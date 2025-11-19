@@ -1,0 +1,5 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+_local.sh
+*.DS_Store
