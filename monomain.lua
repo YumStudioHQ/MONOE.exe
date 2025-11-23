@@ -24,6 +24,6 @@ function main()
 
   -- By returning something else than 0, the engine will crash.
   -- You can request C# library loading by calling this functions:
-  _Mrtrequire("name")
+  -- _Mrtrequire("name")
   return 0
 end

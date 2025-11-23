@@ -15,7 +15,7 @@ internal static partial class INative
     private const string LibName = "yum"; // fallback
 #endif
 
-  private const string DllName = $"Libraries/{LibName}";
+  private const string DllName = $"{LibName}";
 
   public static string SafeIt(IntPtr i) => Marshal.PtrToStringAnsi(i) ?? string.Empty;
 
