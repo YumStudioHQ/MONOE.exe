@@ -4,7 +4,7 @@ using monoe.exe.YumSharp.Types;
 
 namespace monoe.exe.YumSharp;
 
-public static class VariantConverter
+public static class YumConvertions
 {
   public static YumVariant ToYumVariant(Variant v)
   {

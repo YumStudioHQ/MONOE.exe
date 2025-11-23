@@ -3,3 +3,4 @@
 /android/
 _local.sh
 *.DS_Store
+tests/

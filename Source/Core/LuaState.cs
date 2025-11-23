@@ -7,9 +7,8 @@ using monoe.exe.YumSharp;
 using monoe.exe.YumSharp.Natives;
 using monoe.exe.YumSharp.Types;
 using static monoe.exe.YumSharp.YumVectorExtensions;
-using Script = monoe.exe.Source.Core.Script;
 
-namespace monoe.exe.Source.Scripts;
+namespace monoe.exe.Source.Core;
 
 [AttributeUsage(AttributeTargets.Method)]
 public class LuaExportFunctionAttribute(string name, string ns = "Monoe") : Attribute
@@ -18,16 +17,12 @@ public class LuaExportFunctionAttribute(string name, string ns = "Monoe") : Attr
   public string Namespace { get; } = ns;
 }
 
-public class LuaScripting : Script
+public class LuaState : YumSubsystem, IDisposable
 {
-  private readonly YumSubsystem subsystem = new();
-  private readonly ulong yumSysUid;
+  public ulong CurrentUID { get; protected set; }
   private readonly Dictionary<long, object> instances = [];
   private readonly Dictionary<string, Type> reflection = [];
   private long seed = Random.Shared.NextInt64();
-
-  public override YumVector Call(string name, YumVector args)
-   => subsystem.Call(yumSysUid, name, args);
 
   private static object PassAsInteger(YumVariant v, Type type)
   {
@@ -286,10 +281,10 @@ public class LuaScripting : Script
   }
 
 
-  private LuaScripting()
+  private LuaState()
   {
-    yumSysUid = subsystem.NewState();
-    if (!subsystem.Good(yumSysUid)) throw new InvalidOperationException("Got invalid UID (internal error)");
+    CurrentUID = NewState();
+    if (!Good(CurrentUID)) throw new InvalidOperationException("Got invalid UID (internal error)");
 
     var methods = GetType().GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance)
                  .Where(m => m.GetCustomAttribute<LuaExportFunctionAttribute>() != null);
@@ -318,50 +313,44 @@ public class LuaScripting : Script
         del = (Func<YumVector, YumVector>)Delegate.CreateDelegate(typeof(Func<YumVector, YumVector>), this, method);
       }
 
-      subsystem.PushCallback(yumSysUid, atr?.Name ?? method?.Name ?? "_unnamed_function", del, atr?.Namespace ?? "Monoe");
+      PushCallback(CurrentUID, atr?.Name ?? method?.Name ?? "_unnamed_function", del, atr?.Namespace ?? "Monoe");
     }
   }
 
-  public LuaScripting(Dictionary<string, Type> types) : this()
+  public LuaState(Dictionary<string, Type> types) : this()
   {
     reflection = types;
   }
 
-  public LuaScripting(List<Type> types) : this()
+  public LuaState(List<Type> types) : this()
   {
     Dictionary<string, Type> dict = [];
     foreach (var type in types) dict[type?.FullName ?? "undefined"] = type ?? typeof(object);
     reflection = dict;
   }
 
-  public override int Load(string s, bool isFile = true)
-   => subsystem.Load(yumSysUid, s, isFile);
-
-
-  public override void Dispose()
+  public new void Dispose()
   {
-    subsystem.DeleteState(yumSysUid);
-    subsystem.Dispose();
+    DeleteState(CurrentUID);
+    base.Dispose();
   }
 
-  public override void PushAssemblies(Assembly[] assemblies)
+  public int Load(string src, bool isFile = true) => Load(CurrentUID, src, isFile);
+  public YumVector Call(string name, YumVector args) => Call(CurrentUID, name, args);
+  public bool HasMethod(string name) => HasMethod(CurrentUID, name);
+  public void PushCallback(string name, Func<YumVector, YumVector> func, string ns = "")
+    => PushCallback(CurrentUID, name, func, ns);
+
+  public void PushAssemblies(Assembly[] assemblies)
   {
-    foreach (var assembly in assemblies)
-    {
-      try
+    Type[] types = [.. assemblies.SelectMany(a =>
       {
-        foreach (var type in assembly.GetTypes())
-        {
-          if (!reflection.ContainsKey(type.FullName))
-          {
-            reflection[type.FullName] = type;
-          }
-        }
-      }
-      catch (ReflectionTypeLoadException ex)
-      {
-        GD.PrintErr($"Error loading types from assembly {assembly.FullName}: {ex}");
-      }
-    }
+        try { return a.GetTypes(); }
+        catch (ReflectionTypeLoadException ex) { return ex.Types.Where(t => t != null); }
+      })];
+
+    foreach (var type in types) 
+      // Custom types takes over built-in ones!
+      reflection[type?.FullName ?? "undefined"] = type ?? typeof(object);
   }
 }
