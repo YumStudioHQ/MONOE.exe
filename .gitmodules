@@ -1,0 +1,3 @@
+[submodule "YumEngine"]
+	path = YumEngine
+	url = https://yumstudiohq/YumEngine
