@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://mk7wbbixbtr5"]
 
-[ext_resource type="Script" uid="uid://ctrkt0kg8eweu" path="res://Source/Core/Engine/MonoeExeEngine.cs" id="1_txv3s"]
+[ext_resource type="Script" uid="uid://ctrkt0kg8eweu" path="res://Source/Core/Engine/MonoeEngine.cs" id="1_txv3s"]
 
 [node name="Runtime" type="Control"]
 layout_mode = 3

@@ -3,14 +3,29 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using monoe.exe.YumSharp;
 
-namespace monoe.exe.Source.Core;
+namespace monoe.exe.Source.Core.Engine.Internal;
 
-public static partial class Execution
+public partial class EngineClass
 {
-  private static readonly AssemblyLoadContext GodotContext = AssemblyLoadContext.Default;
+  public static Assembly[] GetEngineAssembly()
+  {
+    return [.. AppDomain.CurrentDomain.GetAssemblies(),];
+  }
 
-  public static Assembly LoadExternalAssembly(string path)
+  private readonly AssemblyLoadContext GodotContext = AssemblyLoadContext.Default;
+  public Runtime RuntimeInstance { get; private set; }
+  public LuaState LuaState { get; private set; }
+
+  public EngineClass()
+  {
+    YumEngine.Init();
+    RuntimeInstance = new(this);
+    LuaState = new([typeof(void)]);
+  }
+
+  public Assembly LoadExternalAssembly(string path)
   {
     if (!File.Exists(path))
       throw new FileNotFoundException($"Assembly not found: {path}");
@@ -22,7 +37,7 @@ public static partial class Execution
     return assembly;
   }
 
-  private static Assembly ResolveGodotAssembly(object sender, ResolveEventArgs args)
+  private Assembly ResolveGodotAssembly(object sender, ResolveEventArgs args)
   {
     var requestedName = new AssemblyName(args.Name).Name;
 

@@ -182,7 +182,7 @@ public class LuaState : YumSubsystem, IDisposable
           GD.PrintErr($"Exception during a _typecall(...) invocation\t{e}\n{Dump(uid, args, name)}");
         }
     }
-    return [];
+    return YumVector.UnsafeGlobalEmptyVector;
   }
 
   [LuaExportFunction("_new", "natives")]
@@ -237,7 +237,7 @@ public class LuaState : YumSubsystem, IDisposable
         return [uid];
       }
     }
-    return [];
+    return YumVector.UnsafeGlobalEmptyVector;
   }
 
   [LuaExportFunction("_staticcall", "natives")]
@@ -245,7 +245,7 @@ public class LuaState : YumSubsystem, IDisposable
   {
     // expects: [0]=string typename, [1]=string method, [2..n]=args
     if (args.Count < 2 || !args[0].IsString || !args[1].IsString)
-      return [];
+      return YumVector.UnsafeGlobalEmptyVector;
 
     var typename = args[0].AsString();
     var methodName = args[1].AsString();
@@ -256,8 +256,8 @@ public class LuaState : YumSubsystem, IDisposable
       type = Type.GetType(typename);
       if (type is null)
       {
-        GD.PrintErr($"[Monola._staticcall] Type not found: {typename}");
-        return [];
+        GD.PrintErr($"[LuaState._staticcall] Type not found: {typename}");
+        return YumVector.UnsafeGlobalEmptyVector;
       }
     }
 
@@ -267,8 +267,8 @@ public class LuaState : YumSubsystem, IDisposable
           BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
       if (methodInfo is null)
       {
-        GD.PrintErr($"[Monola._staticcall] Static method not found: {typename}.{methodName}");
-        return [];
+        GD.PrintErr($"[LuaState._staticcall] Static method not found: {typename}.{methodName}");
+        return YumVector.UnsafeGlobalEmptyVector;
       }
 
       return WrapeAndCall(null, methodInfo, args.SliceFrom(2));
@@ -276,7 +276,7 @@ public class LuaState : YumSubsystem, IDisposable
     catch (Exception e)
     {
       GD.PrintErr($"Exception during _staticcall(...) {typename}.{methodName}: {e}");
-      return [];
+      return YumVector.UnsafeGlobalEmptyVector;
     }
   }
 

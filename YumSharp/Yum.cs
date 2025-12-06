@@ -6,6 +6,8 @@ namespace monoe.exe.YumSharp
 {
   public static class YumEngine
   {
+    private static bool isInit = false;
+    
     public static class RuntimeInfo
     {
       public static string Name() => INative.SafeIt(INative.YumEngineInfo_name());
@@ -73,10 +75,12 @@ namespace monoe.exe.YumSharp
 
     public static void Init()
     {
+      if (isInit) return;
       INative.YumEngine_init();
       AppDomain.CurrentDomain.ProcessExit += (_, _) => INative.YumCloseAPI();
       AppDomain.CurrentDomain.UnhandledException += (_, _) => INative.YumCloseAPI();
       Console.CancelKeyPress += (_, _) => INative.YumCloseAPI();
+      isInit = true;
     }
 
     public static class IO

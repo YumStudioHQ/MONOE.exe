@@ -8,7 +8,7 @@ namespace monoe.exe.YumSharp
     // Get a slice (like Python's vec[start:end])
     public static YumVector Slice(this YumVector source, long start = 0, long? end = null)
     {
-      var result = new YumVector();
+      using var result = new YumVector();
 
       if (source == null) 
         return result;

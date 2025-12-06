@@ -78,4 +78,6 @@ public class YumVector : IDisposable, IEnumerable<YumVariant>
       items.Add(v.ToString());
     return string.Join(del, items);
   }
+
+  public static readonly YumVector UnsafeGlobalEmptyVector = [];
 }

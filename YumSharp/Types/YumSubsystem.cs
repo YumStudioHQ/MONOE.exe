@@ -4,7 +4,6 @@ using monoe.exe.YumSharp.Natives;
 
 namespace monoe.exe.YumSharp.Types;
 
-
 public class YumSubsystem : IDisposable
 {
   private IntPtr handle;
@@ -40,7 +39,7 @@ public class YumSubsystem : IDisposable
 
   public void PushCallback(ulong uid, string name, Func<YumVector, YumVector> func, string ns = "")
   {
-    INative.YumCallback cb = (IntPtr inVecPtr, IntPtr outVecPtr) =>
+    INative.YumCallback cb = (inVecPtr, outVecPtr) =>
     {
       try
       {
