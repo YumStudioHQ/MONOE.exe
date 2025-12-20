@@ -5,3 +5,5 @@ _local.sh
 *.DS_Store
 tests/
 release/
+.vscode/
+Libraries/

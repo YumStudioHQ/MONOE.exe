@@ -2,3 +2,6 @@ root = true
 
 [*]
 charset = utf-8
+
+# CS8974: Converting method group to non-delegate type
+dotnet_diagnostic.CS8974.severity = silent

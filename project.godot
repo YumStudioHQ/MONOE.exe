@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="monoe.exe"
-run/main_scene="uid://mk7wbbixbtr5"
+run/main_scene="uid://rafrvxloi8hl"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="uid://bj7tile0lexte"
 

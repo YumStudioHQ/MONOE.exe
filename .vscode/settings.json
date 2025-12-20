@@ -2,4 +2,5 @@
   "Lua.workspace.ignoreDir": [
     "release"
   ],
+  "C_Cpp.errorSquiggles": "enabled",
 }
