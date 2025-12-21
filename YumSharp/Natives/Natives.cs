@@ -9,14 +9,14 @@ internal static unsafe partial class INative
 #if WINDOWS
     private const string LibName = "yum.dll";
 #elif LINUX
-    private const string LibName = "libyum.so";
+    private const string LibName = "yum.so";
 #elif OSX || GODOT_MACOS || GODOT_OSX
     private const string LibName = "libyum_apple.dylib";
 #else
     private const string LibName = "yum";
 #endif
 
-    private const string DllName = $"Libraries/{LibName}";
+    private const string DllName = $"libs/{LibName}";
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate variant_t* YumCallback(
@@ -106,7 +106,7 @@ internal static unsafe partial class INative
     public static partial void libyum_clear(IntPtr state);
     
 
-    [LibraryImport(DllName)]
+    [LibraryImport(DllName, EntryPoint = "libyum_ensure_path")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void libyum_ensure_path(IntPtr state, [MarshalAs(UnmanagedType.LPUTF8Str)] string path);
 

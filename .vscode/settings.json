@@ -3,4 +3,10 @@
     "release"
   ],
   "C_Cpp.errorSquiggles": "enabled",
+  "Lua.diagnostics.globals": [
+    "main"
+  ],
+  "Lua.diagnostics.disable": [
+    "lowercase-global"
+  ],
 }

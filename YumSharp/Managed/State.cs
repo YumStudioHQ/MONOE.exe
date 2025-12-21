@@ -17,7 +17,6 @@ public class YumState : IDisposable
     var parts = path.Split('.');
     var beg = $"{string.Join('.', parts[0..^1])}".TrimSuffix(".");
     var end = parts[^1];
-    GD.Print($"beg:{beg}\tend:{end}");
     INative.libyum_ensure_path(_state, beg);
     return end;
   }
@@ -47,23 +46,14 @@ public class YumState : IDisposable
 
     fixed (variant_t* pArgs = variants)
     {
-      // Example native signature:
-      // syserr_t libyum_call(
-      //   nint state,
-      //   lstring_t name,
-      //   variant_t* args,
-      //   ulong argc,
-      //   out variant_t* rets, // Alocated by YumEngine!
-      //   out ulong retc
-      // );
       ulong outc;
-      variant_t *outa = null;
+      variant_t* outa = null;
       var err = INative.libyum_call(
         _state, name, (ulong)args.LongLength, pArgs, &outc, &outa
       );
 
       if (err.category != syserr_category.OK)
-        throw new YumException(err);      
+        throw new YumException(err);
 
       for (ulong i = 0; i < outc; i++)
       {
@@ -82,7 +72,7 @@ public class YumState : IDisposable
     var end = parts[^1];
 
     INative.libyum_ensure_path(_state, beg);
-    
+
     unsafe
     {
       List<byte[]> pin = [];
@@ -97,25 +87,34 @@ public class YumState : IDisposable
   {
     variant_t* cfun(ulong argc, variant_t* argv, ulong* outc)
     {
-      List<byte[]> pins = [];
-      object[] cs_args = new object[argc];
-      for (ulong i = 0; i < argc; i++)
+      try
       {
-        cs_args[i] = Conversion.VariantToObject(argv[i]);
-      } 
-      
-      var csout = func(cs_args);
+        List<byte[]> pins = [];
+        object[] cs_args = new object[argc];
+        for (ulong i = 0; i < argc; i++)
+        {
+          cs_args[i] = Conversion.VariantToObject(argv[i]);
+        }
 
-      variant_t* cs2luaout = (variant_t*)INative.yumalloc((ulong)(sizeof(variant_t) * csout.Length));
-      // KNOW ! cs3luaout is owned by YumEngine, and you MAY NOT free it.
-      for (int i = 0; i < csout.Length; i++)
-      {
-        cs2luaout[i] = Conversion.ObjectToVariant(csout[i], pins);
+        var csout = func(cs_args);
+
+        variant_t* cs2luaout = (variant_t*)INative.yumalloc((ulong)(sizeof(variant_t) * csout.Length));
+        // KNOW ! cs2luaout is owned by YumEngine, and you MAY NOT free it.
+        for (int i = 0; i < csout.Length; i++)
+        {
+          cs2luaout[i] = Conversion.ObjectToVariant(csout[i], pins);
+        }
+
+        *outc = (ulong)csout.Length;
+
+        return cs2luaout;
       }
-
-      *outc = (ulong)csout.Length;
-
-      return cs2luaout;
+      catch (Exception e)
+      {
+        GD.PrintErr($"C# Exception generated inside C callback {e.Message}\n{e.StackTrace}\nFrom:\t{e.Source}");
+        *outc = 0;
+        return null;
+      }
     }
 
     _gpins.Add(cfun);
@@ -128,16 +127,24 @@ public class YumState : IDisposable
   {
     variant_t* cfun(ulong argc, variant_t* argv, ulong* outc)
     {
-      List<byte[]> pins = [];
-      object[] cs_args = new object[argc];
-      for (ulong i = 0; i < argc; i++)
+      try
       {
-        cs_args[i] = Conversion.VariantToObject(argv[i]);
-      } 
-      
-      action(cs_args);
-      *outc = 0;
+        List<byte[]> pins = [];
+        object[] cs_args = new object[argc];
+        for (ulong i = 0; i < argc; i++)
+        {
+          cs_args[i] = Conversion.VariantToObject(argv[i]);
+        }
 
+        action(cs_args);
+        *outc = 0;
+      }
+      catch (Exception e)
+      {
+        GD.PrintErr($"C# Exception generated inside C callback {e.Message}\n{e.StackTrace}\nFrom:\t{e.Source}");
+      }
+
+      *outc = 0;
       return null;
     }
 
@@ -158,7 +165,7 @@ public class YumState : IDisposable
   public void Dispose()
   {
     if (!disposed)
-    INative.libyum_delete(_state);
+      INative.libyum_delete(_state);
     disposed = true;
   }
 }

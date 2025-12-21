@@ -6,4 +6,4 @@ _local.sh
 tests/
 release/
 .vscode/
-Libraries/
+libs/
