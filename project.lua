@@ -1,7 +1,11 @@
+local io = require('libraries.io.keyboard')
+
 function main()
-  local i = 089
-  local pat = "hello"
-  return "test/player.lua"
+  print('Hello, world')
+end
+
+function process()
+
 end
 
 function deps()

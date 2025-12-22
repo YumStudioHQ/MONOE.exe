@@ -8,7 +8,7 @@ public class Script : IDisposable
   private readonly string src;
   private readonly bool isFile = false;
   private YumState state = new();
-  private Action onerror = null;
+  private readonly Action onerror = null;
 
   public object[] Call(string name, params object[] args)
   {
@@ -39,6 +39,7 @@ public class Script : IDisposable
     state = new();
     try
     {
+      state.Run("function ready()end function process()end function physics()end function exit()end", false);
       state.Run(src, isFile);
     } 
     catch (YumException e)
@@ -55,6 +56,7 @@ public class Script : IDisposable
     this.onerror = onerror;
     try
     {
+      state.Run("function ready()end function process()end function physics()end function exit()end", false);
       state.Run(src, isFile);
     } 
     catch (YumException e)

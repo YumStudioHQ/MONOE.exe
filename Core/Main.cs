@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Godot;
@@ -9,7 +8,7 @@ namespace monoe.exe.Core;
 
 public partial class Main : Node
 {
-  private Dictionary<string, Script> scripts = [];
+  private Script main = null;
   private FileSystemWatcher watcher;
   private readonly ConcurrentQueue<Action> reloadQueue = new();
   private Reflector reflector;
@@ -52,14 +51,14 @@ public partial class Main : Node
         else GD.PrintErr(new FieldAccessException("Cannot dequeue `reloadQueue`"));
       }
 
-      foreach (var script in scripts) script.Value.Call("process", delta);
+      main.Call("process", delta);
     }
   }
 
   public override void _PhysicsProcess(double delta)
   {
     if (!criticalState)
-      foreach (var script in scripts) script.Value.Call("physics", delta);
+      main.Call("physics", delta);
   }
 
   public override void _ExitTree()
@@ -70,9 +69,7 @@ public partial class Main : Node
 
   private void Init()
   {
-    using Script main = new("project.lua", true, eventHandler);
-
-    var @out = main.Call("main").ToArray();
+    main = new("project.lua", true, eventHandler);
 
     var libs = main.Call("deps")
                    .Where(o => o is string s && string.IsNullOrEmpty(s.Trim()))
@@ -81,49 +78,26 @@ public partial class Main : Node
 
     reflector = new(libs);
 
-    foreach (var v in @out) if (v is string s)
-    {
-      var path = Path.GetFullPath(s);
-      var script = new Script(path, true, eventHandler);
-      script.PushCallback("monoe.import", reflector.Limport);
-      script.PushCallback("monoe.call", reflector.Lcall);
-      scripts[path] = script;
-    }
-
-    foreach (var script in scripts) script.Value.Call("ready");
+    main.PushCallback("monoe.import", reflector.Limport);
+    main.PushCallback("monoe.call", reflector.Lcall);
+    main.PushCallback("monoe.staticcall", reflector.Lstaticcall);
+    main.Call("main");
   }
 
   private void CloseStates()
   {
-    foreach (var script in scripts)
-    {
-      script.Value.Call("exit");
-      script.Value.Dispose();
-    }
-
-    scripts = [];
+    main.Call("exit");
   }
 
   private void OnFileChanged(object sender, FileSystemEventArgs e)
   {
     if (e.ChangeType != WatcherChangeTypes.Changed) return;
-    else if (scripts.TryGetValue(Path.GetFullPath(e.FullPath), out Script script))
+
+    reloadQueue.Enqueue(() =>
     {
-      reloadQueue.Enqueue(() =>
-      {
-        script.Call("exit");
-        script.Reload();
-        script.Call("ready");
-      });
-    }
-    else if (Path.GetFileName(e.FullPath) == "project.lua")
-    {
-      reloadQueue.Enqueue(() =>
-      {
-        CloseStates();
-        Init();
-      });
-    }
+      CloseStates();
+      Init();
+    });
 
     if (criticalState)
     {
