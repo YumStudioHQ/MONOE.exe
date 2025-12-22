@@ -164,6 +164,47 @@ function monoe.query:astable()
   return array
 end
 
+---returns true if the object is a query instance.
+---@param obj any
+---@return boolean
+function monoe.query.is_query(obj)
+  local mt = getmetatable(obj)
+  while mt do
+    local index = mt.__index
+    if index == monoe.query then
+      return true
+    end
+    mt = getmetatable(index)
+  end
+  return false
+end
+
+---joins elements in a single query
+---@param ... unknown
+---@return monoe.query
+function monoe.query.join(...)
+  local elements = { ... }
+  local arr = {}
+
+  for _, value in ipairs(elements) do
+    if type(value) == "table" then
+      if monoe.query.is_query(value) then
+        for _, ivalue in pairs(value.data) do
+          table.insert(arr, ivalue)
+        end
+      else
+        for _, ivalue in pairs(value) do
+          table.insert(arr, ivalue)
+        end
+      end
+    else
+      table.insert(arr, value)
+    end
+  end
+
+  return monoe.query.new(arr)
+end
+
 _G.monoe = monoe
 _G.monoe.query = monoe.query
 return monoe.query

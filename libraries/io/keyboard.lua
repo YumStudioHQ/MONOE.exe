@@ -4,7 +4,6 @@ monoe = monoe or {}
 monoe.io = monoe.io or {}
 
 monoe.io.keyboard = {}
-monoe.io.keyboard.__index = monoe.io.keyboard
 
 local base =  "monoe.exe.Core.Export.io.Keyboard"
 
