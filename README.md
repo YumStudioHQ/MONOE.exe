@@ -1,5 +1,9 @@
 # MONOE.exe Game Engine
 
+<p align="center">
+  <img src="./icon.png" alt="icon">
+</p>
+
 ## What is MONOE.exe?
 
 MONOE.exe is a small **meta-engine toy**, built using **C#, C, C++, and Lua**.

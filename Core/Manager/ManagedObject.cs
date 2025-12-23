@@ -2,18 +2,15 @@ namespace monoe.exe.Core.Manager;
 
 public abstract class ManagedObject
 {
-  public long UID { get; }
+  protected long UID = -1;
 
-  protected ManagedObject()
-  {
-    UID = ObjectRegistry.Register(this);
-  }
+  public void SetUID(long uid) => UID = uid;
 
   protected virtual void _Free() { }
 
   public void Free()
   {
     _Free();
-    ObjectRegistry.Remove(UID);
+    if (UID != -1) ObjectRegistry.Remove(UID);
   }
 }

@@ -78,5 +78,4 @@ public class Script : IDisposable
       onerror?.Invoke();
     }
   }
-
 }

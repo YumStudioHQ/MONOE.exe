@@ -12,6 +12,8 @@ public static class ObjectRegistry
   {
     var id = Interlocked.Increment(ref _next);
     _objects[id] = obj;
+    if (obj is ManagedObject mo) mo.SetUID(id);
+  
     return id;
   }
 
@@ -42,5 +44,4 @@ public static class ObjectRegistry
       }
     }
   }
-
 }

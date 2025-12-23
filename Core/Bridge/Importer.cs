@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Bridge;
 
@@ -10,46 +11,43 @@ public static class Importer
 {
   private const long invaliduid = -1;
   private static readonly List<Assembly> assemblies = [.. Engine.EngineAssembly.GetEngineAssembly()];
+  private static readonly Dictionary<string, Type> types = [];
   private static readonly ConcurrentDictionary<(string type, string method), MethodInfo> staticMethodCache = new();
 
   public static void LoadAssemblies(string[] strings)
-   => assemblies.AddRange(Engine.EngineAssembly.GetAssemblies(strings));
+  {
+    assemblies.AddRange(Engine.EngineAssembly.GetAssemblies(strings));
+    foreach (var asm in assemblies)
+    {
+      foreach (var type in asm.GetTypes())
+      {
+        types[type.FullName] = type;
+      }
+    }
+  }
 
   public static void Clear()
   {
     assemblies.Clear();
-
   }
 
   public static object[] Limport(object[] args)
   {
-    string err = "";
     if (args.Length >= 1 && args[0] is string @base)
     {
-      foreach (var asm in assemblies)
-      {
-        var selections = asm.GetTypes().Where(t => t.FullName == @base).ToArray();
-        if (selections.Length != 0)
-        {
-          var selection = selections[0];
+      var selection = types[@base];
 
-          var ctor = selection.GetConstructor(Type.EmptyTypes);
-          if (ctor == null)
-            return [invaliduid, $"type {selection.FullName} has no parameterless constructor"];
+      var ctor = selection.GetConstructor(Type.EmptyTypes);
+      if (ctor == null)
+        return [invaliduid, $"type {selection.FullName} has no parameterless constructor"];
 
-          object instance = ctor.Invoke(null);
-          long uid = Manager.ObjectRegistry.Register(instance);
+      object instance = ctor.Invoke(null);
+      long uid = ObjectRegistry.Register(instance);
 
-          return [uid];
-        }
-      }
-      err = $"base '{@base}' not found";
+      return [uid];
     }
-    else
-    {
-      err = $"bad arguments (expected string at position #1, got {args[0].GetType().FullName})";
-    }
-
+    string err = $"bad arguments (expected string at position #1, got {args[0].GetType().FullName})";
+  
     return [invaliduid, err];
   }
 
@@ -57,7 +55,7 @@ public static class Importer
   {
     if (args.Length >= 2 && args[0] is long uid && args[1] is string methodname)
     {
-      if (Manager.ObjectRegistry.TryGet(uid, out object instance))
+      if (ObjectRegistry.TryGet(uid, out object instance))
       {
         var method = instance.GetType()
             .GetMethod(methodname,
@@ -126,25 +124,18 @@ public static class Importer
 
     var callArgs = args.Skip(2).ToArray();
 
-    try
+    var method = ResolveStaticMethod(@base, methodname);
+
+    object result;
+
+    if (method.GetParameters() is [{ ParameterType: var t }] &&
+        t == typeof(object[]))
     {
-      var method = ResolveStaticMethod(@base, methodname);
-
-      object result;
-
-      if (method.GetParameters() is [{ ParameterType: var t }] &&
-          t == typeof(object[]))
-      {
-        result = method.Invoke(null, [callArgs]);
-        return result is object[] arr ? arr : [result];
-      }
-
-      result = method.Invoke(null, callArgs);
-      return result is object[] arr2 ? arr2 : [result];
+      result = method.Invoke(null, [callArgs]);
+      return result is object[] arr ? arr : [result];
     }
-    catch (Exception e)
-    {
-      return [invaliduid, e.Message];
-    }
+
+    result = method.Invoke(null, callArgs);
+    return result is object[] arr2 ? arr2 : [result];
   }
 }

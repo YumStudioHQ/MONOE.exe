@@ -32,10 +32,6 @@ function monoe.sprite:clear()
   engine.call(self.uid, 'Clear')
 end
 
-function monoe.sprite:render()
-  engine.call(self.uid, 'Render')
-end
-
 function monoe.sprite:position(x, y)
   if x and y then
     engine.call(self.uid, 'SetPosition', x, y)
@@ -47,6 +43,10 @@ end
 
 function monoe.sprite:move(x, y)
   return engine.call(self.uid, 'Move', x, y)
+end
+
+function monoe.sprite:scale(x, y)
+  return engine.call(self.uid, "Scale", x, y)
 end
 
 function monoe.sprite:free()

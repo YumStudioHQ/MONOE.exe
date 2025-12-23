@@ -1,10 +1,9 @@
 using Godot;
 using monoe.exe.Core.Bridge;
-using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Export.Types;
 
-public class Sprite : ManagedObject
+public class Sprite : Exposable
 {
   private readonly Sprite2D sprite = new();
 
@@ -16,11 +15,6 @@ public class Sprite : ManagedObject
   public void Clear()
   {
     sprite.Texture = null;
-  }
-
-  public void Render()
-  {
-    SceneRoot.I.AddChild(sprite);
   }
 
   public void SetPosition(double x, double y)
@@ -39,8 +33,16 @@ public class Sprite : ManagedObject
     return [sprite.Position.X, sprite.Position.Y];
   }
 
+  public object[] Scale(double x, double y)
+  {
+    sprite.Scale = new((float)x, (float)y);
+    return [sprite.Scale.X, sprite.Scale.Y];
+  }
+
   protected override void _Free()
   {
     sprite.QueueFree();
   }
+
+  public override Node NRef() => sprite;
 }
