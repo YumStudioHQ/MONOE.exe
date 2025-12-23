@@ -6,7 +6,7 @@ namespace monoe.exe.Core.Manager;
 public static class ObjectRegistry
 {
   private static long _next = 1;
-  private static readonly ConcurrentDictionary<long, object> _objects = new();
+  private static ConcurrentDictionary<long, object> _objects = new();
 
   public static long Register(object obj)
   {
@@ -32,6 +32,15 @@ public static class ObjectRegistry
 
   public static void Clear()
   {
-    _objects.Clear();
+    var oldObjects = Interlocked.Exchange(ref _objects, new ConcurrentDictionary<long, object>());
+
+    foreach (var obj in oldObjects.Values)
+    {
+      if (obj is ManagedObject mo)
+      {
+        try { mo.Free(); } catch { }
+      }
+    }
   }
+
 }

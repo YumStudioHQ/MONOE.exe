@@ -9,8 +9,11 @@ public abstract class ManagedObject
     UID = ObjectRegistry.Register(this);
   }
 
-  public virtual void Free()
+  protected virtual void _Free() { }
+
+  public void Free()
   {
+    _Free();
     ObjectRegistry.Remove(UID);
   }
 }

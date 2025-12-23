@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using Godot;
-
+using monoe.exe.Core.Bridge;
 using Script = monoe.exe.Core.Bridge.Script;
 
 namespace monoe.exe.Core;
@@ -32,7 +32,7 @@ public partial class Main : Node
     luaErrorHandler = () =>
     {
       criticalState = true;
-      main.Run(inlineErrorHandler, false);
+      main?.Run(inlineErrorHandler, false);
     };
 
     if (! /* Hot reload is optional! */ OS.GetCmdlineArgs().Contains("-no-hot-reload"))
@@ -53,6 +53,12 @@ public partial class Main : Node
       watcher.IncludeSubdirectories = true;
       watcher.EnableRaisingEvents = true;
     }
+
+    /*
+     * We also setup SceneRoot so we can use Godot through C# and Assembly without passing 
+     * and keeping references to a node.
+     */
+    SceneRoot.SetNode(this);
   }
 
   public override void _Ready()
@@ -96,7 +102,9 @@ public partial class Main : Node
 
   public override void _ExitTree()
   {
+    Manager.ObjectRegistry.Clear();
     main.Call("exit");
+    main.Call("monoe.emit", "onexit");
     main.Dispose();
     watcher?.Dispose();
   }
@@ -113,15 +121,15 @@ public partial class Main : Node
                    .ToArray();
 
     // 3. Load them.
-    Bridge.Importer.LoadAssemblies(libs);
+    Importer.LoadAssemblies(libs);
 
     /* 4. Push callbacks.
      * Note: these callbacks are "visible" in monolib.lua and unique_event.lua files!
      * But you can absolutely use them without these files — They are designed only for IDEs!
      */
-    main.PushCallback("monoe.import", Bridge.Importer.Limport);
-    main.PushCallback("monoe.call", Bridge.Importer.Lcall);
-    main.PushCallback("monoe.staticcall", Bridge.Importer.Lstaticcall);
+    main.PushCallback("monoe.import", Importer.Limport);
+    main.PushCallback("monoe.call", Importer.Lcall);
+    main.PushCallback("monoe.staticcall", Importer.Lstaticcall);
     main.Run("monoe.emit = monoe.emit or function(name)end", false); // Ugly injection...
 
     // 5. Call main.
@@ -135,6 +143,7 @@ public partial class Main : Node
     reloadQueue.Enqueue(() =>
     {
       main.Call("exit");
+      Manager.ObjectRegistry.Clear();
       Init();
     });
 
