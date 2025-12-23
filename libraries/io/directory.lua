@@ -1,4 +1,6 @@
-local monolib = require('libraries.monolib')
+---@diagnostic disable: undefined-doc-name
+
+local monolib = require('libraries.engine')
 local list = require('libraries.list')
 
 monoe = monoe or {}
@@ -56,6 +58,14 @@ end
 ---@return string
 function monoe.io.directory.filename(path)
   return monolib.staticcall(base, "FileName", path)
+end
+
+function monoe.io.directory.exists(path)
+  return monolib.staticcall(base, "Exists", path)
+end
+
+function monoe.io.directory.isfile(path)
+  return monolib.staticcall(base, "IsFile", path)
 end
 
 _G.monoe = monoe

@@ -1,7 +1,7 @@
 using System;
 using monoe.exe.YumSharp.Managed;
 
-namespace monoe.exe.Core;
+namespace monoe.exe.Core.Bridge;
 
 public class Script : IDisposable
 {
@@ -18,7 +18,7 @@ public class Script : IDisposable
     } 
     catch (YumException e)
     {
-      LuaErrorUtils.DumpLuaError(e, src);
+      Utils.LuaErrorUtils.DumpLuaError(e, src);
       onerror?.Invoke();
     }
 
@@ -44,7 +44,20 @@ public class Script : IDisposable
     } 
     catch (YumException e)
     {
-      LuaErrorUtils.DumpLuaError(e, src);
+      Utils.LuaErrorUtils.DumpLuaError(e, src);
+      onerror?.Invoke();
+    }
+  }
+
+  public void Run(string s, bool isFile)
+  {
+    try
+    {
+      state.Run(s, isFile);
+    } 
+    catch (YumException e)
+    {
+      Utils.LuaErrorUtils.DumpLuaError(e, src);
       onerror?.Invoke();
     }
   }
@@ -61,7 +74,7 @@ public class Script : IDisposable
     } 
     catch (YumException e)
     {
-      LuaErrorUtils.DumpLuaError(e, src);
+      Utils.LuaErrorUtils.DumpLuaError(e, src);
       onerror?.Invoke();
     }
   }

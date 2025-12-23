@@ -4,45 +4,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace monoe.exe.Core;
+namespace monoe.exe.Core.Bridge;
 
-public class Reflector(string[] files)
+public static class Importer
 {
-  public static List<Type> GetTypes(Assembly[] assemblies)
-  {
-    Assembly[] full = [.. assemblies];
-    return [.. full
-      .SelectMany(a =>
-      {
-        try { return a.GetTypes(); }
-        catch (ReflectionTypeLoadException ex) { return ex.Types.Where(t => t != null); }
-      })];
-  }
-
-  public static Assembly[] GetEngineAssembly()
-   => [.. AppDomain.CurrentDomain.GetAssemblies()];
-
-  public static Assembly[] GetAssemblies(string[] files)
-  {
-    List<Assembly> assemblies = [];
-
-    foreach (var file in files)
-    {
-      if (string.IsNullOrEmpty(file) || string.IsNullOrWhiteSpace(file)) continue;
-      Assembly assembly = Assembly.LoadFrom(file);
-      assemblies.Add(assembly);
-    }
-
-    return [.. assemblies];
-  }
-
-  private Assembly[] assemblies = [.. GetAssemblies(files), .. GetEngineAssembly()];
-  private readonly ConcurrentDictionary<long, object> instances = [];
-  private readonly ConcurrentDictionary<(string type, string method), MethodInfo> staticMethodCache = new();
-  private long uidpos = 1;
   private const long invaliduid = -1;
+  private static readonly List<Assembly> assemblies = [.. Engine.EngineAssembly.GetEngineAssembly()];
+  private static readonly ConcurrentDictionary<(string type, string method), MethodInfo> staticMethodCache = new();
 
-  public object[] Limport(object[] args)
+  public static void LoadAssemblies(string[] strings)
+   => assemblies.AddRange(Engine.EngineAssembly.GetAssemblies(strings));
+
+  public static void Clear()
+  {
+    assemblies.Clear();
+
+  }
+
+  public static object[] Limport(object[] args)
   {
     string err = "";
     if (args.Length >= 1 && args[0] is string @base)
@@ -53,14 +32,14 @@ public class Reflector(string[] files)
         if (selections.Length != 0)
         {
           var selection = selections[0];
-          long uid = uidpos++;
 
           var ctor = selection.GetConstructor(Type.EmptyTypes);
           if (ctor == null)
             return [invaliduid, $"type {selection.FullName} has no parameterless constructor"];
 
           object instance = ctor.Invoke(null);
-          instances[uid] = instance;
+          long uid = Manager.ObjectRegistry.Register(instance);
+
           return [uid];
         }
       }
@@ -74,11 +53,11 @@ public class Reflector(string[] files)
     return [invaliduid, err];
   }
 
-  public object[] Lcall(object[] args)
+  public static object[] Lcall(object[] args)
   {
     if (args.Length >= 2 && args[0] is long uid && args[1] is string methodname)
     {
-      if (instances.TryGetValue(uid, out object instance))
+      if (Manager.ObjectRegistry.TryGet(uid, out object instance))
       {
         var method = instance.GetType()
             .GetMethod(methodname,
@@ -108,7 +87,7 @@ public class Reflector(string[] files)
     return [];
   }
 
-  private MethodInfo ResolveStaticMethod(string typeName, string methodName)
+  private static MethodInfo ResolveStaticMethod(string typeName, string methodName)
   {
     var key = (typeName, methodName);
 
@@ -129,20 +108,16 @@ public class Reflector(string[] files)
           methodName,
           BindingFlags.Public | BindingFlags.Static
       );
-
-      if (method == null)
-        throw new MissingMethodException(
+      staticMethodCache[key] = method ?? throw new MissingMethodException(
             $"static method {methodName} not found in {typeName}"
         );
-
-      staticMethodCache[key] = method;
       return method;
     }
 
     throw new TypeLoadException($"static base '{typeName}' not found");
   }
 
-  public object[] Lstaticcall(object[] args)
+  public static object[] Lstaticcall(object[] args)
   {
     if (args.Length < 2 ||
         args[0] is not string @base ||

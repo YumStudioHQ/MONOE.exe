@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
-using Godot;
 using monoe.exe.YumSharp.Natives;
 
 namespace monoe.exe.YumSharp.Managed;

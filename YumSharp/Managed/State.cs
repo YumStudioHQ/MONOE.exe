@@ -9,7 +9,7 @@ namespace monoe.exe.YumSharp.Managed;
 public class YumState : IDisposable
 {
   private nint _state = nint.Zero;
-  private readonly List<object> _gpins = [];
+  private readonly List<INative.YumCallback> _callbacks = [];
   private bool disposed = false;
 
   private string Ensure(string path)
@@ -85,41 +85,37 @@ public class YumState : IDisposable
 
   public unsafe void PushCallback(string name, Func<object[], object[]> func)
   {
-    variant_t* cfun(ulong argc, variant_t* argv, ulong* outc)
+    INative.YumCallback cb = (argc, argv, outc) =>
     {
       try
       {
-        List<byte[]> pins = [];
-        object[] cs_args = new object[argc];
+        object[] csArgs = new object[argc];
         for (ulong i = 0; i < argc; i++)
-        {
-          cs_args[i] = Conversion.VariantToObject(argv[i]);
-        }
+          csArgs[i] = Conversion.VariantToObject(argv[i]);
 
-        var csout = func(cs_args);
+        var csOut = func(csArgs);
 
-        variant_t* cs2luaout = (variant_t*)INative.yumalloc((ulong)(sizeof(variant_t) * csout.Length));
-        // KNOW ! cs2luaout is owned by YumEngine, and you MAY NOT free it.
-        for (int i = 0; i < csout.Length; i++)
-        {
-          cs2luaout[i] = Conversion.ObjectToVariant(csout[i], pins);
-        }
+        var nativeOut = (variant_t*)
+            INative.yumalloc((ulong)(sizeof(variant_t) * csOut.Length));
 
-        *outc = (ulong)csout.Length;
+        List<byte[]> pins = [];
+        for (int i = 0; i < csOut.Length; i++)
+          nativeOut[i] = Conversion.ObjectToVariant(csOut[i], pins);
 
-        return cs2luaout;
+        *outc = (ulong)csOut.Length;
+        return nativeOut;
       }
       catch (Exception e)
       {
-        GD.PrintErr($"C# Exception generated inside C callback {e.Message}\n{e.StackTrace}\nFrom:\t{e.Source}");
+        GD.PrintErr(e);
         *outc = 0;
         return null;
       }
-    }
+    };
 
-    _gpins.Add(cfun);
+    _callbacks.Add(cb);
 
-    INative.libyum_push_callback(_state, Ensure(name), cfun);
+    INative.libyum_push_callback(_state, Ensure(name), cb);
     INative.libyum_clear(_state);
   }
 
@@ -148,7 +144,7 @@ public class YumState : IDisposable
       return null;
     }
 
-    _gpins.Add(cfun);
+    _callbacks.Add(cfun);
 
     INative.libyum_push_callback(_state, Ensure(name), cfun);
     INative.libyum_clear(_state);
@@ -165,7 +161,10 @@ public class YumState : IDisposable
   public void Dispose()
   {
     if (!disposed)
+    {
+      _callbacks.Clear();
       INative.libyum_delete(_state);
+    }
     disposed = true;
   }
 }
