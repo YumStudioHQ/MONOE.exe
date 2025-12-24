@@ -1,5 +1,6 @@
 ---@diagnostic disable: return-type-mismatch, missing-return-value
 local engine = require('libraries.engine')
+local rendering = require('libraries.rendering')
 
 monoe = monoe or {}
 monoe.engine = monoe.engine or {}
@@ -43,7 +44,12 @@ function monoe.engine.window.move(x, y)
 end
 
 function monoe.engine.window.attach(obj)
-  engine.staticcall(base, 'Attach', obj.uid)
+  if type(obj) == "table" and obj.root then
+    rendering.attach_tree(obj.root, obj)
+    monoe.engine.window.attach(obj.root)
+  else
+    engine.staticcall(base, 'Attach', obj.uid)
+  end
 end
 
 _G.monoe = monoe

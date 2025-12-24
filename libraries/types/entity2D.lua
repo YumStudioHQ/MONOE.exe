@@ -7,6 +7,7 @@ monoe = monoe or {}
 ---@field uid integer
 monoe.entity2D = {}
 monoe.entity2D.__index = monoe.entity2D
+monoe.entity2D.__midx = true
 
 local base = "monoe.exe.Core.Export.Types.Entity2D"
 

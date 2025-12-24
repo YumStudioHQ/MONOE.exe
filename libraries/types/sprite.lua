@@ -6,6 +6,7 @@ monoe = monoe or {}
 ---@field uid integer
 monoe.sprite = {}
 monoe.sprite.__index = monoe.sprite
+monoe.sprite.__midx = true
 
 local base = 'monoe.exe.Core.Export.Types.Sprite'
 
