@@ -1,6 +1,6 @@
 using Godot;
 
-namespace monoe.exe.Core.Export.Types;
+namespace monoe.exe.Core.Bridge.Types;
 
 public class Entity2D : Exposable
 {

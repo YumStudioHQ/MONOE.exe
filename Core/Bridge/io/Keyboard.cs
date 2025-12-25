@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace monoe.exe.Core.Export.io;
+namespace monoe.exe.Core.Bridge.io;
 
 public static class KeyResolver
 {

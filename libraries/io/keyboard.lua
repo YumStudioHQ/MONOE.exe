@@ -5,7 +5,7 @@ monoe.io = monoe.io or {}
 
 monoe.io.keyboard = {}
 
-local base =  "monoe.exe.Core.Export.io.Keyboard"
+local base =  "monoe.exe.Core.Bridge.io.Keyboard"
 
 ---@param key string
 ---@return boolean

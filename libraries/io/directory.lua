@@ -8,7 +8,7 @@ monoe.io = monoe.io or {}
 
 monoe.io.directory = {}
 
-local base = "monoe.exe.Core.Export.io.Filesystem"
+local base = "monoe.exe.Core.Bridge.io.Filesystem"
 
 ---returns all files in given directories
 ---@param ... unknown

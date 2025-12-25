@@ -1,10 +1,10 @@
 using System;
 using Godot;
 using monoe.exe.Core.Bridge;
-using monoe.exe.Core.Export.Types;
+using monoe.exe.Core.Bridge.Types;
 using monoe.exe.Core.Manager;
 
-namespace monoe.exe.Core.Export.io;
+namespace monoe.exe.Core.Bridge.io;
 
 public static class EngineWindow
 {

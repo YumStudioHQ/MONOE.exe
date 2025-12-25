@@ -11,6 +11,7 @@ public class YumState : IDisposable
   private nint _state = nint.Zero;
   private readonly List<INative.YumCallback> _callbacks = [];
   private bool disposed = false;
+  private bool libs = false;
 
   private string Ensure(string path)
   {
@@ -25,6 +26,7 @@ public class YumState : IDisposable
   {
     _state = INative.libyum_new();
     if (libs) INative.libyum_open_libs(_state);
+    this.libs = libs;
   }
 
   public void Run(string src, bool isFile = false)
@@ -37,7 +39,7 @@ public class YumState : IDisposable
   {
     var pinnedStrings = new List<byte[]>(args.Length);
     var variants = new variant_t[args.Length];
-    var output = new List<object>();
+    var output = new object[args.Length];
 
     for (int i = 0; i < args.Length; i++)
     {
@@ -57,12 +59,13 @@ public class YumState : IDisposable
 
       for (ulong i = 0; i < outc; i++)
       {
-        output.Add(Conversion.VariantToObject(outa[i]));
+        output[(int)i] = Conversion.VariantToObject(outa[i]);
       }
+      INative.yumfree_all(outa, outc);
     }
 
     INative.libyum_clear(_state);
-    return [.. output];
+    return output;
   }
 
   public void Push(string name, object value)
@@ -91,12 +94,13 @@ public class YumState : IDisposable
       {
         object[] csArgs = new object[argc];
         for (ulong i = 0; i < argc; i++)
+        {
           csArgs[i] = Conversion.VariantToObject(argv[i]);
+        }
 
         var csOut = func(csArgs);
 
-        var nativeOut = (variant_t*)
-            INative.yumalloc((ulong)(sizeof(variant_t) * csOut.Length));
+        var nativeOut = (variant_t*)INative.yumalloc((ulong)(sizeof(variant_t) * csOut.Length));
 
         List<byte[]> pins = [];
         for (int i = 0; i < csOut.Length; i++)
@@ -164,7 +168,16 @@ public class YumState : IDisposable
     {
       _callbacks.Clear();
       INative.libyum_delete(_state);
+      GC.SuppressFinalize(this);
     }
     disposed = true;
+  }
+
+  public void Clear()
+  {
+    _callbacks.Clear();
+    INative.libyum_delete(_state);
+    _state = INative.libyum_new();
+    if (libs) INative.libyum_open_libs(_state);
   }
 }

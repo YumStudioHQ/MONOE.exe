@@ -6,7 +6,7 @@ monoe = monoe or {}
 monoe.engine = monoe.engine or {}
 monoe.engine.window = {}
 
-local base = "monoe.exe.Core.Export.io.EngineWindow"
+local base = "monoe.exe.Core.Bridge.io.EngineWindow"
 
 ---changes the title of the main window
 ---@param name string

@@ -2,7 +2,7 @@ using System;
 using Godot;
 using monoe.exe.Core.Manager;
 
-namespace monoe.exe.Core.Export.Types;
+namespace monoe.exe.Core.Bridge.Types;
 
 public class Exposable : ManagedObject
 {

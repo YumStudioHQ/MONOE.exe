@@ -1,7 +1,7 @@
 using Godot;
-using monoe.exe.Core.Bridge;
+using monoe.exe.Core.Manager;
 
-namespace monoe.exe.Core.Export.Types;
+namespace monoe.exe.Core.Bridge.Types;
 
 public class Sprite : Exposable
 {
@@ -9,7 +9,7 @@ public class Sprite : Exposable
 
   public void LoadImage(string path)
   {
-    sprite.Texture = ImageTexture.CreateFromImage(Image.LoadFromFile(path));
+    sprite.Texture = ImageTexture.CreateFromImage(Godot.Image.LoadFromFile(path));
   }
 
   public void Clear()
@@ -45,4 +45,10 @@ public class Sprite : Exposable
   }
 
   public override Node NRef() => sprite;
+
+  public long GetImageUID()
+  {
+    long uid = ObjectRegistry.Register(new Image(sprite.Texture));
+    return uid;
+  }
 }

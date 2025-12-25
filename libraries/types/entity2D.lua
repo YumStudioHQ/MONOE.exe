@@ -9,7 +9,7 @@ monoe.entity2D = {}
 monoe.entity2D.__index = monoe.entity2D
 monoe.entity2D.__midx = true
 
-local base = "monoe.exe.Core.Export.Types.Entity2D"
+local base = "monoe.exe.Core.Bridge.Types.Entity2D"
 
 ---Crate a new entity2D. If a path is provided, it'll load it as an image
 ---@return monoe.entity2D

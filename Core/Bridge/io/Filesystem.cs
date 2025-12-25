@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace monoe.exe.Core.Export.io;
+namespace monoe.exe.Core.Bridge.io;
 
 public static class Filesystem
 {
