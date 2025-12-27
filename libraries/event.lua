@@ -33,7 +33,8 @@ local function call(e, f, ...)
   local ok, err = pcall(f, ...)
 
   if not ok then
-    print('>>> event error: ' .. err .. ' * during event ' .. e .. '\n' .. debug.traceback())
+    error('error when calling function ' .. tostring(f) .. ' during event '
+    .. e .. ' ; ok: ' .. tostring(ok) .. ', err: ' .. err)
   end
 end
 

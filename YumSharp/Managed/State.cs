@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Godot;
+using monoe.exe.Core.Engine;
 using monoe.exe.YumSharp.Natives;
 
 namespace monoe.exe.YumSharp.Managed;
@@ -113,7 +114,7 @@ public class YumState : IDisposable
       }
       catch (Exception e)
       {
-        GD.PrintErr(e);
+        EngineConsole.WriteError(e);
         *outc = 0;
         return null;
       }

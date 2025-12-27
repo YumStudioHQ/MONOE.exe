@@ -79,7 +79,8 @@ function monoe.load(name, path)
     subscribe_all(name)
   end)
 
-  local mpath = path
+  local mpath = path:gsub('%.', '/')
+
   if mpath:sub(-4) ~= '.lua' then
     mpath = mpath .. '.lua'
   end
@@ -94,6 +95,15 @@ function monoe.load(name, path)
 
   return _G[name]
 end
+
+monoe.debug = monoe.debug
+
+function monoe.breakpoint()
+  error('breakpoint' .. debug.traceback())
+end
+
+---@param milliseconds integer
+function monoe.wait(milliseconds) end
 
 _G.monoe = monoe
 return monoe

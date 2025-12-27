@@ -53,6 +53,8 @@ public class Script : YumState, IDisposable
     }
   }
 
+  public void RawRun(string s, bool isFile = false) => base.Run(s, isFile);
+
   public Script(string source, bool isFile = true, Action onerror = null)
   {
     src = source;

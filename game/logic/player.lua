@@ -29,7 +29,6 @@ function player.animate()
 end
 
 function player.process(delta)
-  player.flip = false
   player.state = 'idle'
   if keyboard.down('ui_up') then
     player.root:move(0, -(player.speed * delta))
@@ -44,6 +43,7 @@ function player.process(delta)
     player.root:move(player.speed * delta, 0)
     player.direction = 'side'
     player.state = 'walk'
+    player.flip = false
   elseif keyboard.down('ui_left') then
     player.root:move(-(player.speed * delta), 0)
     player.direction = 'side'

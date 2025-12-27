@@ -2,9 +2,12 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Godot;
 using monoe.exe.Core.Bridge;
+using monoe.exe.Core.Engine;
 using Script = monoe.exe.Core.Bridge.Script;
+using Timer = Godot.Timer;
 
 namespace monoe.exe.Core;
 
@@ -12,7 +15,7 @@ public partial class Main : Node
 {
   private static Script main = null;
   private FileSystemWatcher watcher;
-  private readonly ConcurrentQueue<Action> reloadQueue = new();
+  private static readonly ConcurrentQueue<Action> mainThreadQueue = new();
   private bool criticalState = false;
   private Action luaErrorHandler = null;
   private Timer cleanupTimer;
@@ -20,7 +23,7 @@ public partial class Main : Node
 
   public static void Emit(string @event, params object[] args)
   {
-    main.Call("monoe.event.emit", [@event, ..args]);
+    main.Call("monoe.event.emit", [@event, .. args]);
   }
 
   public static object[] LCall(string method, params object[] args)
@@ -28,12 +31,92 @@ public partial class Main : Node
     return main.Call(method, args);
   }
 
+  public static void EnqueueOnMain(Action action) => mainThreadQueue.Enqueue(action);
+
+  public static void InvokeOnMainThreadBlocking(Action action)
+  {
+    using var done = new ManualResetEventSlim(false);
+    Exception error = null;
+
+    mainThreadQueue.Enqueue(() =>
+    {
+      try
+      {
+        action();
+      }
+      catch (Exception e)
+      {
+        error = e;
+      }
+      finally
+      {
+        done.Set();
+      }
+    });
+
+    done.Wait();
+
+    if (error != null)
+      throw error;
+  }
+
   public static void Run(string code) // This Run method is only for string injections!
    => main.Run(code, false);
-  
+
+  private static void DumpLua(string line)
+  {
+    string target =
+      line.Length > "$dump".Length
+        ? line["$dump".Length..].TrimStart()
+        : "_G";
+
+    EngineConsole.WriteLine("");
+    main.RawRun($"""
+  local function dump(t)
+    for key, value in pairs(t) do
+      print(key, value)
+    end
+  end
+  dump({target})
+  """);
+  }
+
+
+  public void ShellInject(string code)
+  {
+    if (code == "$reload")
+    {
+      mainThreadQueue.Enqueue(() =>
+      {
+        Manager.ObjectRegistry.Clear();
+        Init();
+      });
+    }
+    else if (code.StartsWith("$dump")) DumpLua(code);
+    else if (code == "$gc")
+    {
+      mainThreadQueue.Enqueue(() =>
+      {
+        while (GarbageCollector.TryDequeue(out var action))
+          action();
+        GC.Collect();
+      });
+    }
+    else if (code == "$stats") EngineConsole.Print("GC.GetTotalAllocatedBytes:", GC.GetTotalAllocatedBytes(), "GC.GetTotalMemory:", GC.GetTotalMemory(true));
+    else try
+      {
+        main.RawRun(code);
+      }
+      catch (Exception e)
+      {
+        EngineConsole.WriteError(e);
+      }
+  }
 
   public override void _EnterTree()
   {
+    EngineConsole.Verbose("monoe.exe: booting...");
+
     /*
      * Before booting the engine, set up the ErrorHandler, and the FileSystemWatcher.
      */
@@ -79,15 +162,18 @@ public partial class Main : Node
 
   public override void _Ready()
   {
+    EngineConsole.Verbose("loading project");
+
     /*
      * At the first frame, we call the `deps()` function first (in order to request needed libraries), and then,
      * once all library loaded, we call the `main()` function.
      */
     Init();
+    EngineConsole.Verbose("project ready!");
+
     /*
      * The free event is not fired directly after the first frame!
      */
-    
     cleanupTimer = new()
     {
       WaitTime = 0.5,
@@ -95,7 +181,7 @@ public partial class Main : Node
     };
 
     AddChild(cleanupTimer);
-    
+
     cleanupTimer.Timeout += () =>
     {
       Emit("onfree");
@@ -105,17 +191,17 @@ public partial class Main : Node
   public override void _Process(double delta)
   {
     /*
-     * Seen as `process` function in Lua, this function is designed in order to update the game.
-     * If you need to update physics, use the `physics()` function instead.
+     * Seen as `process` event in Lua, this function is designed in order to update the game.
+     * If you need to update physics, use the `physics` event instead.
      */
+    while (!mainThreadQueue.IsEmpty)
+    {
+      if (mainThreadQueue.TryDequeue(out Action action)) action();
+      else EngineConsole.WriteError(new Exception("Cannot dequeue `reloadQueue`"));
+    }
+
     if (!criticalState)
     {
-      while (!reloadQueue.IsEmpty)
-      {
-        if (reloadQueue.TryDequeue(out Action action)) action();
-        else GD.PrintErr(new Exception("Cannot dequeue `reloadQueue`"));
-      }
-
       Emit("process", delta);
     }
   }
@@ -133,22 +219,39 @@ public partial class Main : Node
 
   public override void _ExitTree()
   {
+    EngineConsole.WriteLine();
+    EngineConsole.Verbose("exit requested...");
     Manager.ObjectRegistry.Clear();
+    EngineConsole.Verbose("exit event fired");
     Emit("onexit");
     main.Dispose();
     watcher?.Dispose();
+
     while (!GarbageCollector.IsEmpty)
     {
       if (GarbageCollector.TryDequeue(out Action action))
       {
         action();
-      } else GD.Print("<err>: Failled to deque an element !");
+      }
+      else EngineConsole.WriteError("Failled to deque an element !");
     }
+
+    EngineConsole.Verbose("process finished");
   }
 
   public override void _Input(InputEvent @event)
   {
     Emit("input");
+  }
+
+  private static object[] Lsleep(object[] args)
+  {
+    if (args.Length > 0)
+    {
+      if (args[0] is long l) Thread.Sleep((int)l);
+      else if (args[0] is double d) Thread.Sleep((int)d);
+    }
+    return [];
   }
 
   private void Init()
@@ -172,12 +275,18 @@ public partial class Main : Node
     main.PushCallback("monoe.import", Importer.Limport);
     main.PushCallback("monoe.call", Importer.Lcall);
     main.PushCallback("monoe.staticcall", Importer.Lstaticcall);
+    main.PushCallback("monoe.wait", Lsleep);
     string injection = """
-                       function ready()end
-                       function process()end
-                       function physics()end
-                       function exit()end
                        monoe.event.emit = monoe.event.emit or function(name)end
+
+                       print = function(...)
+                         local args = {}
+                         local t = { ... }
+                         for _, value in pairs(t) do
+                          args[#args + 1] = tostring(value)
+                         end
+                         monoe.staticcall("monoe.exe.Core.Engine.EngineConsole", "Print", table.unpack(args))
+                       end
                        """;
     main.Run(injection, false);
 
@@ -201,23 +310,34 @@ public partial class Main : Node
      *
      * Note: Your file will be in _G.module_name!
      */
+
+    // 8. Start MONOE.exe.shell
+    var thread = new Thread(Shell)
+    {
+      IsBackground = true
+    };
+
+    thread.Start();
   }
 
   private void OnFileChanged(object sender, FileSystemEventArgs e)
   {
     if (e.ChangeType != WatcherChangeTypes.Changed) return;
+    EngineConsole.WriteLine($"\n> file changed {e.FullPath}", ConsoleColor.DarkGray);
 
     if (e.Name == "project.lua")
     {
-      reloadQueue.Enqueue(() =>
+      EngineConsole.Verbose("requested reboot...");
+      mainThreadQueue.Enqueue(() =>
       {
+        EngineConsole.Verbose("rebooting...");
         Manager.ObjectRegistry.Clear();
         Init();
       });
     }
     else
     {
-      reloadQueue.Enqueue(() =>
+      mainThreadQueue.Enqueue(() =>
       {
         Emit("@hot", e.FullPath);
       });
@@ -226,7 +346,44 @@ public partial class Main : Node
     if (criticalState)
     {
       criticalState = false;
-      GD.Print("\n>>> reloaded\n");
+    }
+  }
+
+  private void Shell()
+  {
+    EngineConsole.Verbose("monoe shell — type `$reload`, `$dump`, Lua code, or `exit`");
+
+    /* Quick notes:
+     *  * The monoe shell is a way to interact with the lua code during the runtime. You can use it in order to interact 
+     *    with your game, inspect elements, and get memory usage (C# side).
+     *  * You can also manage errors here, or even explode your game (e.g., monoe = nil = BOOOOM)
+     *  * You MAY NOT use debug.debug() in the shell, as C# takes over Lua's input request: infinite loop.
+     */
+    while (true)
+    {
+      try
+      {
+        EngineConsole.Write("monoe> ", ConsoleColor.Cyan);
+        string line = Console.ReadLine();
+
+        if (line == null)
+          break;
+
+        line = line.Trim();
+        if (line.Length == 0)
+          continue;
+
+        if (line is "exit" or "quit") mainThreadQueue.Enqueue(QueueFree);
+
+        InvokeOnMainThreadBlocking(() => // Blocks the current thread!
+        {
+          ShellInject(line);
+        });
+      }
+      catch (Exception e)
+      {
+        EngineConsole.WriteError($"[Shell Error] {e.Message}");
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using Godot;
+using monoe.exe.Core.Engine;
 using monoe.exe.YumSharp.Managed;
 
 namespace monoe.exe.Core.Bridge.Utils;
@@ -35,10 +36,10 @@ public static partial class LuaErrorUtils
         int line = int.Parse(match.Groups["line"].Value);
         string message = match.Groups["message"].Value;
 
-        GD.PrintErr($"{RED}---- LUA ERROR ----{RESET}");
-        GD.PrintErr($"{YELLOW}File:{RESET} {file}");
-        GD.PrintErr($"{YELLOW}Line:{RESET} {line}");
-        GD.PrintErr($"{YELLOW}Message:{RESET} {RED}{message}{RESET}");
+        EngineConsole.WriteError($"{RED}---- LUA ERROR ----{RESET}");
+        EngineConsole.WriteError($"{YELLOW}File:{RESET} {file}");
+        EngineConsole.WriteError($"{YELLOW}Line:{RESET} {line}");
+        EngineConsole.WriteError($"{YELLOW}Message:{RESET} {RED}{message}{RESET}");
 
         try
         {
@@ -46,7 +47,7 @@ public static partial class LuaErrorUtils
           int start = Math.Max(line - 4, 0);
           int end = Math.Min(line + 2, lines.Length - 1);
 
-          GD.Print($"{CYAN}Source snippet:{RESET}");
+          EngineConsole.WriteError($"{CYAN}Source snippet:{RESET}");
           for (int i = start; i <= end; i++)
           {
             string code = lines[i];
@@ -55,21 +56,21 @@ public static partial class LuaErrorUtils
             code = HighlightLuaSyntax(code);
 
             string prefix = (i + 1 == line) ? $"{RED_BG}>> {i + 1}: {code}{RESET} -- {message}" : $"   {i + 1}: {code}";
-            GD.Print(prefix);
+            EngineConsole.WriteError(prefix);
           }
 
-          GD.Print($"{MAGENTA}From unit:{RESET} {unit}");
-          GD.Print($"{RED}-------------------{RESET}");
+          EngineConsole.WriteError($"{MAGENTA}From unit:{RESET} {unit}");
+          EngineConsole.WriteError($"{RED}-------------------{RESET}");
         }
         catch
         {
-          GD.Print($"{RED}Could not read Lua source file.{RESET}");
+          EngineConsole.WriteError($"{RED}Could not read Lua source file.{RESET}");
         }
       }
     }
     else
     {
-      GD.PrintErr($"{RED}Lua error (could not parse file/line):{RESET} {msg}");
+      EngineConsole.WriteError($"{RED}Lua error (could not parse file/line):{RESET} {msg}");
     }
   }
 
