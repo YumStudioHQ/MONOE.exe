@@ -6,12 +6,11 @@ monoe = monoe or {}
 ---@field uid integer
 monoe.image = {}
 monoe.image.__index = monoe.image
-monoe.image.__midx = true
 
 local base = 'monoe.exe.Core.Bridge.Types.Image'
 
 ---Crate a new image. If a path is provided, it'll load it as an image
----@param path string|nil|integer
+---@param path string|nil|integer @type '"file"'
 ---@return monoe.image
 function monoe.image.new(path)
   local uid = -1
@@ -39,7 +38,7 @@ function monoe.image:path()
 end
 
 ---Loads an image
----@param path string
+---@param path string @type '"file"'
 function monoe.image:load(path)
   engine.call(self.uid, 'LoadImage', path)
 end

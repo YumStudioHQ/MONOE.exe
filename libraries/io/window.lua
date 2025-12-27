@@ -15,18 +15,18 @@ function monoe.engine.window.title(name)
 end
 
 ---changes the size of the main window
----@param x number
----@param y number
+---@param x number|nil
+---@param y number|nil
 ---@return integer, integer
 function monoe.engine.window.size(x, y)
-  return engine.staticcall(base, 'SetSize', x or 0, y or 0)
+  return engine.staticcall(base, 'SetSize', x, y)
 end
 
----@param x number
----@param y number
+---@param x number|nil
+---@param y number|nil
 ---@return integer, integer
 function monoe.engine.window.position(x, y)
-  return engine.staticcall(base, 'SetPosition', x or 0, y or 0)
+  return engine.staticcall(base, 'SetPosition', x, y)
 end
 
 ---@param x number
@@ -36,8 +36,8 @@ function monoe.engine.window.scale(x, y)
   return engine.staticcall(base, 'Scale', x or 0, y or 0)
 end
 
----@param x number
----@param y number
+---@param x number|nil
+---@param y number|nil
 ---@return integer, integer
 function monoe.engine.window.move(x, y)
   return engine.staticcall(base, 'Move', x or 0, y or 0)
@@ -50,6 +50,14 @@ function monoe.engine.window.attach(obj)
   else
     engine.staticcall(base, 'Attach', obj.uid)
   end
+end
+
+---returns a 2D vector to the center of the window.
+---@return number
+---@return number
+function monoe.engine.window.center()
+  local x, y = monoe.engine.window.size()
+  return x / 2, y / 2
 end
 
 _G.monoe = monoe

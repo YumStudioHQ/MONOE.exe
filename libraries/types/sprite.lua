@@ -8,7 +8,6 @@ monoe = monoe or {}
 ---@field uid integer
 monoe.sprite = {}
 monoe.sprite.__index = monoe.sprite
-monoe.sprite.__midx = true
 
 local base = 'monoe.exe.Core.Bridge.Types.Sprite'
 
@@ -69,7 +68,7 @@ end
 
 ---@return integer
 function monoe.sprite:image()
-  return (engine.call(self.uid, 'GetImageUID'))
+  return image.new(engine.call(self.uid, 'GetImageUID'))
 end
 
 function monoe.sprite:free()

@@ -29,6 +29,14 @@ function monoe.event.subscribe(name, fn)
   list[#list + 1] = fn
 end
 
+local function call(e, f, ...)
+  local ok, err = pcall(f, ...)
+
+  if not ok then
+    error(err .. ' * during event ' .. e .. '\n' .. debug.traceback())
+  end
+end
+
 ---Emits an event
 ---@param name string
 ---@param ... any
@@ -38,10 +46,7 @@ function monoe.event.emit(name, ...)
     monoe.event._once[name] = nil
 
     for i = 1, #list do
-      local ok, err = pcall(list[i], ...)
-      if not ok then
-        print("Event error:", err)
-      end
+      call(name, list[i], ...)
     end
   end
 
@@ -50,10 +55,7 @@ function monoe.event.emit(name, ...)
   if list then
 
     for i = 1, #list do
-      local ok, err = pcall(list[i], ...)
-      if not ok then
-        print("Event error:", err)
-      end
+      call(name, list[i], ...)
     end
   end
 end

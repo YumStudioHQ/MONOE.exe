@@ -1,8 +1,5 @@
-using System;
 using Godot;
-using monoe.exe.Core.Bridge;
 using monoe.exe.Core.Bridge.Types;
-using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Bridge.io;
 
@@ -13,9 +10,15 @@ public static class EngineWindow
   
   public static object[] SetSize(double x, double y)
   {
-    var vec = new Vector2I((int)x, (int)y);
-    SceneRoot.I.GetWindow().Size = vec;
-    return [vec.X, vec.Y];
+    if (x > 0 && y > 0)
+    {
+      var vec = new Vector2I((int)x, (int)y);
+      SceneRoot.I.GetWindow().Size = vec;
+
+      return [vec.X, vec.Y];
+    }
+
+    return [SceneRoot.I.GetWindow().Size.X, SceneRoot.I.GetWindow().Size.Y];
   }
   
   public static object[] Scale(double x, double y)
@@ -28,9 +31,14 @@ public static class EngineWindow
 
   public static object[] SetPosition(double x, double y)
   {
-    var vec = new Vector2I((int)x, (int)y);
-    SceneRoot.I.GetWindow().Position = vec;
-    return [vec.X, vec.Y];
+    if (x > 0 && y > 0)
+    {
+      var vec = new Vector2I((int)x, (int)y);
+      SceneRoot.I.GetWindow().Position = vec;
+      return [vec.X, vec.Y];
+    }
+    
+    return [SceneRoot.I.GetWindow().Position.X, SceneRoot.I.GetWindow().Position.Y];
   }
 
   public static object[] Move(double x, double y)

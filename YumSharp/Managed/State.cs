@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Godot;
 using monoe.exe.YumSharp.Natives;
 
@@ -10,6 +11,7 @@ public class YumState : IDisposable
 {
   private nint _state = nint.Zero;
   private readonly List<INative.YumCallback> _callbacks = [];
+  private readonly List<GCHandle> _callbackHandles = [];
   private bool disposed = false;
   private bool libs = false;
 
@@ -117,40 +119,11 @@ public class YumState : IDisposable
       }
     };
 
+    var handle = GCHandle.Alloc(cb);
+    _callbackHandles.Add(handle);
+
     _callbacks.Add(cb);
-
     INative.libyum_push_callback(_state, Ensure(name), cb);
-    INative.libyum_clear(_state);
-  }
-
-  public unsafe void PushCallback(string name, Action<object[]> action)
-  {
-    variant_t* cfun(ulong argc, variant_t* argv, ulong* outc)
-    {
-      try
-      {
-        List<byte[]> pins = [];
-        object[] cs_args = new object[argc];
-        for (ulong i = 0; i < argc; i++)
-        {
-          cs_args[i] = Conversion.VariantToObject(argv[i]);
-        }
-
-        action(cs_args);
-        *outc = 0;
-      }
-      catch (Exception e)
-      {
-        GD.PrintErr($"C# Exception generated inside C callback {e.Message}\n{e.StackTrace}\nFrom:\t{e.Source}");
-      }
-
-      *outc = 0;
-      return null;
-    }
-
-    _callbacks.Add(cfun);
-
-    INative.libyum_push_callback(_state, Ensure(name), cfun);
     INative.libyum_clear(_state);
   }
 
@@ -166,12 +139,18 @@ public class YumState : IDisposable
   {
     if (!disposed)
     {
+      foreach (var h in _callbackHandles)
+        h.Free();
+
+      _callbackHandles.Clear();
       _callbacks.Clear();
+
       INative.libyum_delete(_state);
       GC.SuppressFinalize(this);
     }
     disposed = true;
   }
+
 
   public void Clear()
   {

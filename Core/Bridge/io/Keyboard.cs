@@ -45,14 +45,15 @@ public static class KeyResolver
 
 public static class Keyboard
 {
-  public static object[] KeyPressed(object[] args)
+  public static bool KeyPressed(string key)
   {
-    foreach (var arg in args)
-      if (arg is string key && KeyResolver.TryResolve(key, out Key Gkey))
-      {
-        return [Input.IsPhysicalKeyPressed(Gkey)];
-      }
+    if (KeyResolver.TryResolve(key, out Key Gkey))
+      return Input.IsPhysicalKeyPressed(Gkey);
 
-    return [];
+    return false;
   }
+
+  public static bool ActionPressed(string name) => Input.IsActionPressed(name);
+  public static bool ActionJustPressed(string name) => Input.IsActionJustPressed(name);
+  public static bool ActionReleased(string name) => Input.IsActionJustReleased(name);
 }

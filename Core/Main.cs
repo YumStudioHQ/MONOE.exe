@@ -98,7 +98,7 @@ public partial class Main : Node
     
     cleanupTimer.Timeout += () =>
     {
-      main.Call("monoe.event.emit", "onfree");
+      Emit("onfree");
     };
   }
 
@@ -134,7 +134,7 @@ public partial class Main : Node
   public override void _ExitTree()
   {
     Manager.ObjectRegistry.Clear();
-    Emit("monoe.event.emit", "onexit");
+    Emit("onexit");
     main.Dispose();
     watcher?.Dispose();
     while (!GarbageCollector.IsEmpty)
@@ -144,6 +144,11 @@ public partial class Main : Node
         action();
       } else GD.Print("<err>: Failled to deque an element !");
     }
+  }
+
+  public override void _Input(InputEvent @event)
+  {
+    Emit("input");
   }
 
   private void Init()
