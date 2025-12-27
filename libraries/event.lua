@@ -33,7 +33,18 @@ local function call(e, f, ...)
   local ok, err = pcall(f, ...)
 
   if not ok then
-    error(err .. ' * during event ' .. e .. '\n' .. debug.traceback())
+    print('>>> event error: ' .. err .. ' * during event ' .. e .. '\n' .. debug.traceback())
+  end
+end
+
+function monoe.event.unsubscribe(name, fn)
+  local list = monoe.event._listeners[name]
+  if not list then return end
+
+  for i = #list, 1, -1 do
+    if list[i] == fn then
+      table.remove(list, i)
+    end
   end
 end
 

@@ -6,11 +6,12 @@ local event = require('libraries.event')
 local image = require('libraries.image')
 local animation = require('libraries.types.animation')
 local query = require('libraries.linq')
+local engine = require('libraries.engine')
 
 -- todo: screen..
 
 function main()
-  local player = require('player')
+  engine.load('player', 'game.logic.player')
 end
 
 function deps()end

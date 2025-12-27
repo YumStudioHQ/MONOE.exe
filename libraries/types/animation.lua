@@ -82,6 +82,12 @@ function monoe.animation:scale(x, y)
   return engine.call(self.uid, "Scale", x, y)
 end
 
+---@param axe 'V'|'H'
+---@param state boolean
+function monoe.animation:flip(axe, state)
+  engine.call(self.uid, 'Flip' .. axe, state)
+end
+
 ---loads an animation from an image
 ---@param name string
 ---@param image monoe.image

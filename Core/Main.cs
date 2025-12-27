@@ -183,7 +183,24 @@ public partial class Main : Node
 
     // 5. Call main.
     Run("main = main or function() end");
-    Emit("ready", main.Call("main"));
+    var margs = main.Call("main");
+
+    // 6. Load scripts (They are generally requested from the main function!)
+    Emit("@load");
+
+    // 7. Finally, call ready!
+    Emit("ready", margs);
+
+    /* Quick note!
+     * Generally, users love hot reloading. So, the function 'load' in monoe allows
+     * hot reloading on other files than the main lua script. Idea is to subscribe a function
+     * that'll load the file to two events: the @load event, and the @hot (that allows hot reloading).
+     * When a hot reloading event is fired, each subscribers looks for the path: if it's their file, they'll 
+     * reload the file.
+     * That's also why the "ready" event is fired after loading: ready is for class (or whatever) initialization!
+     *
+     * Note: Your file will be in _G.module_name!
+     */
   }
 
   private void OnFileChanged(object sender, FileSystemEventArgs e)
@@ -202,11 +219,9 @@ public partial class Main : Node
     {
       reloadQueue.Enqueue(() =>
       {
-        main.Run("project.lua", true);
-        main.Reload();
+        Emit("@hot", e.FullPath);
       });
     }
-
 
     if (criticalState)
     {
