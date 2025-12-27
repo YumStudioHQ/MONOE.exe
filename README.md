@@ -4,69 +4,177 @@
   <img src="./icon.png" alt="icon">
 </p>
 
-## What is MONOE.exe?
+### What is MONOE.exe?
 
-MONOE.exe is a small **meta-engine toy**, built using **C#, C, C++, and Lua**.
+**MONOE.exe** is a small **meta-engine** designed for experimentation, learning, and flexible game development.
 
-* **C/C++** powers core libraries through [YumEngine](https://github.com/YumStudioHQ/YumEngine).
-* **C#** handles Godot integration.
-* **Lua** is available for easy scripting.
+It combines multiple languages:
 
-In future versions, C/C++ libraries may also become fully usable from Lua!
+* **C / C++** — core native libraries (via YumEngine)
+* **C#** — engine logic and Godot integration
+* **Lua** — main scripting language
 
----
-
-## Why MONOE.exe?
-
-Because you should be able to **code your game your way**. No limits, no fuss—Lua, C#, or any language visible to Lua can be used to build your game.
+Lua scripts can interact with C# and native libraries at runtime.
 
 ---
 
-## Philosophy
+### Why MONOE.exe?
 
-> Code as you wish. MONOE.exe gives you the freedom to use Lua for quick scripting, or C# for deeper control.
+Most engines force you into a fixed workflow.
+
+MONOE.exe does the opposite.
+
+You can:
+
+* Write fast gameplay logic in **Lua**
+* Use **C#** for engine systems or tools
+* Load **custom DLLs** at runtime
+* Reload scripts while the game is running
+
+There is no “one correct way” to use the engine.
 
 ---
 
-## How do I make my first game?
+### Philosophy
 
-Super simple! Start with a few functions:
+> **Code your game your way.**
+
+MONOE.exe focuses on **freedom**, **runtime control**, and **experimentation**, instead of strict rules or heavy abstractions.
+
+---
+
+## Engine Lifecycle
+
+MONOE.exe uses an **event-driven lifecycle**.
+
+The main Lua script (`project.lua`) follows this order:
+
+1. **`deps()`**
+
+   * Called first
+   * Return paths to C# DLLs to load
+   * Only minimal Lua libraries are available here
+
+2. **Libraries are loaded**
+
+   * C# assemblies become visible to Lua
+
+3. **`main()`**
+
+   * Project initialization
+   * Register events, load scripts, setup state
+
+4. **`@load` event**
+
+   * Used to load secondary Lua files
+   * Supports hot-reload
+
+5. **`ready` event**
+
+   * Called once everything is loaded
+
+6. **Runtime loop**
+
+   * `process(delta)` — every frame
+   * `physics(delta)` — physics update
+
+7. **Exit**
+
+   * `onexit` event
+   * Cleanup logic
+
+---
+
+## Basic Lua Example
 
 ```lua
-function main() 
-  -- Initialization code here
-end
-
-function process()
-  -- Called every frame
-end
-
-function physics()
-  -- Update physics if your game uses it
-end
-
-function exit()
-  -- Save your game or cleanup here
-end
+local event = require('libraries.event')
 
 function deps()
-  -- Load custom libraries (C# DLLs)
+  return {
+    "./MyLibrary.dll"
+  }
 end
+
+function main()
+  print("Game started")
+end
+
+event.subscribe('process', function(delta)
+  -- update!
+end)
+
+event.subscribe('physics', function(delta)
+  -- update physics!
+end)
+
+event.subscribe('onexit', function(delta)
+  -- clean up here
+end)
 ```
 
-**Tips:**
+---
 
-* `deps()` is called first, before your libraries are loaded. Only Lua's standard libraries and manually imported ones are available at this point.
-* When passing data between C# and Lua, you can use **long (integer), double, string, boolean**, and optionally binary data or unique IDs.
+## Hot Reloading
+
+MONOE.exe supports **hot reloading** for Lua files.
+
+* When a `.lua` file changes:
+
+  * `@hot` event is emitted
+  * Scripts can reload themselves
+* If `project.lua` changes:
+
+  * The engine reboots the project
+
+This allows fast iteration without restarting the engine.
 
 ---
 
-## Libraries
+## Garbage Collector
 
-* MONOE.exe provides **built-in standard libraries**.
-* You can also load **any Lua standard library**.
-* Need your own types? Write them in C#, compile to `.dll`, and return the file path in `deps()`.
+Each 0.5 seconds, the engine fires the 'onfree' event that allows to clean up data later (e.g., dropped stuff).
+Prefer using `monoe.event.once('onfree', function()end)` for this event, as subscribe calls the function every time the event is fired. On the other hand, once calls once.
 
 ---
 
-> MONOE.exe is about giving you **freedom and flexibility**. Explore, experiment, and create your game your way!
+## Runtime Shell
+
+MONOE.exe includes a **runtime shell**.
+
+You can:
+
+* Execute Lua code at runtime
+* Inspect globals
+* Force reloads
+* Trigger garbage collection
+
+### Shell commands
+
+* `$reload` — reload the project
+* `$dump <table>` — print a Lua table
+* `$gc` — force garbage collection
+* `$stats` — show memory stats
+
+---
+
+## Error Handling
+
+* Lua errors can trigger a **critical state**
+* In critical state:
+
+  * Game logic stops
+  * Error handler is executed
+* Hot reload clears the critical state
+
+This prevents crashes and allows recovery.
+
+---
+
+## Final note
+
+MONOE.exe is not meant to compete with large engines.
+
+It is  a **sandbox**, and a **tool for experimentation**.
+
+If you enjoy building engines, MONOE.exe is for you.
