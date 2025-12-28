@@ -178,3 +178,9 @@ MONOE.exe is not meant to compete with large engines.
 It is  a **sandbox**, and a **tool for experimentation**.
 
 If you enjoy building engines, MONOE.exe is for you.
+
+---
+
+## See more !
+
+* [meta-runtime](./docs/meta-runtime.md)
