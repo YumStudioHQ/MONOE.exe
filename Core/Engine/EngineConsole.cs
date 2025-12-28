@@ -8,6 +8,7 @@ public static class EngineConsole
 {
   // Lock object for thread safety
   private static readonly Lock consoleLock = new();
+  public static bool IsVerbose = true;
 
   /// <summary>
   /// Thread-safe write with optional color
@@ -72,27 +73,32 @@ public static class EngineConsole
 
   public static void Verbose(params object[] args)
   {
-    WriteLine($"> {string.Join("\t", args.Select(arg => arg?.ToString() ?? ""))}", ConsoleColor.DarkGray);
+    if (IsVerbose)
+      WriteLine($"> {string.Join("\t", args.Select(arg => arg?.ToString() ?? ""))}", ConsoleColor.DarkGray);
   }
 
   /// <summary>
   /// Thread-safe read line
   /// </summary>
-  public static string ReadLine(string prompt = "> ")
+  public static string ReadLine(string prompt = "> ", ConsoleColor? color = null)
   {
-    lock (consoleLock)
+    var originalColor = Console.ForegroundColor;
+    try
     {
-      try
+      lock (consoleLock)
       {
+        if (color != null) Console.ForegroundColor = color.Value;
         Console.Write(prompt);
-        return Console.ReadLine() ?? "";
+        Console.ForegroundColor = originalColor;
       }
-      catch (Exception ex)
-      {
-        WriteLine("Console ReadLine Error: " + ex.Message, ConsoleColor.Red);
-        return "";
-      }
+      return Console.ReadLine() ?? "";
     }
+    catch (Exception ex)
+    {
+      WriteLine("Console ReadLine Error: " + ex.Message, ConsoleColor.Red);
+      return "";
+    }
+
   }
 
   /// <summary>

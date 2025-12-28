@@ -6,6 +6,7 @@ using System.Threading;
 using Godot;
 using monoe.exe.Core.Bridge;
 using monoe.exe.Core.Engine;
+using monoe.exe.Core.Engine.Shell;
 using Script = monoe.exe.Core.Bridge.Script;
 using Timer = Godot.Timer;
 
@@ -16,10 +17,12 @@ public partial class Main : Node
   private static Script main = null;
   private FileSystemWatcher watcher;
   private static readonly ConcurrentQueue<Action> mainThreadQueue = new();
-  private bool criticalState = false;
+  private static bool locked = false;
   private Action luaErrorHandler = null;
   private Timer cleanupTimer;
   public readonly static ConcurrentQueue<Action> GarbageCollector = [];
+  private static Action reloadRequestAction = () => { };
+  private static Action exitRequestionAction = () => { };
 
   public static void Emit(string @event, params object[] args)
   {
@@ -32,6 +35,37 @@ public partial class Main : Node
   }
 
   public static void EnqueueOnMain(Action action) => mainThreadQueue.Enqueue(action);
+  public static void RequestReload()
+  {
+    EngineConsole.WriteLine();
+    EngineConsole.Verbose("reload requested");
+    mainThreadQueue.Enqueue(reloadRequestAction);
+  }
+  public static void RequestLock()
+  {
+    EngineConsole.Verbose((locked ? "un" : "") + "lock requested...");
+    mainThreadQueue.Enqueue(() =>
+    {
+      EngineConsole.Verbose((locked ? "un" : "") + "locking...");
+      /* Note:
+       *  * This won't lock directly, event after executing the action, 
+       *    as other action may be queued after this one !
+       */
+      locked = !locked;
+    });
+  }
+
+  public static void RequestExit()
+  {
+    EnqueueOnMain(() =>
+    {
+      if (AppLifetime.IsShuttingDown)
+        return;
+
+      AppLifetime.IsShuttingDown = true;
+      exitRequestionAction();
+    });
+  }
 
   public static void InvokeOnMainThreadBlocking(Action action)
   {
@@ -63,58 +97,9 @@ public partial class Main : Node
   public static void Run(string code) // This Run method is only for string injections!
    => main.Run(code, false);
 
-  private static void DumpLua(string line)
-  {
-    string target =
-      line.Length > "$dump".Length
-        ? line["$dump".Length..].TrimStart()
-        : "_G";
-
-    EngineConsole.WriteLine("");
-    main.RawRun($"""
-  local function dump(t)
-    for key, value in pairs(t) do
-      print(key, value)
-    end
-  end
-  dump({target})
-  """);
-  }
-
-
-  public void ShellInject(string code)
-  {
-    if (code == "$reload")
-    {
-      mainThreadQueue.Enqueue(() =>
-      {
-        Manager.ObjectRegistry.Clear();
-        Init();
-      });
-    }
-    else if (code.StartsWith("$dump")) DumpLua(code);
-    else if (code == "$gc")
-    {
-      mainThreadQueue.Enqueue(() =>
-      {
-        while (GarbageCollector.TryDequeue(out var action))
-          action();
-        GC.Collect();
-      });
-    }
-    else if (code == "$stats") EngineConsole.Print("GC.GetTotalAllocatedBytes:", GC.GetTotalAllocatedBytes(), "GC.GetTotalMemory:", GC.GetTotalMemory(true));
-    else try
-      {
-        main.RawRun(code);
-      }
-      catch (Exception e)
-      {
-        EngineConsole.WriteError(e);
-      }
-  }
-
   public override void _EnterTree()
   {
+    if (OS.GetCmdlineArgs().Contains("-silent")) EngineConsole.IsVerbose = false;
     EngineConsole.Verbose("monoe.exe: booting...");
 
     /*
@@ -130,7 +115,7 @@ public partial class Main : Node
 
     luaErrorHandler = () =>
     {
-      criticalState = true;
+      locked = true;
       main?.Run(inlineErrorHandler, false);
     };
 
@@ -158,6 +143,27 @@ public partial class Main : Node
      * and keeping references to a node.
      */
     SceneRoot.SetNode(this);
+
+    /*
+     * Also expose a static action that allow other classes to request a reload!
+     */
+    reloadRequestAction = () =>
+    {
+      EngineConsole.Verbose("reloading...");
+      Manager.ObjectRegistry.Clear();
+      main.Reload();
+      LoadProject();
+    };
+
+    // And exit!
+
+    exitRequestionAction = () =>
+    {
+      GetTree().Quit();
+    };
+
+    // Then, the shell
+    if (!OS.GetCmdlineArgs().Contains("-no-shell")) Shell.Init();
   }
 
   public override void _Ready()
@@ -168,7 +174,7 @@ public partial class Main : Node
      * At the first frame, we call the `deps()` function first (in order to request needed libraries), and then,
      * once all library loaded, we call the `main()` function.
      */
-    Init();
+    LoadProject();
     EngineConsole.Verbose("project ready!");
 
     /*
@@ -186,6 +192,16 @@ public partial class Main : Node
     {
       Emit("onfree");
     };
+
+    if (!OS.GetCmdlineArgs().Contains("-no-shell"))
+    {
+      var thread = new Thread(Shell.Prompt)
+      {
+        IsBackground = true,
+      };
+
+      thread.Start();
+    }
   }
 
   public override void _Process(double delta)
@@ -200,7 +216,7 @@ public partial class Main : Node
       else EngineConsole.WriteError(new Exception("Cannot dequeue `reloadQueue`"));
     }
 
-    if (!criticalState)
+    if (!locked)
     {
       Emit("process", delta);
     }
@@ -211,7 +227,7 @@ public partial class Main : Node
     /*
      * Updates physics.
      */
-    if (!criticalState)
+    if (!locked)
     {
       Emit("physics", delta);
     }
@@ -254,7 +270,7 @@ public partial class Main : Node
     return [];
   }
 
-  private void Init()
+  private void LoadProject()
   {
     // 1. Detect the project.
     main = new("project.lua", true, luaErrorHandler);
@@ -310,14 +326,6 @@ public partial class Main : Node
      *
      * Note: Your file will be in _G.module_name!
      */
-
-    // 8. Start MONOE.exe.shell
-    var thread = new Thread(Shell)
-    {
-      IsBackground = true
-    };
-
-    thread.Start();
   }
 
   private void OnFileChanged(object sender, FileSystemEventArgs e)
@@ -332,7 +340,7 @@ public partial class Main : Node
       {
         EngineConsole.Verbose("rebooting...");
         Manager.ObjectRegistry.Clear();
-        Init();
+        LoadProject();
       });
     }
     else
@@ -343,47 +351,9 @@ public partial class Main : Node
       });
     }
 
-    if (criticalState)
+    if (locked)
     {
-      criticalState = false;
-    }
-  }
-
-  private void Shell()
-  {
-    EngineConsole.Verbose("monoe shell — type `$reload`, `$dump`, Lua code, or `exit`");
-
-    /* Quick notes:
-     *  * The monoe shell is a way to interact with the lua code during the runtime. You can use it in order to interact 
-     *    with your game, inspect elements, and get memory usage (C# side).
-     *  * You can also manage errors here, or even explode your game (e.g., monoe = nil = BOOOOM)
-     *  * You MAY NOT use debug.debug() in the shell, as C# takes over Lua's input request: infinite loop.
-     */
-    while (true)
-    {
-      try
-      {
-        EngineConsole.Write("monoe> ", ConsoleColor.Cyan);
-        string line = Console.ReadLine();
-
-        if (line == null)
-          break;
-
-        line = line.Trim();
-        if (line.Length == 0)
-          continue;
-
-        if (line is "exit" or "quit") mainThreadQueue.Enqueue(QueueFree);
-
-        InvokeOnMainThreadBlocking(() => // Blocks the current thread!
-        {
-          ShellInject(line);
-        });
-      }
-      catch (Exception e)
-      {
-        EngineConsole.WriteError($"[Shell Error] {e.Message}");
-      }
+      locked = false;
     }
   }
 }
