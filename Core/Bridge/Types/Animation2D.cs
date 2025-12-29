@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using Godot;
+using monoe.exe.Core.Bridge.Types.Interfaces;
 using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Bridge.Types;
 
-public class Animation2D : Exposable
+public class Animation2D : Exposable, IPositionable2D, IScalable2D
 {
   protected AnimatedSprite2D animation;
 
@@ -69,17 +70,27 @@ public class Animation2D : Exposable
     return [animation.Scale.X, animation.Scale.Y];
   }
 
+  public void SetSize(double x, double y)
+  {
+    animation.Scale = new((float)x, (float)y);
+  }
+
+  public object[] GetSize() => [animation.Scale.X, animation.Scale.Y];
+
+  public void SetScale(double x, double y) => Scale(x, y);
+  public object[] GetScale() => [animation.Scale.X, animation.Scale.Y];
+
   private void _AnimationFromImage(
-  string name,
-  Image image,
-  int frameWidth,
-  int frameHeight,
-  int fromColumn,
-  int toColumn,
-  int fromRow,
-  int toRow,
-  double fps
-)
+      string name,
+      Image image,
+      int frameWidth,
+      int frameHeight,
+      int fromColumn,
+      int toColumn,
+      int fromRow,
+      int toRow,
+      double fps
+    )
   {
     int textureWidth = image.Texture.GetWidth();
     int textureHeight = image.Texture.GetHeight();
@@ -139,14 +150,10 @@ public class Animation2D : Exposable
   }
 
   public void FlipH(bool state)
-  {
-    animation.FlipH = state;
-  }
+   => animation.FlipH = state;
 
   public void FlipV(bool state)
-  {
-    animation.FlipV = state;
-  }
+   => animation.FlipV = state;
 
   protected override void _Free()
   {

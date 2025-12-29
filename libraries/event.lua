@@ -11,8 +11,8 @@ monoe.event = {
 function monoe.event.once(name, fn)
   local list = monoe.event._once[name]
   if not list then
-    list = {}
-    monoe.event._once[name] = list
+	list = {}
+	monoe.event._once[name] = list
   end
   list[#list + 1] = fn
 end
@@ -23,8 +23,8 @@ end
 function monoe.event.subscribe(name, fn)
   local list = monoe.event._listeners[name]
   if not list then
-    list = {}
-    monoe.event._listeners[name] = list
+	list = {}
+	monoe.event._listeners[name] = list
   end
   list[#list + 1] = fn
 end
@@ -33,8 +33,8 @@ local function call(e, f, ...)
   local ok, err = pcall(f, ...)
 
   if not ok then
-    error('error when calling function ' .. tostring(f) .. ' during event '
-    .. e .. ' ; ok: ' .. tostring(ok) .. ', err: ' .. err)
+	error('error when calling function ' .. tostring(f) .. ' during event '
+	.. e .. ' ; ok: ' .. tostring(ok) .. ', err: ' .. err)
   end
 end
 
@@ -43,9 +43,9 @@ function monoe.event.unsubscribe(name, fn)
   if not list then return end
 
   for i = #list, 1, -1 do
-    if list[i] == fn then
-      table.remove(list, i)
-    end
+	if list[i] == fn then
+	  table.remove(list, i)
+	end
   end
 end
 
@@ -55,20 +55,20 @@ end
 function monoe.event.emit(name, ...)
   local list = monoe.event._once[name]
   if list then
-    monoe.event._once[name] = nil
+	monoe.event._once[name] = nil
 
-    for i = 1, #list do
-      call(name, list[i], ...)
-    end
+	for i = 1, #list do
+	  call(name, list[i], ...)
+	end
   end
 
   list = monoe.event._listeners[name]
 
   if list then
 
-    for i = 1, #list do
-      call(name, list[i], ...)
-    end
+	for i = 1, #list do
+	  call(name, list[i], ...)
+	end
   end
 end
 

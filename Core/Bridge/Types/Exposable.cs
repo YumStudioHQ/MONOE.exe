@@ -4,9 +4,9 @@ using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Bridge.Types;
 
-public class Exposable : ManagedObject
+public abstract class Exposable : ManagedObject
 {
-  public virtual Node NRef() => new();
+  public abstract Node NRef();
 
   public static void Expose(Node target, long uid)
   {
@@ -14,6 +14,9 @@ public class Exposable : ManagedObject
     {
       target.AddChild(mo.NRef());
     }
-    else throw new ArgumentException($"{uid}: Not exposable");
+    else
+    {
+      throw new ArgumentException($"{uid}: Not exposable");
+    }
   }
 }

@@ -25,6 +25,8 @@ function monoe.staticcall(base, method, ...)
   print(debug.traceback())
 end
 
+function monoe.shell(...) end
+
 monoe.env = monoe.env or {
   debug = false,
   path = ''
@@ -40,6 +42,8 @@ local function fullpath(path)
 end
 
 local function subscribe_all(name)
+  if type(_G[name]) ~= "table" then return end
+
   if type(_G[name].process) == "function" then
     event.subscribe('process', function (delta) _G[name].process(delta) end)
   end

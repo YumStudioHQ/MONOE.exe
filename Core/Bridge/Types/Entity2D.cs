@@ -1,8 +1,9 @@
 using Godot;
+using monoe.exe.Core.Bridge.Types.Interfaces;
 
 namespace monoe.exe.Core.Bridge.Types;
 
-public class Entity2D : Exposable
+public class Entity2D : Exposable, IPositionable2D, IScalable2D
 {
   protected Node2D SelfNode;
 
@@ -38,6 +39,17 @@ public class Entity2D : Exposable
     SelfNode.Scale = new((float)x, (float)y);
     return [SelfNode.Scale.X, SelfNode.Scale.Y];
   }
+
+
+  public void SetSize(double x, double y)
+  {
+    SelfNode.Scale = new((float)x, (float)y);
+  }
+
+  public object[] GetSize() => [SelfNode.Scale.X, SelfNode.Scale.Y];
+
+  public void SetScale(double x, double y) => Scale(x, y);
+  public object[] GetScale() => [SelfNode.Scale.X, SelfNode.Scale.Y];
 
   protected override void _Free()
   {

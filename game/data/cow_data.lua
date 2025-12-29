@@ -1,11 +1,9 @@
 local animation = require('libraries.types.animation')
 local entity = require('libraries.types.entity')
-local cam = require('libraries.types.cam')
 
 return {
   root = entity.new(),
   animation = animation.new(),
-  cam = cam.new(),
   speed = 300,
   ---@type 'down'|'up'|'side'
   direction = 'down',

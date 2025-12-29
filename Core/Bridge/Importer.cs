@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Godot;
 using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Bridge;
@@ -13,6 +14,8 @@ public static class Importer
   private static readonly List<Assembly> assemblies = [.. Engine.EngineAssembly.GetEngineAssembly()];
   private static readonly Dictionary<string, Type> types = [];
   private static readonly ConcurrentDictionary<(string type, string method), MethodInfo> staticMethodCache = new();
+
+  public static Assembly[] GetAssemblies() => [..assemblies];
 
   public static void LoadAssemblies(string[] strings)
   {

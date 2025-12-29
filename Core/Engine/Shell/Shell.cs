@@ -23,6 +23,12 @@ public static class Shell
     foreach (var (Method, Attr) in methods) commands[Method.Name.ToLower()] = Method;
   }
 
+  public static object[] Prompt(object[] args)
+  {
+    foreach (var arg in args) if (arg is string s) ExecuteCommand(s);
+    return [];
+  }
+
   public static void Prompt()
   {
     EngineConsole.Verbose("monoe shell — type `:<cmd>` in order to execute built-in command <cmd>, or, write lua code.");

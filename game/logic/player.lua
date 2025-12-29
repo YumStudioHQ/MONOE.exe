@@ -3,6 +3,7 @@ local window = require('libraries.io.window')
 local keyboard = require('libraries.io.keyboard')
 
 local player = require('game.data.player_data')
+local global = require('game.data.glob')
 
 function player.ready()
   local idle = image.new('./game/assets/player/idle.png')
@@ -16,7 +17,7 @@ function player.ready()
   player.animation:load('walk_down', walk, 80, 80, 0, 7, 1, 1)
   player.animation:load('walk_up', walk, 80, 80, 0, 7, 2, 2)
 
-  player.root:scale(10, 10)
+  player.root:scale(global.scale, global.scale)
   player.root:position(window.center())
 
   window.attach(player)

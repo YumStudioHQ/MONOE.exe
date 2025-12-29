@@ -1,9 +1,10 @@
 using Godot;
+using monoe.exe.Core.Bridge.Types.Interfaces;
 using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Bridge.Types;
 
-public class Sprite : Exposable
+public class Sprite : Exposable, IPositionable2D, IScalable2D
 {
   private readonly Sprite2D sprite = new();
 
@@ -35,9 +36,19 @@ public class Sprite : Exposable
 
   public object[] Scale(double x, double y)
   {
-    sprite.Scale = new((float)x, (float)y);
+    sprite.Scale = new(sprite.Scale.X + (float)x, sprite.Scale.Y + (float)y);
     return [sprite.Scale.X, sprite.Scale.Y];
   }
+
+  public void SetSize(double x, double y)
+  {
+    sprite.Scale = new((float)x, (float)y);
+  }
+
+  public object[] GetSize() => [sprite.Scale.X, sprite.Scale.Y];
+
+  public void SetScale(double x, double y) => Scale(x, y);
+  public object[] GetScale() => [sprite.Scale.X, sprite.Scale.Y];
 
   protected override void _Free()
   {

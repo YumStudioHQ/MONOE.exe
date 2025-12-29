@@ -1,0 +1,101 @@
+
+## ENGINE TODO LIST (what you don’t have yet)
+
+### Core Systems
+
+1. **Tilemap / Grid system**
+
+   * Load a simple 2D tilemap (array or CSV)
+   * Mark solid vs walkable tiles
+   * Optional: decorations layer
+
+2. **Collision**
+
+   * AABB (rectangular) collisions only
+   * Entity vs Tile
+   * Entity vs Entity (simple overlap)
+
+3. **Dialogue System**
+   * Allow to dialguate
+   * Loads Lua data
+   * Prebuilt UI?
+
+---
+
+### Extra Fun / Nice-to-Have
+
+7. **HTTP Requests**
+
+   * Fetch / send JSON
+   * Useful for leaderboards, patching, or just testing
+
+8. **Hot Reload Scripts**
+
+   * Already planned — keep it working for entities and game logic
+
+9. **Sound**
+
+   * Play simple effects (footsteps, pickup, eat)
+
+10. **Optional Godot / C# Style Additions**
+
+* **Signals / Event System**: entities can send events instead of polling
+* **Scene system**: parent/child nodes
+* **Y-Sort / Layering**: fake depth for top-down (trees in front/back of player)
+
+---
+
+## GAME TODO LIST (Deliver & Survive)
+
+**Game name:** **“Forest Courier”**
+
+### Core Gameplay
+
+1. Player can **move around map** (start small)
+2. Player has **hunger** (decreases over time)
+3. Player can **pick up food items** (apples, mushrooms)
+4. Player can **deliver items to NPCs**
+5. Game ends when player:
+
+   * Completes 3 deliveries
+   * OR dies of hunger
+
+### Optional / Stretch
+
+6. **Enemies / Cute mobs**
+
+   * Avoid or attack (later)
+7. **Inventory**
+
+   * Minimal (apple count, package count)
+8. **Sounds / UI**
+
+   * Hunger bar, pickup sounds, delivery confirmation
+
+---
+
+**Engine first**
+
+1. Entity system
+2. Input + movement
+3. Collision
+4. Tilemap
+5. Camera
+6. Animation
+
+**Then game**
+
+1. Hunger system
+2. Item pickup
+3. NPC delivery
+4. Win/lose screen
+5. Optional: combat / mobs
+
+---
+
+### Bonus fun ideas (Godot/C# inspired)
+
+1. **Signals / Events:** Player emits “delivery completed” → NPC reacts
+2. **Scene hierarchy:** Entities can have children (like weapons or particle effects)
+3. **Hot reload configs:** Reload tilemaps, entity data, or animations while running
+4. **HTTP leaderboard:** Post player score / delivery count

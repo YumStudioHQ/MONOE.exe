@@ -155,7 +155,11 @@ public class YumState : IDisposable
 
   public void Clear()
   {
+    foreach (var h in _callbackHandles)
+      h.Free();
+    _callbackHandles.Clear();
     _callbacks.Clear();
+
     INative.libyum_delete(_state);
     _state = INative.libyum_new();
     if (libs) INative.libyum_open_libs(_state);

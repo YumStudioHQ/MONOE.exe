@@ -292,6 +292,7 @@ public partial class Main : Node
     main.PushCallback("monoe.call", Importer.Lcall);
     main.PushCallback("monoe.staticcall", Importer.Lstaticcall);
     main.PushCallback("monoe.wait", Lsleep);
+    main.PushCallback("monoe.shell", Shell.Prompt);
     string injection = """
                        monoe.event.emit = monoe.event.emit or function(name)end
 

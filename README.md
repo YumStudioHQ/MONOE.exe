@@ -184,3 +184,7 @@ If you enjoy building engines, MONOE.exe is for you.
 ## See more !
 
 * [meta-runtime](./docs/meta-runtime.md)
+
+## Important 
+
+everything in game/assets is **not** my art, but the one of: https://otterisk.itch.io !
