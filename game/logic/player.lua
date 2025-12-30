@@ -29,7 +29,7 @@ function player.animate()
   player.animation:flip('H', player.flip)
 end
 
-function player.process(delta)
+function player.physics(delta)
   player.state = 'idle'
   if keyboard.down('ui_up') then
     player.root:move(0, -(player.speed * delta))

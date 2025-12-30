@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dvxcx16rqgib5"
-path="res://.godot/imported/Knight 1 - death.png-cd120272d474c5ea14675b6e1faacab7.ctex"
+uid="uid://7kv1jqb8jnsq"
+path="res://.godot/imported/Chick.png-183fb7457c05084d7e4ea59ee215734f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://game/assets/knight/Knight 1 - death.png"
-dest_files=["res://.godot/imported/Knight 1 - death.png-cd120272d474c5ea14675b6e1faacab7.ctex"]
+source_file="res://game/assets/chicken/Chick.png"
+dest_files=["res://.godot/imported/Chick.png-183fb7457c05084d7e4ea59ee215734f.ctex"]
 
 [params]
 

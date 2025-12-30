@@ -9,17 +9,6 @@
    * Mark solid vs walkable tiles
    * Optional: decorations layer
 
-2. **Collision**
-
-   * AABB (rectangular) collisions only
-   * Entity vs Tile
-   * Entity vs Entity (simple overlap)
-
-3. **Dialogue System**
-   * Allow to dialguate
-   * Loads Lua data
-   * Prebuilt UI?
-
 ---
 
 ### Extra Fun / Nice-to-Have

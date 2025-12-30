@@ -28,7 +28,7 @@ public class Sprite : Exposable, IPositionable2D, IScalable2D
     return [sprite.Position.X, sprite.Position.Y];
   }
 
-  public object[] Move(double x, double y)
+  public object[] Deplace(double x, double y)
   {
     sprite.Position = new(sprite.Position.X + (float)x, sprite.Position.Y + (float)y);
     return [sprite.Position.X, sprite.Position.Y];

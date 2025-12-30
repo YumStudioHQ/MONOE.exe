@@ -11,7 +11,7 @@ monoe.entity.__midx = true
 
 local base = "monoe.exe.Core.Bridge.Types.Entity2D"
 
----Crate a new entity. If a path is provided, it'll load it as an image
+---Crate a new entity.
 ---@return monoe.entity
 function monoe.entity.new()
   local uid = engine.import(base)
@@ -37,9 +37,9 @@ end
 
 ---@param x number
 ---@param y number
----@return number, number
 function monoe.entity:move(x, y)
-  return engine.call(self.uid, 'Move', x, y)
+  engine.call(self.uid, 'Velocity', x, y)
+  engine.call(self.uid, 'MoveAndSlide')
 end
 
 ---@param x number

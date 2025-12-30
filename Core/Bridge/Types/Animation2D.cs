@@ -58,7 +58,7 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
     return [animation.Position.X, animation.Position.Y];
   }
 
-  public object[] Move(double x, double y)
+  public object[] Deplace(double x, double y)
   {
     animation.Position = new(animation.Position.X + (float)x, animation.Position.Y + (float)y);
     return [animation.Position.X, animation.Position.Y];
