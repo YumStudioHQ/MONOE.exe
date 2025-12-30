@@ -1,3 +1,0 @@
-return {
-  scale = 10,
-}

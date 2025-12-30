@@ -1,6 +1,6 @@
 {
   "Lua.workspace.ignoreDir": [
-    "release"
+    "release", "build"
   ],
   "C_Cpp.errorSquiggles": "enabled",
   "Lua.diagnostics.disable": [

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using monoe.exe.Core.Bridge;
+using monoe.exe.Core.Engine.Compiler;
 using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Engine.Shell;
@@ -267,6 +268,12 @@ public static class BuiltIns
       if (assemblies.Length == 0)
         EngineConsole.WriteLine("No assemblies found.", ConsoleColor.Red);
     };
+  }
+
+  [BuiltIn("compiles the whole project")]
+  public static Action Compile(string[]_)
+  {
+    return Yakoc.Compile;
   }
 
   private static object ParseArg(string arg)
