@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -271,9 +272,85 @@ public static class BuiltIns
   }
 
   [BuiltIn("compiles the whole project")]
-  public static Action Compile(string[]_)
+  public static Action Compile(string[] _)
   {
     return Yakoc.Compile;
+  }
+
+  [BuiltIn("copies engine's libraries to the specified path", "[path]")]
+  public static Action CopyLibs(string[] args)
+  {
+    return () =>
+    {
+      if (args.Length < 0)
+      {
+        EngineConsole.WriteError("[!] Expected path");
+        return;
+      }
+      try
+      {
+        string appDir = AppDomain.CurrentDomain.BaseDirectory;
+        string currentDir = args[0];
+
+        string[] folders = ["libs", "libraries"];
+
+        foreach (var folder in folders)
+        {
+          string source = Path.Combine(appDir, folder);
+          string dest = Path.Combine(currentDir, folder);
+
+          if (!Directory.Exists(source))
+          {
+            EngineConsole.WriteError($"[!] Source folder not found: {source}");
+            continue;
+          }
+
+          CopyDirectory(source, dest);
+          EngineConsole.WriteLine($"Copied '{folder}' to '{currentDir}'", ConsoleColor.Green);
+        }
+      }
+      catch (Exception ex)
+      {
+        EngineConsole.WriteError($"[!] Failed to copy folders: {ex.Message}");
+      }
+    };
+  }
+
+  [BuiltIn("creates a new project", "[path]")]
+  public static Action NewProject(string[] args)
+  {
+    return () =>
+    {
+      if (args.Length < 0)
+      {
+        EngineConsole.WriteError("[!] Expected path");
+        return;
+      }
+
+      var path = args[0];
+
+      if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+      CopyLibs([path])();
+    };
+  }
+
+  private static void CopyDirectory(string sourceDir, string destinationDir)
+  {
+    if (!Directory.Exists(destinationDir))
+      Directory.CreateDirectory(destinationDir);
+
+    foreach (var file in Directory.GetFiles(sourceDir))
+    {
+      var destFile = Path.Combine(destinationDir, Path.GetFileName(file));
+      File.Copy(file, destFile, overwrite: true);
+    }
+
+    foreach (var directory in Directory.GetDirectories(sourceDir))
+    {
+      var destDir = Path.Combine(destinationDir, Path.GetFileName(directory));
+      CopyDirectory(directory, destDir);
+    }
   }
 
   private static object ParseArg(string arg)

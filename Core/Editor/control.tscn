@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://dwc871xvoyvum"]
+
+[ext_resource type="Script" uid="uid://d4g8nkiuu33o7" path="res://Core/Editor/code_edit.gd" id="2_q7sg8"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CodeEdit" type="CodeEdit" parent="."]
+layout_mode = 0
+offset_right = 724.0
+offset_bottom = 428.0
+symbol_lookup_on_click = true
+symbol_tooltip_on_hover = true
+gutters_draw_line_numbers = true
+code_completion_enabled = true
+indent_size = 2
+indent_use_spaces = true
+auto_brace_completion_enabled = true
+auto_brace_completion_highlight_matching = true
+script = ExtResource("2_q7sg8")

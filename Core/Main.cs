@@ -273,7 +273,12 @@ public partial class Main : Node
   private void LoadProject()
   {
     // 1. Detect the project.
-    main = new("project.lua", true, luaErrorHandler);
+    if (File.Exists("project.lua") || OS.GetCmdlineArgs().Contains("-editor"))
+    {
+      main = new("project.lua", true, luaErrorHandler);
+      main.Run("deps = deps or function()end", false); // Ensure the next call.
+    }
+    else main = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "project.lua"), true, luaErrorHandler);
 
     // 2. Load dependencies
     var libs = main.Call("deps")

@@ -1,7 +1,12 @@
 local engine = require('libraries.engine')
 
-function main()
+monoe.editor = {}
+local editor = monoe.editor -- Such a lazy dev...
 
+function editor.ready()
+  print('Hi ! Welcome to the monoe.editor editor~')
 end
 
 function deps()end
+
+engine.qualify(editor)

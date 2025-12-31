@@ -1,87 +1,89 @@
 # MONOE.exe Game Engine
 
 <p align="center">
-  <img src="./icon.png" alt="icon">
+  <img src="./icon.png" alt="MONOE.exe Logo" width="120">
 </p>
 
-### What is MONOE.exe?
+## Overview
 
-**MONOE.exe** is a small **meta-engine** designed for experimentation, learning, and flexible game development.
+**MONOE.exe** is a modular, multi-language game engine designed for **maximum flexibility, runtime extensibility, and rapid iteration**.
+It allows developers to combine **Lua scripting**, **C# engine logic**, and **native C/C++ libraries**, all in a unified workflow.
 
-It combines multiple languages:
-
-* **C / C++** — core native libraries (via YumEngine)
-* **C#** — engine logic and Godot integration
-* **Lua** — main scripting language
-
-Lua scripts can interact with C# and native libraries at runtime.
+MONOE.exe is built for experimentation and serious game development alike — no fixed workflows, no rigid rules, just **powerful runtime control**.
 
 ---
 
-### Why MONOE.exe?
+## Install
+ * [Here!](https://github.com/YumStudioHQ/MONOE.exe/releases/latest)
 
-Most engines force you into a fixed workflow.
+## Key Features
 
-MONOE.exe does the opposite.
-
-You can:
-
-* Write fast gameplay logic in **Lua**
-* Use **C#** for engine systems or tools
-* Load **custom DLLs** at runtime
-* Reload scripts while the game is running
-
-There is no “one correct way” to use the engine.
+| Feature                    | Description                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------------- |
+| **Multi-language support** | Lua scripting with full C# and C/C++ integration                                   |
+| **Hot Reload**             | Reload Lua scripts or the entire project at runtime                                |
+| **Event-driven Lifecycle** | Lifecycle events: `deps`, `main`, `@load`, `ready`, `process`, `physics`, `onexit` |
+| **Runtime Shell**          | Inspect engine state, execute Lua code, reload scripts, trigger garbage collection |
+| **Garbage Collection**     | Automatic cleanup every 0.5s with optional manual control                          |
+| **Extensible**             | Load custom DLLs, push callbacks, and extend the engine runtime                    |
 
 ---
 
-### Philosophy
+## Architecture
 
-> **Code your game your way.**
+MONOE.exe’s architecture is designed for modularity and runtime flexibility:
 
-MONOE.exe focuses on **freedom**, **runtime control**, and **experimentation**, instead of strict rules or heavy abstractions.
+```
+   +------------------+
+   |   Lua Scripts    |
+   |  (Gameplay)      |
+   +--------+---------+
+            ↕
+   +------------------+
+   |     C# Engine    |
+   |  (Core Systems,  |
+   |    Hot Reload,   |
+   |    Event Loop)   |
+   +--------+---------+
+            ↕
++------------------------+
+|    Native Libraries    |
+| (C/C++ via YumEngine)  |
++------------------------+
+```
+
+* **Lua scripts** interact directly with C# assemblies and native libraries.
+* The **runtime shell** enables live code execution, hot reloads, and debugging.
+* Events drive the engine lifecycle, keeping logic clean and modular.
 
 ---
 
 ## Engine Lifecycle
 
-MONOE.exe uses an **event-driven lifecycle**.
-
-The main Lua script (`project.lua`) follows this order:
+The engine follows an **event-driven lifecycle**, controlled by `project.lua`:
 
 1. **`deps()`**
+   Load required C# DLLs. Minimal Lua environment available.
 
-   * Called first
-   * Return paths to C# DLLs to load
-   * Only minimal Lua libraries are available here
-
-2. **Libraries are loaded**
-
-   * C# assemblies become visible to Lua
+2. **Libraries Loaded**
+   C# assemblies become accessible to Lua.
 
 3. **`main()`**
-
-   * Project initialization
-   * Register events, load scripts, setup state
+   Initialize project, register events, load scripts.
 
 4. **`@load` event**
-
-   * Used to load secondary Lua files
-   * Supports hot-reload
+   Load secondary Lua files. Supports hot-reload.
 
 5. **`ready` event**
+   Fired when all scripts and libraries are loaded.
 
-   * Called once everything is loaded
+6. **Runtime Loop**
 
-6. **Runtime loop**
-
-   * `process(delta)` — every frame
-   * `physics(delta)` — physics update
+   * `process(delta)` — called every frame
+   * `physics(delta)` — physics updates
 
 7. **Exit**
-
-   * `onexit` event
-   * Cleanup logic
+   `onexit` event triggers cleanup.
 
 ---
 
@@ -91,9 +93,7 @@ The main Lua script (`project.lua`) follows this order:
 local event = require('libraries.event')
 
 function deps()
-  return {
-    "./MyLibrary.dll"
-  }
+  return { "./MyLibrary.dll" }
 end
 
 function main()
@@ -101,15 +101,15 @@ function main()
 end
 
 event.subscribe('process', function(delta)
-  -- update!
+  -- update game logic
 end)
 
 event.subscribe('physics', function(delta)
-  -- update physics!
+  -- update physics
 end)
 
-event.subscribe('onexit', function(delta)
-  -- clean up here
+event.subscribe('onexit', function()
+  -- cleanup logic
 end)
 ```
 
@@ -117,74 +117,62 @@ end)
 
 ## Hot Reloading
 
-MONOE.exe supports **hot reloading** for Lua files.
+MONOE.exe supports hot reloading of Lua scripts:
 
-* When a `.lua` file changes:
-
-  * `@hot` event is emitted
-  * Scripts can reload themselves
-* If `project.lua` changes:
-
-  * The engine reboots the project
-
-This allows fast iteration without restarting the engine.
-
----
-
-## Garbage Collector
-
-Each 0.5 seconds, the engine fires the 'onfree' event that allows to clean up data later (e.g., dropped stuff).
-Prefer using `monoe.event.once('onfree', function()end)` for this event, as subscribe calls the function every time the event is fired. On the other hand, once calls once.
+* Changing a `.lua` file emits the `@hot` event.
+* Changing `project.lua` triggers a full project reload.
+* Hot reload keeps the engine running and prevents crashes.
 
 ---
 
 ## Runtime Shell
 
-MONOE.exe includes a **runtime shell**.
+The runtime shell allows:
 
-You can:
+* Executing Lua code at runtime
+* Inspecting globals and tables
+* Reloading scripts
+* Triggering garbage collection
 
-* Execute Lua code at runtime
-* Inspect globals
-* Force reloads
-* Trigger garbage collection
+**[Shell Commands](./docs/shell.md):**
 
-### Shell commands
-
-* `$reload` — reload the project
-* `$dump <table>` — print a Lua table
-* `$gc` — force garbage collection
-* `$stats` — show memory stats
+| Command         | Description                |
+| --------------- | -------------------------- |
+| `:reload`       | Reload the entire project  |
+| `:dump <table>` | Print a Lua table          |
+| `:stats`        | Display memory statistics  |
 
 ---
 
 ## Error Handling
 
-* Lua errors can trigger a **critical state**
-* In critical state:
-
-  * Game logic stops
-  * Error handler is executed
-* Hot reload clears the critical state
-
-This prevents crashes and allows recovery.
+* Lua errors trigger a **critical state**
+* In critical state, the game logic stops and error handler executes
+* Hot reload clears critical state for safe recovery
 
 ---
 
-## Final note
+## Advanced Topics
 
-MONOE.exe is not meant to compete with large engines.
-
-It is  a **sandbox**, and a **tool for experimentation**.
-
-If you enjoy building engines, MONOE.exe is for you.
+* **Garbage Collection**: `onfree` event every 0.5s, with optional `once()` for single-run cleanup.
+* **Main-thread queue**: enqueue actions safely from other threads.
+* **Custom DLLs & Callbacks**: extend engine capabilities at runtime.
 
 ---
 
-## See more !
+## Philosophy
 
-* [meta-runtime](./docs/meta-runtime.md)
+> **Code your game your way.**
 
-## Important 
+MONOE.exe emphasizes **freedom**, **experimentation**, and **runtime control**.
+It’s a tool for developers who want a sandbox that can scale to full-featured games.
 
-everything in game/assets is **not** my art, but the one of: https://otterisk.itch.io !
+---
+
+## See More
+
+* [Getting Started](./docs/getting-started.md)
+* [Lua API Reference](./docs/monoe_lua_api.md)
+* [Meta Runtime](./docs/meta-runtime.md)
+* [Shell Commands](./docs/shell.md)
+* [Engine Architecture](./docs/architecture.md)
