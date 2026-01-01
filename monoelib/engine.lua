@@ -1,4 +1,4 @@
-local event = require('libraries.event')
+local event = require('monoelib.event')
 
 ---@class monoe
 monoe = monoe or {}

@@ -1,6 +1,5 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using monoe.exe.Core.Engine.Shell;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -13,27 +12,27 @@ public class Yakoc
   {
     PreBuild.PrepareBuild();
 
-    string code = "namespace monoe.lib.Runtime; class MainApp : monoe.exe.Core.Main {  }";
+    string code = "namespace monoe.lib.Generated.Runtime; class MonolibMainApp : monoe.exe.Core.Base.MainBase {  }";
     SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code);
 
-    Assembly[] assemblies = [..EngineAssembly.GetEngineAssembly(), typeof(Main).Assembly];
+    Assembly[] assemblies = [..EngineAssembly.GetEngineAssembly(), typeof(Main).Assembly, typeof(Godot.Aabb).Assembly, typeof(YumSharp.Managed.YumState).Assembly];
     var references = assemblies
         .Select(asm => asm.Location)
         .Where(path => !string.IsNullOrEmpty(path))
         .Select(path => 
           { 
             EngineConsole.WriteLine($"> Using Assembly: {path}", System.ConsoleColor.DarkGray);
-            
+
             string buildPath = Path.Combine("build", Path.GetFileName(path));
             File.Copy(path, buildPath, true);
             EngineConsole.WriteLine($"> Copied: {buildPath}", System.ConsoleColor.DarkGray);
 
             return MetadataReference.CreateFromFile(path); 
           })
-        .ToList();
+        .ToArray();
 
     var compilation = CSharpCompilation.Create(
-        "GeneratedAssembly",
+        "monoelib",
         [syntaxTree],
         references,
         new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true)

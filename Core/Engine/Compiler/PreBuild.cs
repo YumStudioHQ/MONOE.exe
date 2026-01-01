@@ -11,7 +11,7 @@ namespace monoe.exe.Core.Engine.Compiler
 
       if (!Directory.Exists(buildDir))
         Directory.CreateDirectory(buildDir);
-      CopyFolder("libraries", Path.Combine(buildDir, "libraries"));
+      CopyFolder(EngineResources.GetResourceDir("monoelib"), Path.Combine(buildDir, "monoelib"));
       CopyFolder("libs", Path.Combine(buildDir, "libs"));
       CopyFolder("res", Path.Combine(buildDir, "res"));
     }

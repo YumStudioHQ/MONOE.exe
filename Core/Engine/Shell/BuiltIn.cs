@@ -317,7 +317,7 @@ public static class BuiltIns
   }
 
   [BuiltIn("creates a new project", "[path]")]
-  public static Action NewProject(string[] args)
+  public static Action Newp(string[] args)
   {
     return () =>
     {
@@ -334,6 +334,18 @@ public static class BuiltIns
       CopyLibs([path])();
     };
   }
+
+  [BuiltIn("shows the version")]
+  public static Action Version(string[]_) => () => { EngineConsole.WriteLine(Core.Version.All); };
+
+  [BuiltIn("shows avaible runtimes")]
+  public static Action Runtimes(string[]_) => () =>
+  {
+    foreach (var runtime in EngineResources.GetInternalRuntimes())
+    {
+      EngineConsole.WriteLine($"monoe.runtime-{runtime}@{Core.Version.All} ~ {EngineResources.GetRuntime(runtime)}");
+    }
+  };
 
   private static void CopyDirectory(string sourceDir, string destinationDir)
   {

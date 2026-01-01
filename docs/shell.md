@@ -7,7 +7,7 @@
 * Execute Lua code on the fly.
 * Run built-in C# commands directly from the shell.
 * Inspect Lua tables, C# objects, and assemblies.
-* Manage your project: reload, compile, create new projects, copy libraries.
+* Manage your project: reload, compile, create new projects, copy monoelib.
 * Thread-safe execution and engine locking.
 
 ## Built-in Commands

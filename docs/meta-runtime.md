@@ -3,7 +3,7 @@
 ### Overview
 
 MONOE.exe isn’t just a Lua scripting engine — it’s a **meta-runtime**.
-It allows Lua scripts to interact dynamically with **all loaded C# types and assemblies**, including built-in engine systems and user-loaded libraries.
+It allows Lua scripts to interact dynamically with **all loaded C# types and assemblies**, including built-in engine systems and user-loaded monoelib.
 
 This means you can:
 

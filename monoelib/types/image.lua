@@ -1,4 +1,4 @@
-local engine = require('libraries.engine')
+local engine = require('monoelib.engine')
 
 monoe = monoe or {}
 

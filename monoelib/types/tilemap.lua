@@ -1,5 +1,5 @@
-local engine = require('libraries.engine')
-local image = require('libraries.types.image')
+local engine = require('monoelib.engine')
+local image = require('monoelib.types.image')
 
 monoe = monoe or {}
 

@@ -52,7 +52,7 @@ MONOE.exe’s architecture is designed for modularity and runtime flexibility:
 +------------------------+
 ```
 
-* **Lua scripts** interact directly with C# assemblies and native libraries.
+* **Lua scripts** interact directly with C# assemblies and native monoelib.
 * The **runtime shell** enables live code execution, hot reloads, and debugging.
 * Events drive the engine lifecycle, keeping logic clean and modular.
 
@@ -90,7 +90,7 @@ The engine follows an **event-driven lifecycle**, controlled by `project.lua`:
 ## Basic Lua Example
 
 ```lua
-local event = require('libraries.event')
+local event = require('monoelib.event')
 
 function deps()
   return { "./MyLibrary.dll" }

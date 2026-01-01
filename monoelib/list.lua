@@ -1,4 +1,4 @@
-local linq = require('libraries.linq')
+local linq = require('monoelib.linq')
 
 monoe = monoe or {}
 

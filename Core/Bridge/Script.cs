@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using monoe.exe.Core.Engine;
 using monoe.exe.YumSharp.Managed;
 
 namespace monoe.exe.Core.Bridge;
@@ -60,14 +62,9 @@ public class Script : YumState, IDisposable
     src = source;
     this.isFile = isFile;
     this.onerror = onerror;
-    try
-    {
-      base.Run(src, isFile);
-    } 
-    catch (YumException e)
-    {
-      Utils.LuaErrorUtils.DumpLuaError(e, src);
-      onerror?.Invoke();
-    }
+    base.Run($"package.path = package.path .. {EngineResources.LuaLibrariesFmt()}", false);
+
+    if (isFile && !File.Exists(src)) throw new FileNotFoundException($"no such file {src}!");
+    base.Run(src, isFile);
   }
 }

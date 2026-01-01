@@ -1,6 +1,6 @@
 ---@diagnostic disable: return-type-mismatch, missing-return-value
-local engine = require('libraries.engine')
-local rendering = require('libraries.rendering')
+local engine = require('monoelib.engine')
+local rendering = require('monoelib.rendering')
 
 monoe = monoe or {}
 monoe.engine = monoe.engine or {}

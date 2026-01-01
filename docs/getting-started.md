@@ -15,7 +15,7 @@ Create a new directory for your game project. Copy the `libraries` folder from t
 Create a `project.lua` file in your project root:
 
 ```lua
-local engine = require('libraries.engine')
+local engine = require('monoelib.engine')
 
 -- Define your game object
 monoe.game = {}
@@ -44,9 +44,9 @@ engine.qualify(monoe.game)
 Create a new Lua file called `game.lua` in your project directory:
 
 ```lua
-local entity = require('libraries.types.entity')
-local sprite = require('libraries.types.sprite')
-local event = require('libraries.event')
+local entity = require('monoelib.types.entity')
+local sprite = require('monoelib.types.sprite')
+local event = require('monoelib.event')
 
 -- Game variables
 local ball
@@ -100,7 +100,7 @@ end
 
 function updatePaddle(delta)
     -- Move paddle with keyboard input
-    local keyboard = require('libraries.io.keyboard')
+    local keyboard = require('monoelib.io.keyboard')
 
     local px, py = paddle:position()
 
@@ -136,7 +136,7 @@ return {}
 Modify your `project.lua` to load the game script:
 
 ```lua
-local engine = require('libraries.engine')
+local engine = require('monoelib.engine')
 
 monoe.game = {}
 
@@ -155,7 +155,7 @@ engine.qualify(monoe.game)
 
 ## Step 4: Add Input Handling
 
-The keyboard input in the example above uses the `libraries.io.keyboard` module. Make sure you have the necessary IO libraries available.
+The keyboard input in the example above uses the `monoelib.io.keyboard` module. Make sure you have the necessary IO libraries available.
 
 ## Step 5: Run Your Game
 
