@@ -1,175 +1,210 @@
-# linq.lua
+# monoe.query
 
-Source: `libraries/linq.lua`
+
+
+## Properties
+
+- **data** (`table`): 
 
 ## monoe.query.new
 
-@class monoe.query
-@field data table
 Builds a new query type
-@param enum any
-@return monoe.query
 
-| Parameter | Type |
-|-----------|------|
-| `enum` | any |
+### Parameters
 
-**Returns:** monoe.query
+| Name | Type | Description |
+|------|------|-------------|
+| `enum` | `any` |  |
+
+### Returns
+
+- `monoe.query`
 
 ---
 
 ## monoe.query:foreach
 
-@param iterator function
-@return monoe.query
+iterates all elements of the query
 
-| Parameter | Type |
-|-----------|------|
-| `iterator` | function |
+### Parameters
 
-**Returns:** monoe.query
+| Name | Type | Description |
+|------|------|-------------|
+| `iterator` | `function` |  |
+
+### Returns
+
+- `monoe.query`
 
 ---
 
 ## monoe.query:where
 
-@param predicate function
-@return monoe.query
+selects elements when the predicator returns true.
 
-| Parameter | Type |
-|-----------|------|
-| `predicate` | function |
+### Parameters
 
-**Returns:** monoe.query
+| Name | Type | Description |
+|------|------|-------------|
+| `predicate` | `function` |  |
+
+### Returns
+
+- `monoe.query`
 
 ---
 
 ## monoe.query:select
 
-@param mapper function
-@return monoe.query
+maps a new query from the current query, releying on the provided mapper.
 
-| Parameter | Type |
-|-----------|------|
-| `mapper` | function |
+### Parameters
 
-**Returns:** monoe.query
+| Name | Type | Description |
+|------|------|-------------|
+| `mapper` | `function` |  |
+
+### Returns
+
+- `monoe.query`
 
 ---
 
 ## monoe.query:all
 
-@param predicate any
-@return boolean
+returns true when the predicator returns true for all elements.
 
-| Parameter | Type |
-|-----------|------|
-| `predicate` | any |
+### Parameters
 
-**Returns:** boolean
+| Name | Type | Description |
+|------|------|-------------|
+| `predicate` | `any` |  |
+
+### Returns
+
+- `boolean`
 
 ---
 
 ## monoe.query:any
 
-@param predicate any
-@return boolean
+returns true when the predicator returns true with at least one element.
 
-| Parameter | Type |
-|-----------|------|
-| `predicate` | any |
+### Parameters
 
-**Returns:** boolean
+| Name | Type | Description |
+|------|------|-------------|
+| `predicate` | `any` |  |
+
+### Returns
+
+- `boolean`
 
 ---
 
 ## monoe.query:take
 
-@param n integer
-@return monoe.query
 
-| Parameter | Type |
-|-----------|------|
-| `n` | integer |
 
-**Returns:** monoe.query
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `n` | `integer` |  |
+
+### Returns
+
+- `monoe.query`
 
 ---
 
 ## monoe.query:skip
 
-@param n number
-@return monoe.query
 
-| Parameter | Type |
-|-----------|------|
-| `n` | number |
 
-**Returns:** monoe.query
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `n` | `number` |  |
+
+### Returns
+
+- `monoe.query`
 
 ---
 
 ## monoe.query:distinct
 
-@return monoe.query
 
-**Returns:** monoe.query
+
+### Returns
+
+- `monoe.query`
 
 ---
 
 ## monoe.query:sum
 
-@param mapper function
-@return integer
+sums all numeric values
 
-| Parameter | Type |
-|-----------|------|
-| `mapper` | function |
+### Parameters
 
-**Returns:** integer
+| Name | Type | Description |
+|------|------|-------------|
+| `mapper` | `function` |  |
+
+### Returns
+
+- `integer`
 
 ---
 
 ## monoe.query:max
 
-@param mapper function
-@return any
+returns the maximum value
 
-| Parameter | Type |
-|-----------|------|
-| `mapper` | function |
+### Parameters
 
-**Returns:** any
+| Name | Type | Description |
+|------|------|-------------|
+| `mapper` | `function` |  |
+
+### Returns
+
+- `any`
 
 ---
 
 ## monoe.query:astable
 
+
+
 ---
 
 ## monoe.query.is_query
 
-@param obj any
-@return boolean
+returns true if the object is a query instance.
 
-| Parameter | Type |
-|-----------|------|
-| `obj` | any |
+### Parameters
 
-**Returns:** boolean
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `any` |  |
+
+### Returns
+
+- `boolean`
 
 ---
 
 ## monoe.query.join
 
-@param ... unknown
-@return monoe.query
+joins elements in a single query
 
-| Parameter | Type |
-|-----------|------|
-| `...` | unknown |
+### Returns
 
-**Returns:** monoe.query
+- `monoe.query`
 
 ---
 

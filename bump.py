@@ -15,7 +15,7 @@ VERSION_REGEX = re.compile(
 SEMVER_REGEX = re.compile(r"^\d+\.\d+\.\d+$")
 
 
-def bump_version(major, minor, fix, bump_type):
+def bump_version(major: int, minor: int, fix:int, bump_type: str) -> tuple[int, int, int]:
     if bump_type == "major":
         return major + 1, 0, 0
     elif bump_type == "minor":
@@ -72,6 +72,7 @@ def main():
     )
 
     PROJECT_FILE.write_text(updated_content, encoding="utf-8")
+
     VERSION_FILE.write_text(f"""namespace monoe.exe.Core;
 public static partial class Version {{
     public static readonly int Major = {new_major};

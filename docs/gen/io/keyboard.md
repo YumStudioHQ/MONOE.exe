@@ -1,60 +1,70 @@
-# keyboard.lua
+# monoe.io.keyboard
 
-Source: `libraries/io/keyboard.lua`
+Provides functions to query keyboard input and actions.
 
 ## monoe.io.keyboard.key_down
 
-@class monoe.io.keyboard
-Provides functions to query keyboard input and actions.
 Checks if a physical key is currently pressed.
-@param key string Key name (e.g., "space", "enter", "a")
-@return boolean True if the key is pressed, false otherwise
 
-| Parameter | Type |
-|-----------|------|
-| `key` | string Key name (e.g., "space", "enter", "a") |
+### Parameters
 
-**Returns:** boolean True if the key is pressed, false otherwise
+| Name | Type | Description |
+|------|------|-------------|
+| `key` | `string` | Key name (e.g., "space", "enter", "a") |
+
+### Returns
+
+- `boolean True if the key is pressed, false otherwise`
 
 ---
 
 ## monoe.io.keyboard.down
 
-@param action string Action name (as defined in the input map of Godot)
-@note ui_down, ui_up, ui_right and ui_left are true when using ZSQD, WSDA, ...
-@return boolean True if the action is pressed, false otherwise
+Checks if an action is currently pressed.
 
-| Parameter | Type |
-|-----------|------|
-| `action` | string Action name (as defined in the input map of Godot) |
+### Parameters
 
-**Returns:** boolean True if the action is pressed, false otherwise
+| Name | Type | Description |
+|------|------|-------------|
+| `action` | `string` | Action name (as defined in the input map of Godot) |
+
+### Returns
+
+- `boolean True if the action is pressed, false otherwise`
+
+> **Note:** ui_down, ui_up, ui_right and ui_left are true when using ZSQD, WSDA, ...
 
 ---
 
 ## monoe.io.keyboard.just_down
 
-@param action string Action name
-@return boolean True if the action was just pressed, false otherwise
+Checks if an action was just pressed this frame.
 
-| Parameter | Type |
-|-----------|------|
-| `action` | string Action name |
+### Parameters
 
-**Returns:** boolean True if the action was just pressed, false otherwise
+| Name | Type | Description |
+|------|------|-------------|
+| `action` | `string` | Action name |
+
+### Returns
+
+- `boolean True if the action was just pressed, false otherwise`
 
 ---
 
 ## monoe.io.keyboard.released
 
-@param action string Action name
-@return boolean True if the action was just released, false otherwise
+Checks if an action was released this frame.
 
-| Parameter | Type |
-|-----------|------|
-| `action` | string Action name |
+### Parameters
 
-**Returns:** boolean True if the action was just released, false otherwise
+| Name | Type | Description |
+|------|------|-------------|
+| `action` | `string` | Action name |
+
+### Returns
+
+- `boolean True if the action was just released, false otherwise`
 
 ---
 

@@ -10,22 +10,30 @@ public class Yakoc
 {
   public static void Compile()
   {
-    PreBuild.PrepareBuild();
+    Building.PrepareBuild();
 
     string code = "namespace monoe.lib.Generated.Runtime; class MonolibMainApp : monoe.exe.Core.Base.MainBase {  }";
     SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code);
 
     Assembly[] assemblies = [..EngineAssembly.GetEngineAssembly(), typeof(Main).Assembly, typeof(Godot.Aabb).Assembly, typeof(YumSharp.Managed.YumState).Assembly];
     var references = assemblies
+        .Where(asm => !asm.GetName().Name.StartsWith("System") 
+               && !asm.GetName().Name.StartsWith("Microsoft")
+               && !asm.GetName().Name.StartsWith("netstandard"))
         .Select(asm => asm.Location)
         .Where(path => !string.IsNullOrEmpty(path))
+        .Where(path =>
+        {
+          var exists = File.Exists(path);
+          if (!exists) EngineConsole.WriteLine($"{path}: Assembly not found", System.ConsoleColor.Yellow);
+          return exists;
+        })
         .Select(path => 
           { 
             EngineConsole.WriteLine($"> Using Assembly: {path}", System.ConsoleColor.DarkGray);
 
-            string buildPath = Path.Combine("build", Path.GetFileName(path));
+            string buildPath = Path.Join(Building.GetBuildDir(), Path.GetFileName(path));
             File.Copy(path, buildPath, true);
-            EngineConsole.WriteLine($"> Copied: {buildPath}", System.ConsoleColor.DarkGray);
 
             return MetadataReference.CreateFromFile(path); 
           })
@@ -38,7 +46,7 @@ public class Yakoc
         new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true)
     );
 
-    using var fs = new FileStream("build/monoe.lib.dll", FileMode.Create);
+    using var fs = new FileStream(Path.Join(Building.GetBuildDir(), "monoe.lib.dll"), FileMode.Create);
     var result = compilation.Emit(fs);
 
     if (!result.Success)
@@ -48,13 +56,7 @@ public class Yakoc
         EngineConsole.WriteError(diag.ToString());
       }
     }
+
+    Building.BuildReleases();
   }
 }
-
-/*
-var assembly = Assembly.LoadFrom("GeneratedAssembly.dll");
-var type = assembly.GetType("Test");
-var method = type.GetMethod("Run");
-method.Invoke(null, null);
-
-*/

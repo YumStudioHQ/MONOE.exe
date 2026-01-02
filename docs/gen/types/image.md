@@ -1,48 +1,59 @@
-# image.lua
+# monoe.image
 
-Source: `libraries/types/image.lua`
+Represents an image that can be loaded, cleared, and managed in the engine.
+
+## Properties
+
+- **uid** (`integer`): Unique ID for the engine-side image object
 
 ## monoe.image.new
 
-@class monoe.image
-@field uid integer Unique ID for the engine-side image object
-Represents an image that can be loaded, cleared, and managed in the engine.
 Creates a new `monoe.image` object.
 If a `path` is provided, the image will be loaded from that file.
-@param path string|integer|nil File path, existing UID, or nil for a new empty image
-@return monoe.image Newly created image object
 
-| Parameter | Type |
-|-----------|------|
-| `path` | string|integer|nil File path, existing UID, or nil for a new empty image |
+### Parameters
 
-**Returns:** monoe.image Newly created image object
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | `string|integer|nil` | File path, existing UID, or nil for a new empty image |
+
+### Returns
+
+- `monoe.image Newly created image object`
 
 ---
 
 ## monoe.image:path
 
-@return string Current file path of the image
+Returns the file path of the image.
 
-**Returns:** string Current file path of the image
+### Returns
+
+- `string Current file path of the image`
 
 ---
 
 ## monoe.image:load
 
-@param path string File path to load
+Loads an image from a file path.
 
-| Parameter | Type |
-|-----------|------|
-| `path` | string File path to load |
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | `string` | File path to load |
 
 ---
 
 ## monoe.image:clear
 
+Clears the image content, resetting it to empty.
+
 ---
 
 ## monoe.image:free
+
+Frees the engine-side resources associated with this image.
 
 ---
 

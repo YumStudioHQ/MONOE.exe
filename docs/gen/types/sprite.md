@@ -1,96 +1,113 @@
-# sprite.lua
+# monoe.sprite
 
-Source: `libraries/types/sprite.lua`
+
+
+## Properties
+
+- **uid** (`integer`): Unique ID for the engine-side sprite object
 
 ## monoe.sprite.new
 
-@diagnostic disable: return-type-mismatch, missing-return-value
-@class monoe.sprite
-@field uid integer Unique ID for the engine-side sprite object
 Creates a new `monoe.sprite` object.
 If a path is provided, it will load it as an image.
-@param path string|nil File path to load as the sprite image
-@return monoe.sprite
 
-| Parameter | Type |
-|-----------|------|
-| `path` | string|nil File path to load as the sprite image |
+### Parameters
 
-**Returns:** monoe.sprite
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | `string|nil` | File path to load as the sprite image |
+
+### Returns
+
+- `monoe.sprite`
 
 ---
 
 ## monoe.sprite:clear
 
+Clears the sprite image.
+
 ---
 
 ## monoe.sprite:load
 
-@param path string File path of the image
+Loads an image into the sprite.
 
-| Parameter | Type |
-|-----------|------|
-| `path` | string File path of the image |
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | `string` | File path of the image |
 
 ---
 
 ## monoe.sprite:position
 
-@param x number|nil
-@param y number|nil
-@return number x
-@return number y
+Sets or gets the position of the sprite.
 
-| Parameter | Type |
-|-----------|------|
-| `x` | number|nil |
-| `y` | number|nil |
+### Parameters
 
-**Returns:** number x, number y
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | `number|nil` |  |
+| `y` | `number|nil` |  |
+
+### Returns
+
+- `number x`
+- `number y`
 
 ---
 
 ## monoe.sprite:move
 
-@param x number
-@param y number
-@return number new_x
-@return number new_y
+Moves the sprite by the specified offset.
 
-| Parameter | Type |
-|-----------|------|
-| `x` | number |
-| `y` | number |
+### Parameters
 
-**Returns:** number new_x, number new_y
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | `number` |  |
+| `y` | `number` |  |
+
+### Returns
+
+- `number new_x`
+- `number new_y`
 
 ---
 
 ## monoe.sprite:scale
 
-@param x number
-@param y number
-@return number new_x
-@return number new_y
+Scales the sprite.
 
-| Parameter | Type |
-|-----------|------|
-| `x` | number |
-| `y` | number |
+### Parameters
 
-**Returns:** number new_x, number new_y
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | `number` |  |
+| `y` | `number` |  |
+
+### Returns
+
+- `number new_x`
+- `number new_y`
 
 ---
 
 ## monoe.sprite:image
 
-@return monoe.image
+Returns the sprite's image object.
 
-**Returns:** monoe.image
+### Returns
+
+- `monoe.image`
 
 ---
 
 ## monoe.sprite:free
+
+Frees engine resources associated with this sprite.
 
 ---
 

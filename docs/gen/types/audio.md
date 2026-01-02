@@ -1,68 +1,82 @@
-# audio.lua
+# monoe.audio
 
-Source: `libraries/types/audio.lua`
+Represents an audio player capable of loading, playing, and managing sound files.
+
+## Properties
+
+- **uid** (`integer`): Unique engine-side identifier for the audio object
 
 ## monoe.audio.new
 
-@class monoe.audio
-@field uid integer Unique engine-side identifier for the audio object
-Represents an audio player capable of loading, playing, and managing sound files.
 Creates a new `monoe.audio` object.
 If a `source` is provided, the audio file will be loaded automatically.
-@param source string? Optional file path to load immediately
-@return monoe.audio Newly created audio object
 
-| Parameter | Type |
-|-----------|------|
-| `source` | string? Optional file path to load immediately |
+### Parameters
 
-**Returns:** monoe.audio Newly created audio object
+| Name | Type | Description |
+|------|------|-------------|
+| `source` | `string` | ? Optional file path to load immediately |
+
+### Returns
+
+- `monoe.audio Newly created audio object`
 
 ---
 
 ## monoe.audio:load
 
-@param source string File path of the audio to load
+Loads a sound file (.wav, .mp3) into the audio player.
 
-| Parameter | Type |
-|-----------|------|
-| `source` | string File path of the audio to load |
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `source` | `string` | File path of the audio to load |
 
 ---
 
 ## monoe.audio:play
 
-@param at number? Optional starting position in seconds
-@param loop boolean? Whether the audio should loop (default: false)
+Plays the audio.
 
-| Parameter | Type |
-|-----------|------|
-| `at` | number? Optional starting position in seconds |
-| `loop` | boolean? Whether the audio should loop (default: false) |
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `at` | `number` | ? Optional starting position in seconds |
+| `loop` | `boolean` | ? Whether the audio should loop (default: false) |
 
 ---
 
 ## monoe.audio:stop
 
+Stops playback of the audio.
+
 ---
 
 ## monoe.audio:length
 
-@return number
+Returns the length of the audio stream in seconds.
 
-**Returns:** number
+### Returns
+
+- `number`
 
 ---
 
 ## monoe.audio:finished
 
-@return string Event name
+Returns the name of the event triggered when playback finishes.
 
-**Returns:** string Event name
+### Returns
+
+- `string Event name`
 
 ---
 
 ## monoe.audio:free
+
+Frees the engine-side resources associated with this audio object.
 
 ---
 

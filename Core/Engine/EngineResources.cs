@@ -19,10 +19,10 @@ public static class EngineResources
   }
 
   public static string[] GetInternalRuntimes() => [
-    "osx", "linx64", "linarm64", "lin32",
-    "winx64", "winarm64", "win32",
+    "osx", "lin64", "linarm64", "lin32",
+    "win64", "winarm64", "win32",
   ];
 
   public static string GetRuntime(string name)
-    => GetResourceDir("runtime", name);
+    => GetResourceDir("runtimes", name);
 }

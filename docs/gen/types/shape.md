@@ -1,31 +1,37 @@
-# shape.lua
+# monoe.shape
 
-Source: `libraries/types/shape.lua`
+
+
+## Properties
+
+- **uid** (`integer`): Unique ID for the engine-side shape object
 
 ## monoe.shape.new
 
-@class monoe.shape
-@field uid integer Unique ID for the engine-side shape object
 Creates a new shape object for collisions.
 Supports predefined types: `"rectangle:WIDTHxHEIGHT"`, `"circle:RADIUS"`, `"capsule:RADIUSxHEIGHT"`.
-@param shape string Shape description
-@return monoe.shape
 
-| Parameter | Type |
-|-----------|------|
-| `shape` | string Shape description |
+### Parameters
 
-**Returns:** monoe.shape
+| Name | Type | Description |
+|------|------|-------------|
+| `shape` | `string` | Shape description |
+
+### Returns
+
+- `monoe.shape`
 
 ---
 
 ## monoe.shape:debug
 
-@param hex integer Color in 0xRRGGBBAA format
+Sets a debug outline color for the shape.
 
-| Parameter | Type |
-|-----------|------|
-| `hex` | integer Color in 0xRRGGBBAA format |
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `hex` | `integer` | Color in 0xRRGGBBAA format |
 
 ---
 

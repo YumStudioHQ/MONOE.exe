@@ -1,94 +1,199 @@
 import re
 import os
+from dataclasses import dataclass, field
+from typing import List, Dict, Optional
 
-def extract_lua_functions(lua_code):
-    # Match functions with optional LuaDoc above
-    func_pattern = re.compile(
-        r"(?:---@[\s\S]*?)?"          # optional doc comments
-        r"function\s+([a-zA-Z0-9_:.]+)\s*\((.*?)\)",  # function name and params
-        re.MULTILINE
-    )
+# -----------------------------
+# Data models
+# -----------------------------
 
-    # Capture full type info until end of line
-    param_pattern = re.compile(r"---@param\s+(\w+)\s+([^\n]+)")
-    return_pattern = re.compile(r"---@return\s+([^\n]+)")
+@dataclass
+class Note:
+    kind: str  # note | warning | see
+    text: str
 
-    functions = []
+@dataclass
+class Param:
+    name: str
+    type: str
+    description: str
 
-    for match in func_pattern.finditer(lua_code):
-        full_match = match.group(0)
-        name = match.group(1)
-        params = [p.strip() for p in match.group(2).split(',')] if match.group(2).strip() else []
+@dataclass
+class FunctionDoc:
+    name: str
+    params: List[Param] = field(default_factory=list)
+    returns: List[str] = field(default_factory=list)
+    summary: str = ""
+    notes: List[Note] = field(default_factory=list)
+    is_method: bool = False
 
-        param_docs = {n: t.strip() for n, t in param_pattern.findall(full_match)}
-        return_types = [r.strip() for r in return_pattern.findall(full_match)]
+@dataclass
+class FieldDoc:
+    name: str
+    type: str
+    description: str
 
-        doc_lines = [line.strip()[3:].strip() for line in full_match.splitlines() if line.strip().startswith('---')]
-        docstring = "\n".join(doc_lines)
+@dataclass
+class ClassDoc:
+    name: str
+    summary: str = ""
+    fields: List[FieldDoc] = field(default_factory=list)
+    functions: List[FunctionDoc] = field(default_factory=list)
 
-        functions.append({
-            'name': name,
-            'params': params,
-            'param_types': param_docs,
-            'return_types': return_types,
-            'doc': docstring
-        })
+# -----------------------------
+# LuaDoc parsing
+# -----------------------------
 
-    return functions
+CLASS_RE = re.compile(r"---@class\s+([\w\.]+)")
+FIELD_RE = re.compile(r"---@field\s+(\w+)\s+([\w\<\>\.\|]+)\s*(.*)")
+PARAM_RE = re.compile(r"---@param\s+(\w+)\s+([\w\<\>\.\|]+)\s*(.*)")
+RETURN_RE = re.compile(r"---@return\s+(.+)")
+NOTE_RE = re.compile(r"---@(?P<kind>note|warning|see)\s+(.*)")
+FUNC_RE = re.compile(r"function\s+([\w\.\:]+)\s*\((.*?)\)")
 
-def generate_md(file_path, functions, lua_folder, output_folder):
-    # Generate path inside gen/ preserving folder structure
-    rel_path = os.path.relpath(file_path, lua_folder)
-    md_path = os.path.join(output_folder, rel_path)
-    md_path = md_path.replace('.lua', '.md')
-    os.makedirs(os.path.dirname(md_path), exist_ok=True)
+def parse_lua_file(code: str) -> Optional[ClassDoc]:
+    lines = code.splitlines()
+    class_doc = None
+    current_doc = []
 
-    file_name = os.path.basename(file_path)
-    with open(md_path, 'w', encoding='utf-8') as f:
-        f.write(f"# {file_name}\n\n")
-        f.write(f"Source: `{file_path}`\n\n")
+    def flush_doc():
+        nonlocal current_doc
+        doc = current_doc
+        current_doc = []
+        return doc
 
-        for func in functions:
-            f.write(f"## {func['name']}\n\n")
-            if func['doc']:
-                f.write(f"{func['doc']}\n\n")
-            if func['params']:
-                f.write("| Parameter | Type |\n")
-                f.write("|-----------|------|\n")
-                for p in func['params']:
-                    type_info = func['param_types'].get(p, 'unknown')
-                    f.write(f"| `{p}` | {type_info} |\n")
+    for i, line in enumerate(lines):
+        line = line.rstrip()
+
+        if line.startswith('---'):
+            current_doc.append(line)
+            continue
+
+        # CLASS
+        m = CLASS_RE.search("\n".join(current_doc))
+        if m and not class_doc:
+            class_name = m.group(1)
+            class_doc = ClassDoc(name=class_name)
+
+            for l in current_doc:
+                if l.startswith('---') and not l.startswith('---@'):
+                    class_doc.summary += l[3:].strip() + "\n"
+
+                fm = FIELD_RE.match(l)
+                if fm:
+                    class_doc.fields.append(FieldDoc(*fm.groups()))
+
+            flush_doc()
+            continue
+
+        # FUNCTION
+        fm = FUNC_RE.search(line)
+        if fm and class_doc:
+            name = fm.group(1)
+            is_method = ':' in name
+
+            fn = FunctionDoc(name=name, is_method=is_method)
+
+            for l in current_doc:
+                if l.startswith('---') and not l.startswith('---@'):
+                    fn.summary += l[3:].strip() + "\n"
+
+                pm = PARAM_RE.match(l)
+                if pm:
+                    fn.params.append(Param(*pm.groups()))
+
+                rm = RETURN_RE.match(l)
+                if rm:
+                    fn.returns.append(rm.group(1))
+
+                nm = NOTE_RE.match(l)
+                if nm:
+                    fn.notes.append(Note(nm.group("kind"), nm.group(2)))
+
+            class_doc.functions.append(fn)
+            flush_doc()
+
+    return class_doc
+
+def render_markdown(cls: ClassDoc, output_path: str):
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(f"# {cls.name}\n\n")
+        f.write(cls.summary.strip() + "\n\n")
+
+        if cls.fields:
+            f.write("## Properties\n\n")
+            for field in cls.fields:
+                f.write(f"- **{field.name}** (`{field.type}`): {field.description}\n")
+            f.write("\n")
+
+        for fn in cls.functions:
+            f.write(f"## {fn.name}\n\n")
+            f.write(fn.summary.strip() + "\n\n")
+
+            if fn.params:
+                f.write("### Parameters\n\n")
+                f.write("| Name | Type | Description |\n")
+                f.write("|------|------|-------------|\n")
+                for p in fn.params:
+                    f.write(f"| `{p.name}` | `{p.type}` | {p.description} |\n")
                 f.write("\n")
-            if func['return_types']:
-                f.write(f"**Returns:** {', '.join(func['return_types'])}\n\n")
+
+            if fn.returns:
+                f.write("### Returns\n\n")
+                for r in fn.returns:
+                    f.write(f"- `{r}`\n")
+                f.write("\n")
+
+            for note in fn.notes:
+                title = note.kind.capitalize()
+                f.write(f"> **{title}:** {note.text}\n\n")
+
             f.write("---\n\n")
-    return md_path
 
-def generate_reference_table(md_files, output_file):
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write("# MONOE.exe Lua API Reference Table\n\n")
-        for md in md_files:
-            title = os.path.basename(md).replace('.md', '')
-            f.write(f"- [{title}]({os.path.relpath(md, os.path.dirname(output_file))})\n")
+def main(
+    lua_root: str = "monoelib",
+    output_root: str = "docs/gen",
+    index_file: str = "docs/monoe_lua_api.md"
+):
+    generated = []
 
-def main(lua_folder, output_folder, ref_table_file):
-    md_files = []
-    for root, _, files in os.walk(lua_folder):
+    for root, _, files in os.walk(lua_root):
         for file in files:
-            if file.endswith('.lua'):
-                path = os.path.join(root, file)
-                with open(path, 'r', encoding='utf-8') as f:
-                    code = f.read()
-                funcs = extract_lua_functions(code)
-                md_file = generate_md(path, funcs, lua_folder, output_folder)
-                md_files.append(md_file)
+            if not file.endswith(".lua"):
+                continue
 
-    generate_reference_table(md_files, ref_table_file)
-    print(f"Generated {len(md_files)} MD files in '{output_folder}' and reference table at '{ref_table_file}'")
+            lua_path = os.path.join(root, file)
 
-if __name__ == "__main__":
-    lua_folder = "libraries"
-    output_folder = "docs/gen"
-    ref_table_file = "docs/monoe_lua_api.md"
-    main(lua_folder, output_folder, ref_table_file)
+            with open(lua_path, "r", encoding="utf-8") as f:
+                code = f.read()
+
+            cls = parse_lua_file(code)
+            if not cls:
+                continue  # no @class → ignore
+
+            # Preserve folder structure
+            rel = os.path.relpath(lua_path, lua_root)
+            md_path = os.path.join(output_root, rel).replace(".lua", ".md")
+
+            render_markdown(cls, md_path)
+            generated.append((cls.name, md_path))
+
+            print(f"✓ {cls.name} → {md_path}")
+
+    # -----------------------------
+    # Generate index table
+    # -----------------------------
+    os.makedirs(os.path.dirname(index_file), exist_ok=True)
+    with open(index_file, "w", encoding="utf-8") as f:
+        f.write("# MONOE.exe Lua API Reference\n\n")
+
+        for name, path in sorted(generated):
+            rel = os.path.relpath(path, os.path.dirname(index_file))
+            f.write(f"- [{name}]({rel})\n")
+
+    print(f"\n✔ Generated {len(generated)} class docs")
+    print(f"✔ Index written to {index_file}")
+
+if __name__ == "__main__": main()
