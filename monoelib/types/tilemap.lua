@@ -55,6 +55,7 @@ function monoe.tilemap:load(name, source, tile_width, tile_height)
   tile_width = tile_width or 16
   tile_height = tile_height or tile_width
 
+---@diagnostic disable-next-line: assign-type-mismatch
   self.tilesets[name] = engine.call(self.uid, 'AddImage', img.uid, tile_width, tile_height)
 end
 

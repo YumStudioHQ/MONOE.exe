@@ -1,41 +1,55 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 
 namespace monoe.exe.Core.Engine.Compiler;
 
-public class Yakoc
+public class Monoec
 {
   public static void Compile()
   {
     Building.PrepareBuild();
 
-    string code = "namespace monoe.lib.Generated.Runtime; class MonolibMainApp : monoe.exe.Core.Base.MainBase {  }";
+    string code = """
+                  namespace monoe.lib.Generated.Runtime 
+                  { 
+                    public class MonolibMainApp : monoe.exe.Core.Base.ReleaseBase
+                    {
+                      public Godot.Node Expose()
+                      {
+                        return new monoe.exe.Core.Base.MainBase(base.gameSettings);
+                      }
+                    }
+                  }
+    
+                  """;
     SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code);
 
-    Assembly[] assemblies = [..EngineAssembly.GetEngineAssembly(), typeof(Main).Assembly, typeof(Godot.Aabb).Assembly, typeof(YumSharp.Managed.YumState).Assembly];
+    Assembly[] assemblies = [.. EngineAssembly.GetEngineAssembly(), 
+                                typeof(Main).Assembly, 
+                                typeof(Godot.Aabb).Assembly, 
+                                typeof(Path).Assembly];
     var references = assemblies
-        .Where(asm => !asm.GetName().Name.StartsWith("System") 
-               && !asm.GetName().Name.StartsWith("Microsoft")
-               && !asm.GetName().Name.StartsWith("netstandard"))
-        .Select(asm => asm.Location)
-        .Where(path => !string.IsNullOrEmpty(path))
-        .Where(path =>
+        .Where(asm =>
         {
-          var exists = File.Exists(path);
-          if (!exists) EngineConsole.WriteLine($"{path}: Assembly not found", System.ConsoleColor.Yellow);
+          var exists = File.Exists(asm.Location);
+          if (!exists) EngineConsole.WriteLine($"{asm.Location}: Assembly not found", ConsoleColor.Yellow);
           return exists;
         })
-        .Select(path => 
-          { 
-            EngineConsole.WriteLine($"> Using Assembly: {path}", System.ConsoleColor.DarkGray);
+        .Select(asm =>
+          {
+            EngineConsole.WriteLine($"> Using Assembly: {asm.Location}", ConsoleColor.DarkGray);
 
-            string buildPath = Path.Join(Building.GetBuildDir(), Path.GetFileName(path));
-            File.Copy(path, buildPath, true);
+            if (!asm.FullName.StartsWith("System") && !asm.FullName.StartsWith("Microsoft"))
+            {
+              string buildPath = Path.Join(Building.GetAssembliesDir(), Path.GetFileName(asm.Location));
+              File.Copy(asm.Location, buildPath, true);
+            }
 
-            return MetadataReference.CreateFromFile(path); 
+            return MetadataReference.CreateFromFile(asm.Location);
           })
         .ToArray();
 
@@ -43,19 +57,38 @@ public class Yakoc
         "monoelib",
         [syntaxTree],
         references,
-        new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true)
+        new CSharpCompilationOptions(
+          OutputKind.DynamicallyLinkedLibrary,
+          allowUnsafe: true,
+          nullableContextOptions: NullableContextOptions.Enable
+        )
     );
 
-    using var fs = new FileStream(Path.Join(Building.GetBuildDir(), "monoe.lib.dll"), FileMode.Create);
+    Directory.CreateDirectory(Path.GetDirectoryName(Building.GameAssemblyOutPath)!);
+
+    using var fs = new FileStream(
+        Building.GameAssemblyOutPath,
+        FileMode.Create,
+        FileAccess.Write,
+        FileShare.None
+    );
+
     var result = compilation.Emit(fs);
 
     if (!result.Success)
     {
       foreach (var diag in result.Diagnostics)
-      {
         EngineConsole.WriteError(diag.ToString());
-      }
+
+      throw new InvalidOperationException("Roslyn compilation failed.");
     }
+
+    fs.Flush();
+    EngineConsole.Verbose(
+        $"Assembly written: {Building.GameAssemblyOutPath} ({fs.Length} bytes)"
+    );
+
+    fs.Close();
 
     Building.BuildReleases();
   }

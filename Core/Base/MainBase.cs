@@ -6,7 +6,9 @@ using System.Threading;
 using Godot;
 using monoe.exe.Core.Bridge;
 using monoe.exe.Core.Engine;
+using monoe.exe.Core.Engine.Resources;
 using monoe.exe.Core.Engine.Shell;
+using monoe.exe.Core.Settings;
 using Script = monoe.exe.Core.Bridge.Script;
 using Timer = Godot.Timer;
 
@@ -15,7 +17,7 @@ namespace monoe.exe.Core.Base;
 public partial class MainBase : Node
 {
   private static Script main = null;
-  protected Settings.GameSettings gameSettings;
+  protected GameSettings gameSettings;
   private FileSystemWatcher watcher;
   private static readonly ConcurrentQueue<Action> mainThreadQueue = new();
   private static bool locked = false;
@@ -91,12 +93,18 @@ public partial class MainBase : Node
 
     done.Wait();
 
-    if (error != null)
-      throw error;
+    if (error != null) throw error;
   }
 
   public static void Run(string code) // This Run method is only for string injections!
    => main.Run(code, false);
+
+  public MainBase() { }
+
+  public MainBase(GameSettings settings)
+  {
+    gameSettings = settings;
+  }
 
   public override void _EnterTree()
   {

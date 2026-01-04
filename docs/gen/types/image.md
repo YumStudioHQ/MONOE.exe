@@ -29,7 +29,7 @@ Returns the file path of the image.
 
 ### Returns
 
-- `string Current file path of the image`
+- `string current file path of the image`
 
 ---
 

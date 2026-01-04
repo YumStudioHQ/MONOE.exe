@@ -35,8 +35,9 @@ function monoe.image.new(path)
 end
 
 ---Returns the file path of the image.
----@return string Current file path of the image
+---@return string current file path of the image
 function monoe.image:path()
+---@diagnostic disable-next-line: return-type-mismatch
   return engine.call(self.uid, 'GetPath')
 end
 

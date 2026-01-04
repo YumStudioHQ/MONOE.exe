@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using monoe.exe.Core.Bridge;
 using monoe.exe.Core.Engine.Compiler;
+using monoe.exe.Core.Engine.Resources;
 using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Engine.Shell;
@@ -274,7 +275,7 @@ public static class BuiltIns
   [BuiltIn("compiles the whole project")]
   public static Action Compile(string[] _)
   {
-    return Yakoc.Compile;
+    return Monoec.Compile;
   }
 
   [BuiltIn("copies engine's libraries to the specified path", "[path]")]
@@ -341,9 +342,9 @@ public static class BuiltIns
   [BuiltIn("shows avaible runtimes")]
   public static Action Runtimes(string[]_) => () =>
   {
-    foreach (var runtime in EngineResources.GetInternalRuntimes())
+    foreach (var runtime in EngineResources.GetRuntimes())
     {
-      EngineConsole.WriteLine($"monoe.runtime-{runtime}@{Core.Version.All} ~ {EngineResources.GetRuntime(runtime)}");
+      EngineConsole.WriteLine($"monoe.runtime-{runtime.Name}@{Core.Version.All} ~ {runtime.Path}");
     }
   };
 
