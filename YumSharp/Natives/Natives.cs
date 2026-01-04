@@ -5,30 +5,7 @@ namespace monoe.exe.YumSharp.Natives;
 
 internal static unsafe partial class INative
 {
-#if GODOT_MACOS
-    private const string DllName = $"libs/libyum_apple";
-#else
-    #if GODOT_WINDOWS || WINDOWS
-        private const string DllPlatform = "win";
-        #warning windows
-    #else
-        private const string DllPlatform = "linux";
-        #warning linux
-    #endif
-
-    #if X64
-        private const string DllArch = "x64";
-        #warning 64
-    #elif X86
-        private const string DllArch = "x86";
-        #warning 86
-    #else
-        private const string DllArch = "arm64";
-        #warning ARM
-    #endif
-
-    private const string DllName = $"libs/libyum_{DllPlatform}_{DllArch}";
-#endif
+    private const string DllName = $"libs/libyum";
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate variant_t* YumCallback(

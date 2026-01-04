@@ -5,17 +5,5 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <EnableRuntimeMarshalling>true</EnableRuntimeMarshalling>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-
-
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(PlatformTarget)'=='x64'">
-   <DefineConstants>X64</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(PlatformTarget)'=='x86'">
-   <DefineConstants>X86</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(PlatformTarget)'=='ARM64'">
-   <DefineConstants>ARM64</DefineConstants>
   </PropertyGroup>
 </Project>
