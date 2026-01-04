@@ -43,7 +43,7 @@ public static class Shell
 
       if (line.Trim() == ":exit")
       {
-        Main.RequestExit();
+        Base.MainBase.RequestExit();
         return;
       }
 
@@ -51,7 +51,7 @@ public static class Shell
       {
         Interlocked.Increment(ref commandRunning);
 
-        Main.EnqueueOnMain(() =>
+        Base.MainBase.EnqueueOnMain(() =>
         {
           try
           {
@@ -67,11 +67,11 @@ public static class Shell
       {
         Interlocked.Increment(ref commandRunning);
 
-        Main.EnqueueOnMain(() =>
+        Base.MainBase.EnqueueOnMain(() =>
         {
           try
           {
-            Main.Run(line);
+            Base.MainBase.Run(line);
           }
           finally
           {
@@ -83,7 +83,7 @@ public static class Shell
 
   }
 
-  private static void ExecuteCommand(string line)
+  public static void ExecuteCommand(string line)
   {
     if (line.StartsWith(':'))
     {
@@ -107,7 +107,7 @@ public static class Shell
     }
     else
     {
-      Main.EnqueueOnMain(() => { Main.Run(line); });
+      Base.MainBase.EnqueueOnMain(() => { Base.MainBase.Run(line); });
     }
   }
 }

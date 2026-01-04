@@ -208,6 +208,20 @@ public partial class MainBase : Node
 
     if (gameSettings.HasShell)
     {
+      bool canPass = false;
+      foreach (var osArg in OS.GetCmdlineArgs())
+      {
+        var arg = osArg;
+
+        if (arg.Length > 0 && canPass)
+        {
+          if (arg.StartsWith('-')) arg = ':' + arg[1..];
+          Shell.ExecuteCommand(arg);
+        }
+
+        if (arg == "-c") canPass = !canPass;
+      }
+
       var thread = new Thread(Shell.Prompt)
       {
         IsBackground = true,
@@ -290,7 +304,7 @@ public partial class MainBase : Node
     // 1. Detect the project.
     if (OS.GetCmdlineArgs().Contains("-editor") || !File.Exists(gameSettings.MainFile))
     {
-      var path = Path.Combine(EngineResources.GetResourceDir(), "project.lua");
+      var path = Path.Combine(EngineResources.GetResourceDir(), "main.lua");
       EngineConsole.Verbose($"loading editor at {path}");
       main = new(path, true, luaErrorHandler); 
     }

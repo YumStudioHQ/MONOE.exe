@@ -25,7 +25,7 @@ public static class EngineResources
   {
     string name = "osx";
     string path = GetResourceDir("runtimes", name);
-    string resources = "monoe.lib.app/Contents/Resources";
+    string resources = "monoe.exe.app/Contents/Resources";
     return new(name, path, resources);
   }
 
