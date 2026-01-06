@@ -51,6 +51,19 @@ Clears the image content, resetting it to empty.
 
 ---
 
+## monoe.image:replace
+
+replaces the color a by the color b.
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `a` | `string|monoe.color` |  |
+| `b` | `string|monoe.color` |  |
+
+---
+
 ## monoe.image:free
 
 Frees the engine-side resources associated with this image.

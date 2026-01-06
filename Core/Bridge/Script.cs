@@ -30,6 +30,7 @@ public class Script : YumState, IDisposable
   public void Reload()
   {
     Clear();
+    base.Run($"package.path = package.path .. {EngineResources.LuaLibrariesFmt()}", false);
 
     try
     {

@@ -121,6 +121,18 @@ Pauses execution for a specified number of milliseconds.
 
 ---
 
+## _attach
+
+Attaches an object or its children to the window for rendering.
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `table` | Object with `.uid` or `.root` property |
+
+---
+
 ## monoe.qualify
 
 Subscribes all known methods of a table to events.

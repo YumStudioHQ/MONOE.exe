@@ -1,4 +1,5 @@
 local event = require('monoelib.event')
+local rendering = require('monoelib.rendering')
 
 ---@class monoe
 monoe = monoe or {}
@@ -116,10 +117,24 @@ end
 ---@param milliseconds integer
 function monoe.wait(milliseconds) end
 
+---Attaches an object or its children to the window for rendering.
+---@param obj table Object with `.uid` or `.root` property
+local function _attach(obj)
+  if type(obj) == "table" and obj.root then
+    rendering.attach_tree(obj.root, obj)
+    _attach(obj.root)
+  else
+    monoe.staticcall("monoe.exe.Core.Bridge.io.EngineWindow", 'Attach', obj.uid)
+  end
+end
+
 ---Subscribes all known methods of a table to events.
 ---@param table table
 function monoe.qualify(table)
   subscribe_all(table)
+  if type(table.root) == "table" then
+    _attach(table)
+  end
 end
 
 _G.monoe = monoe

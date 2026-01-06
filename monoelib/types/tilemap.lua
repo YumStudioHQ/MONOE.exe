@@ -48,6 +48,8 @@ end
 ---@param tile_height integer Tile height in pixels (default = `tile_width`)
 function monoe.tilemap:load(name, source, tile_width, tile_height)
   local img = source
+  local allocated = false
+  
   if type(source) == "string" then
     img = image.new(source)
   end
@@ -55,8 +57,9 @@ function monoe.tilemap:load(name, source, tile_width, tile_height)
   tile_width = tile_width or 16
   tile_height = tile_height or tile_width
 
----@diagnostic disable-next-line: assign-type-mismatch
+  ---@diagnostic disable-next-line: assign-type-mismatch
   self.tilesets[name] = engine.call(self.uid, 'AddImage', img.uid, tile_width, tile_height)
+  if allocated then image:free() end
 end
 
 ---Scales the entire tilemap.

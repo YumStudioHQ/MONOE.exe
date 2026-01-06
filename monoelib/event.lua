@@ -1,6 +1,6 @@
 monoe = monoe or {}
 
----@class monoe_event
+---@class monoe.event
 ---@field _once table<string, function[]> Listeners that trigger only once
 ---@field _listeners table<string, function[]> Persistent listeners
 monoe.event = {

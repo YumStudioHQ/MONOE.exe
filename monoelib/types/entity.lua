@@ -44,6 +44,7 @@ end
 ---Automatically calls `MoveAndSlide` to update the entity's position according to physics rules.
 ---@param x number Horizontal velocity
 ---@param y number Vertical velocity
+---@warn Do not use this function outside the physics event.
 function monoe.entity:move(x, y)
   engine.call(self.uid, 'Velocity', x, y)
   engine.call(self.uid, 'MoveAndSlide')
@@ -66,6 +67,7 @@ end
 
 ---Attaches another object (sprite, animation, or another entity) to this entity.
 ---The attached object will move and scale with the entity.
+---@diagnostic disable-next-line: undefined-doc-name
 ---@param obj monoe.image|monoe.sprite|monoe.animation|monoe.entity Object to attach
 function monoe.entity:attach(obj)
   engine.call(self.uid, 'Attach', obj.uid)

@@ -124,7 +124,7 @@ public partial class MainBase : Node
 
     if (! /* Hot reload is optional! */ gameSettings.HasHotReload)
     {
-      watcher = new("./")
+      watcher = new(Directory.GetCurrentDirectory())
       {
         NotifyFilter = NotifyFilters.Attributes
                      | NotifyFilters.CreationTime

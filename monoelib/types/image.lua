@@ -52,6 +52,26 @@ function monoe.image:clear()
   engine.call(self.uid, 'Clear')
 end
 
+---replaces the color a by the color b.
+---@param a string|monoe.color
+---@param b string|monoe.color
+function monoe.image:replace(a, b)
+  local _a = a or monoe.color.white
+  local _b = b or monoe.color.white
+
+  if type(a) == "table" then
+    ---@cast a monoe.color
+    _a = a:string()
+  end
+
+  if type(b) == "table" then
+    ---@cast b monoe.color
+    _a = b:string()
+  end
+
+  engine.call(self.uid, 'ReplaceColor', _a, _b)
+end
+
 ---Frees the engine-side resources associated with this image.
 function monoe.image:free()
   engine.call(self.uid, 'Free')

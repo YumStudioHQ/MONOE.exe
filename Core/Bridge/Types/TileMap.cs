@@ -16,6 +16,7 @@ public class MTileMap : Exposable
 
   private long _AddImage(Image image, Vector2I tileSize)
   {
+    map.TileSet.TileSize = tileSize;
     var source = new TileSetAtlasSource
     {
       Texture = image.Texture,

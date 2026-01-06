@@ -13,7 +13,7 @@ monoe.animation.__index = monoe.animation
 local base = "monoe.exe.Core.Bridge.Types.Animation2D"
 
 ---Creates a new `monoe.animation` object.
----@return monoe_animation
+---@return monoe.animation
 function monoe.animation.new()
   local uid = engine.import(base)
 

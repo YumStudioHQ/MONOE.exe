@@ -12,7 +12,7 @@ Creates a new `monoe.animation` object.
 
 ### Returns
 
-- `monoe_animation`
+- `monoe.animation`
 
 ---
 
