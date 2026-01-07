@@ -34,6 +34,11 @@ function monoe.shape:debug(hex)
   engine.call(self.uid, 'Debug', hex)
 end
 
+---Removes the instance from the rendering side.
+function monoe.shape:remove()
+  engine.call(self.uid, 'Remove')
+end
+
 -- Expose globally
 _G.monoe = monoe
 _G.monoe.shape = monoe.shape

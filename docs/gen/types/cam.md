@@ -16,3 +16,9 @@ Creates a new `monoe.cam` instance.
 
 ---
 
+## monoe.cam:remove
+
+Removes the instance from the rendering side.
+
+---
+

@@ -36,14 +36,14 @@ public static class BuiltIns
     }
 
     foreach (var table in args) code += $"dump({table});";
-    return () => { Main.Run(code); };
+    return () => { Base.MainBase.Run(code); };
   }
 
   [BuiltIn("reloads the whole project")]
-  public static Action Reload(string[] _) => Main.RequestReload;
+  public static Action Reload(string[] _) => Base.MainBase.RequestReload;
 
   [BuiltIn("locks / unlocks the engine's main loop. Commands can still be executed.")]
-  public static Action Lock(string[] _) => Main.RequestLock;
+  public static Action Lock(string[] _) => Base.MainBase.RequestLock;
 
   [BuiltIn("inspects a lua value", "<expr>")]
   public static Action Inspect(string[] args)
@@ -62,7 +62,7 @@ public static class BuiltIns
                 end
                 """;
 
-    return () => Main.Run(code);
+    return () => Base.MainBase.Run(code);
   }
 
   [BuiltIn("blocks the shell thread for N milliseconds", "ms")]
@@ -127,7 +127,7 @@ public static class BuiltIns
 
   [BuiltIn("quits the engine")]
   public static Action Exit(string[] _)
-    => Main.RequestExit;
+    => Base.MainBase.RequestExit;
 
   [BuiltIn("emits an event with given arguments")]
   public static Action Emit(string[] args)
@@ -148,7 +148,7 @@ public static class BuiltIns
 
     return () =>
     {
-      Main.Emit(eventName, [.. parsed]);
+      Base.MainBase.Emit(eventName, [.. parsed]);
     };
   }
 

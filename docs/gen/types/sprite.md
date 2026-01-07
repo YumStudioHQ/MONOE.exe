@@ -111,3 +111,9 @@ Frees engine resources associated with this sprite.
 
 ---
 
+## monoe.sprite:remove
+
+Removes the instance from the rendering side.
+
+---
+

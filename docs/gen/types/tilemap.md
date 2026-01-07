@@ -7,6 +7,7 @@ Represents a 2D tilemap that can place tiles, fill areas, and draw patterns usin
 - **uid** (`integer`): Engine-side unique ID
 - **tilesets** (`table<string`): , integer> Loaded tilesets by name
 - **last** (`integer`): Last used ID or counter
+- **zindex** (`integer`): The Z index of the tilemap. Won't be used if not used with monoe.layermap.
 
 ## monoe.tilemap.new
 
@@ -180,6 +181,18 @@ Fills an area using random tiles based on a probability threshold.
 | `tileset` | `string` | Tileset name |
 | `tiles` | `table` | Array of {tileset_x, tileset_y} |
 | `threshold` | `number` | Probability (0–1) for a tile to be placed (default 0.5) |
+
+---
+
+## monoe.tilemap:free
+
+Frees engine resources associated with this tilemap.
+
+---
+
+## monoe.tilemap:remove
+
+Removes the instance from the rendering side.
 
 ---
 

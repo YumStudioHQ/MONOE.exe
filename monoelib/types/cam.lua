@@ -15,6 +15,11 @@ function monoe.cam.new()
   return setmetatable({ uid = uid }, monoe.cam)
 end
 
+---Removes the instance from the rendering side.
+function monoe.cam:remove()
+  engine.call(self.uid, 'Remove')
+end
+
 _G.monoe = monoe
 _G.monoe.cam = monoe.cam
 

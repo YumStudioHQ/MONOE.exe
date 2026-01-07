@@ -76,12 +76,18 @@ end
 ---Returns the sprite's image object.
 ---@return monoe.image
 function monoe.sprite:image()
+---@diagnostic disable-next-line: param-type-mismatch
   return image.new(engine.call(self.uid, 'GetImageUID'))
 end
 
 ---Frees engine resources associated with this sprite.
 function monoe.sprite:free()
   engine.call(self.uid, 'Free')
+end
+
+---Removes the instance from the rendering side.
+function monoe.sprite:remove()
+  engine.call(self.uid, 'Remove')
 end
 
 _G.monoe = monoe

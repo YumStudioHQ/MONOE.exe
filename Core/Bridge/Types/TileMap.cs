@@ -61,7 +61,8 @@ public class MTileMap : Exposable
   }
 
   public override Node NRef()
-  {
-    return map;
-  }
+   => map;
+
+  public override void Remove()
+   => map.GetParent().RemoveChild(map);
 }

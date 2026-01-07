@@ -175,3 +175,9 @@ Frees engine resources associated with this animation.
 
 ---
 
+## monoe.animation:remove
+
+Removes the instance from the rendering side.
+
+---
+

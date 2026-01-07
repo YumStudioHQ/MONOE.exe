@@ -7,6 +7,7 @@ monoe = monoe or {}
 ---@field uid integer Engine-side unique ID
 ---@field tilesets table<string, integer> Loaded tilesets by name
 ---@field last integer Last used ID or counter
+---@field zindex integer The Z index of the tilemap. Won't be used if not used with monoe.layermap.
 ---Represents a 2D tilemap that can place tiles, fill areas, and draw patterns using tilesets.
 monoe.tilemap = {}
 monoe.tilemap.__index = monoe.tilemap
@@ -22,7 +23,7 @@ function monoe.tilemap.new()
     error('Failed to create monoe.tilemap object: invalid UID for ' .. base)
   end
 
-  return setmetatable({ uid = uid, tilesets = {}, last = 0 }, monoe.tilemap)
+  return setmetatable({ uid = uid, tilesets = {}, last = 0, zindex = 0 }, monoe.tilemap)
 end
 
 ---Places a single tile at the specified tile coordinates.
@@ -189,6 +190,16 @@ function monoe.tilemap:noise(x, y, width, height, tileset, tiles, threshold)
       end
     end
   end
+end
+
+---Frees engine resources associated with this tilemap.
+function monoe.tilemap:free()
+  engine.call(self.uid, 'Free')
+end
+
+---Removes the instance from the rendering side.
+function monoe.tilemap:remove()
+  engine.call(self.uid, 'Remove')
 end
 
 _G.monoe = monoe

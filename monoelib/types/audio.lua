@@ -1,3 +1,4 @@
+---@diagnostic disable: return-type-mismatch
 local engine = require('monoelib.engine')
 
 monoe = monoe or {}
@@ -61,6 +62,11 @@ end
 ---Frees the engine-side resources associated with this audio object.
 function monoe.audio:free()
   engine.call(self.uid, 'Free')
+end
+
+---Removes the instance from the rendering side.
+function monoe.audio:remove()
+  engine.call(self.uid, 'Remove')
 end
 
 _G.monoe = monoe

@@ -35,3 +35,9 @@ Sets a debug outline color for the shape.
 
 ---
 
+## monoe.shape:remove
+
+Removes the instance from the rendering side.
+
+---
+

@@ -68,4 +68,7 @@ public class Entity2D : Exposable, IPositionable2D, IScalable2D
   }
 
   public override Node NRef() => node;
+  
+  public override void Remove()
+   => node.GetParent().RemoveChild(node);
 }

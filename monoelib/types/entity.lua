@@ -65,6 +65,11 @@ function monoe.entity:free()
   engine.call(self.uid, 'Free')
 end
 
+---Removes the instance from the rendering side.
+function monoe.entity:remove()
+  engine.call(self.uid, 'Remove')
+end
+
 ---Attaches another object (sprite, animation, or another entity) to this entity.
 ---The attached object will move and scale with the entity.
 ---@diagnostic disable-next-line: undefined-doc-name

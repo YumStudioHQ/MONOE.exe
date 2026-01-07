@@ -75,6 +75,12 @@ After calling this, the entity should no longer be used.
 
 ---
 
+## monoe.entity:remove
+
+Removes the instance from the rendering side.
+
+---
+
 ## monoe.entity:attach
 
 Attaches another object (sprite, animation, or another entity) to this entity.

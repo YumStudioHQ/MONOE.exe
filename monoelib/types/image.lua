@@ -2,9 +2,9 @@ local engine = require('monoelib.engine')
 
 monoe = monoe or {}
 
+---Represents an image that can be loaded, cleared, and managed in the engine.
 ---@class monoe.image
 ---@field uid integer Unique ID for the engine-side image object
----Represents an image that can be loaded, cleared, and managed in the engine.
 monoe.image = {}
 monoe.image.__index = monoe.image
 

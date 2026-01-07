@@ -51,4 +51,7 @@ public class MCollisionShape2D : Exposable
   }
 
   public override Node NRef() => collisionShape;
+
+  public override void Remove()
+   => collisionShape.GetParent().RemoveChild(collisionShape);
 }

@@ -62,4 +62,7 @@ public class Sprite : Exposable, IPositionable2D, IScalable2D
     long uid = ObjectRegistry.Register(new Image(sprite.Texture));
     return uid;
   }
+
+  public override void Remove()
+   => sprite.GetParent().RemoveChild(sprite);
 }

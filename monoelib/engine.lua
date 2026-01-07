@@ -124,7 +124,7 @@ local function _attach(obj)
     rendering.attach_tree(obj.root, obj)
     _attach(obj.root)
   else
-    monoe.staticcall("monoe.exe.Core.Bridge.io.EngineWindow", 'Attach', obj.uid)
+    monoe.staticcall("monoe.exe.Core.Bridge.io.EngineMainWindow", 'Attach', obj.uid)
   end
 end
 

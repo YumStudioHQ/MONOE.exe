@@ -120,6 +120,11 @@ function monoe.animation:free()
   engine.call(self.uid, 'Free')
 end
 
+---Removes the instance from the rendering side.
+function monoe.animation:remove()
+  engine.call(self.uid, 'Remove')
+end
+
 -- Expose globally
 _G.monoe = monoe
 _G.monoe.animation = monoe.animation

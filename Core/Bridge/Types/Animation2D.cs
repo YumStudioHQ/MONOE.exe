@@ -161,7 +161,8 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
   }
 
   public override Node NRef()
-  {
-    return animation;
-  }
+   => animation;
+  
+  public override void Remove()
+   => animation.GetParent().RemoveChild(animation);
 }

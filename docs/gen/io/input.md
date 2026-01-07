@@ -1,8 +1,8 @@
-# monoe.io.keyboard
+# monoe.io
 
 Provides functions to query keyboard input and actions.
 
-## monoe.io.keyboard.key_down
+## monoe.io.key_down
 
 Checks if a physical key is currently pressed.
 
@@ -18,7 +18,7 @@ Checks if a physical key is currently pressed.
 
 ---
 
-## monoe.io.keyboard.down
+## monoe.io.down
 
 Checks if an action is currently pressed.
 
@@ -36,7 +36,7 @@ Checks if an action is currently pressed.
 
 ---
 
-## monoe.io.keyboard.just_down
+## monoe.io.just_down
 
 Checks if an action was just pressed this frame.
 
@@ -52,7 +52,7 @@ Checks if an action was just pressed this frame.
 
 ---
 
-## monoe.io.keyboard.released
+## monoe.io.released
 
 Checks if an action was released this frame.
 
@@ -65,6 +65,16 @@ Checks if an action was released this frame.
 ### Returns
 
 - `boolean True if the action was just released, false otherwise`
+
+---
+
+## monoe.io.mouse
+
+Returns the position of the mouse.
+
+### Returns
+
+- `integer, integer`
 
 ---
 

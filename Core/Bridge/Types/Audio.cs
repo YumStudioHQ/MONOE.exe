@@ -40,7 +40,7 @@ public class Audio : Exposable
 
     if (isEventAdded) audio.Finished += () =>
     {
-      Main.Emit(@event);
+      Base.MainBase.Emit(@event);
     };
 
     isEventAdded = true;
@@ -48,6 +48,9 @@ public class Audio : Exposable
   }
 
   public override Node NRef() => audio;
+
+  public override void Remove()
+   => audio.GetParent().RemoveChild(audio);
 
   protected override void _Free()
   {

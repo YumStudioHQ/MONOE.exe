@@ -10,7 +10,7 @@ public static class KeyResolver
 
   static KeyResolver()
   {
-    _map = new Dictionary<string, Key>();
+    _map = [];
 
     foreach (Key k in Enum.GetValues<Key>())
     {

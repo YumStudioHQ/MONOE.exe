@@ -9,4 +9,6 @@ public class QuickCamera2D : Exposable
   public override Node NRef()
    => cam;
   
+  public override void Remove()
+   => cam.GetParent().RemoveChild(cam);
 }

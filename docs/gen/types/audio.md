@@ -80,3 +80,9 @@ Frees the engine-side resources associated with this audio object.
 
 ---
 
+## monoe.audio:remove
+
+Removes the instance from the rendering side.
+
+---
+
