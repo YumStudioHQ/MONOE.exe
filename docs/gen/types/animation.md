@@ -5,6 +5,7 @@
 ## Properties
 
 - **uid** (`integer`): Unique ID for the engine-side animation object
+- **zindex** (`integer`): 
 
 ## monoe.animation.new
 

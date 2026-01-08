@@ -1,10 +1,11 @@
 using Godot;
+using monoe.exe.Core.Bridge.Types.Interfaces;
 
 namespace monoe.exe.Core.Bridge.Types;
 
-public class RenderingDelegate : Exposable
+public class RenderingDelegate : Exposable, IPositionable2D, IScalable2D
 {
-  private readonly Node node = new();
+  private readonly Node2D node = new();
 
   public override Node NRef() => node;
 
@@ -16,4 +17,40 @@ public class RenderingDelegate : Exposable
 
   public override void Remove()
    => node.GetParent().RemoveChild(node);
+
+  public void SetPosition(double x, double y)
+  {
+    node.Position = new((float)x, (float)y);
+  }
+
+  public object[] GetPosition()
+  {
+    return [node.Position.X, node.Position.Y];
+  }
+
+  public object[] Deplace(double x, double y)
+  {
+    node.Position += new Vector2((float)x, (float)y);
+    return [node.Position.X, node.Position.Y];
+  }
+
+  public void SetSize(double x, double y)
+  {
+    node.Scale = node.Position = new((float)x, (float)y);
+  }
+
+  public void SetScale(double x, double y)
+  {
+    SetSize(x, y);
+  }
+
+  public object[] GetSize()
+  {
+    return [node.Scale.X, node.Scale.Y];
+  }
+
+  public object[] GetScale()
+  {
+    return GetSize();
+  }
 }

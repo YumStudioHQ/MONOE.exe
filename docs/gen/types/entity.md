@@ -5,6 +5,7 @@ Represents a 2D game entity that can hold sprites, animations, or other attached
 ## Properties
 
 - **uid** (`integer`): Unique engine-side identifier for this entity
+- **zindex** (`integer`): 
 
 ## monoe.entity.new
 

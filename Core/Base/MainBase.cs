@@ -348,7 +348,7 @@ public partial class MainBase : Node
 
     // 5. Call main.
     Run("main = main or function() end");
-    Emit("_monoe_main");
+
     var margs = main.Call("main");
 
     // 6. Load scripts (They are generally requested from the main function!)

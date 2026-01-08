@@ -6,6 +6,7 @@ monoe = monoe or {}
 
 ---@class monoe.entity
 ---@field uid integer Unique engine-side identifier for this entity
+---@field zindex integer
 ---Represents a 2D game entity that can hold sprites, animations, or other attached objects.
 monoe.entity = {}
 monoe.entity.__index = monoe.entity
@@ -22,7 +23,7 @@ function monoe.entity.new()
     error('Failed to create monoe.entity object: invalid UID!')
   end
 
-  return setmetatable({ uid = uid }, monoe.entity)
+  return setmetatable({ uid = uid, zindex = 0 }, monoe.entity)
 end
 
 ---Gets or sets the position of the entity in 2D space.

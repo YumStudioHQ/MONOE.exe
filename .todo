@@ -2,7 +2,9 @@
 
 * [!] Implement a C# interface and API.
 * [!] Implement a C interface and API.
-* [!] Support mouth position.
+* [x] Support mouth position.
+* [!] Window access extension: resizable, expand-mode, settings, ...
+* [!] Static-objects?
 
 # Editor
 

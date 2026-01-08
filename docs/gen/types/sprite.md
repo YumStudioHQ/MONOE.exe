@@ -5,6 +5,7 @@
 ## Properties
 
 - **uid** (`integer`): Unique ID for the engine-side sprite object
+- **zindex** (`integer`): 
 
 ## monoe.sprite.new
 

@@ -1,25 +1,24 @@
-# monoe.renderer
+# monoe.node
 
-This class allows you to set a rendering order for your games, sorting with a zindex, if the field is present.
+This is a simple node, that can allow you to structurate your scenes.
 
 ## Properties
 
 - **uid** (`integer`): 
-- **objects** (`table`): 
 
-## monoe.renderer.new
+## monoe.node.new
 
-Creates a new renderer.
+Creates a new node.
 
 ### Returns
 
-- `monoe.renderer`
+- `monoe.node`
 
 ---
 
-## monoe.renderer:attach
+## monoe.node:attach
 
-Attaches an object to the renderer state.
+Attaches an object to the node state.
 
 ### Parameters
 
@@ -29,15 +28,7 @@ Attaches an object to the renderer state.
 
 ---
 
-## monoe.renderer:expose
-
-Sorts the internal table, and returns a renderable table (e.g., monoe.io.window)
-
-> **Warning:** You MAY NOT call this function each frame, as it is heavy. Prefer exposing once, or, each new scenes.
-
----
-
-## monoe.renderer:move
+## monoe.node:move
 
 Moves the set of objects.
 
@@ -50,10 +41,10 @@ Moves the set of objects.
 
 ---
 
-## monoe.renderer:position
+## monoe.node:position
 
-Gets or sets the position of the renderer in 2D space.
-If `x` and `y` are provided, the renderer is moved to that position.
+Gets or sets the position of the node in 2D space.
+If `x` and `y` are provided, the node is moved to that position.
 
 ### Parameters
 
@@ -69,9 +60,9 @@ If `x` and `y` are provided, the renderer is moved to that position.
 
 ---
 
-## monoe.renderer:scale
+## monoe.node:scale
 
-Scales the renderer in X and Y directions.
+Scales the node in X and Y directions.
 
 ### Parameters
 
@@ -87,14 +78,14 @@ Scales the renderer in X and Y directions.
 
 ---
 
-## monoe.renderer:free
+## monoe.node:free
 
-Releases engine resources used by this renderer.
-After calling this, the renderer should no longer be used.
+Releases engine resources used by this node.
+After calling this, the node should no longer be used.
 
 ---
 
-## monoe.renderer:remove
+## monoe.node:remove
 
 Removes the instance from the rendering side.
 

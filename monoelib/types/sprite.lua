@@ -7,6 +7,7 @@ monoe = monoe or {}
 
 ---@class monoe.sprite
 ---@field uid integer Unique ID for the engine-side sprite object
+---@field zindex integer
 monoe.sprite = {}
 monoe.sprite.__index = monoe.sprite
 
@@ -27,7 +28,7 @@ function monoe.sprite.new(path)
     engine.call(uid, 'LoadImage', path)
   end
 
-  return setmetatable({ uid = uid }, monoe.sprite)
+  return setmetatable({ uid = uid, zindex = 0 }, monoe.sprite)
 end
 
 ---Clears the sprite image.
