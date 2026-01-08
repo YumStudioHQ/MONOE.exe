@@ -1,6 +1,7 @@
 async function loadVersion() {
   try {
-    const res = await fetch("/project.godot");
+    const base = window.location.pathname.replace(/\/index\.html$/, "");
+    const res = await fetch(`${base}/project.godot`);
     const text = await res.text();
 
     const match = text.match(/config\/version\s*=\s*"([^"]+)"/);

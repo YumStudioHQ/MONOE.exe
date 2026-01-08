@@ -1,22 +1,19 @@
 :root {
-  --bg: #1e1e1e;
-  --panel: #252526;
-  --border: #333;
-  --text: #d4d4d4;
-  --muted: #9aa0a6;
-  --accent: #4da6ff;
-  --code-bg: #1b1b1b;
-}
-
-* {
-  box-sizing: border-box;
+  --bg: #121212;
+  --panel: rgba(30, 30, 30, 0.85); /* semi-transparent panel */
+  --border: rgba(255, 255, 255, 0.1);
+  --text: #e0e0e0;
+  --muted: #aaaaaa;
+  --accent: #ff6ec7; /* neon pink accent */
+  --code-bg: rgba(20, 20, 20, 0.9);
 }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background: var(--bg);
+  font-family: "Inter", system-ui, sans-serif;
+  background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
   color: var(--text);
+  backdrop-filter: blur(2px);
 }
 
 .topbar {
@@ -24,18 +21,23 @@ body {
   align-items: center;
   gap: 16px;
   padding: 12px 20px;
-  background: #2a2a2a;
+  background: rgba(40, 40, 40, 0.8);
   border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(6px);
 }
 
 .logo {
   width: 48px;
   height: 48px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px var(--accent);
 }
 
 .title h1 {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+  color: var(--text);
 }
 
 .version {
@@ -53,25 +55,20 @@ main {
   background: var(--panel);
   border: 1px solid var(--border);
   padding: 24px;
-  border-radius: 6px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  backdrop-filter: blur(6px);
+  transition: transform 0.2s;
 }
 
-.loading {
-  color: var(--muted);
-  font-style: italic;
-}
-
-/* Markdown styling */
-.panel h1,
-.panel h2,
-.panel h3 {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 4px;
+.panel:hover {
+  transform: translateY(-2px);
 }
 
 .panel a {
   color: var(--accent);
   text-decoration: none;
+  font-weight: 500;
 }
 
 .panel a:hover {
@@ -80,31 +77,37 @@ main {
 
 .panel code {
   background: var(--code-bg);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: Consolas, monospace;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: 'Fira Code', monospace;
+  font-weight: 500;
 }
 
 .panel pre {
   background: var(--code-bg);
   padding: 16px;
-  border-radius: 6px;
+  border-radius: 12px;
   overflow-x: auto;
+  font-size: 0.95rem;
 }
 
-.panel table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.panel th,
-.panel td {
+.download-grid button {
+  background: rgba(50, 50, 50, 0.85);
   border: 1px solid var(--border);
-  padding: 8px 10px;
+  color: var(--text);
+  padding: 12px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s;
 }
 
-.panel th {
-  background: #2f2f2f;
+.download-grid button:hover {
+  background: rgba(60, 0, 60, 0.9);
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  transform: translateY(-2px);
 }
 
 footer {
@@ -112,52 +115,4 @@ footer {
   padding: 12px;
   font-size: 0.85rem;
   color: var(--muted);
-}
-
-.download-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.download-grid button {
-  background: #2f2f2f;
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 12px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  transition: border-color 0.2s, background 0.2s, transform 0.05s;
-}
-
-.download-grid button:hover {
-  border-color: var(--accent);
-  background: #353535;
-}
-
-.download-grid button:active {
-  transform: translateY(1px);
-}
-
-.download-btn {
-  margin-left: auto;
-  padding: 8px 14px;
-  background: #2f2f2f;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-  text-decoration: none;
-  font-size: 0.95rem;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.download-btn:hover {
-  background: #353535;
-  border-color: var(--accent);
-}
-
-.download-btn {
-  margin-left: auto;
 }
