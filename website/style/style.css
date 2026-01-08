@@ -1,0 +1,163 @@
+:root {
+  --bg: #1e1e1e;
+  --panel: #252526;
+  --border: #333;
+  --text: #d4d4d4;
+  --muted: #9aa0a6;
+  --accent: #4da6ff;
+  --code-bg: #1b1b1b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background: #2a2a2a;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+}
+
+.title h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.version {
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+
+main {
+  padding: 24px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 24px;
+  border-radius: 6px;
+}
+
+.loading {
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Markdown styling */
+.panel h1,
+.panel h2,
+.panel h3 {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+}
+
+.panel a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.panel a:hover {
+  text-decoration: underline;
+}
+
+.panel code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: Consolas, monospace;
+}
+
+.panel pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.panel table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.panel th,
+.panel td {
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+}
+
+.panel th {
+  background: #2f2f2f;
+}
+
+footer {
+  text-align: center;
+  padding: 12px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.download-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.download-grid button {
+  background: #2f2f2f;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, background 0.2s, transform 0.05s;
+}
+
+.download-grid button:hover {
+  border-color: var(--accent);
+  background: #353535;
+}
+
+.download-grid button:active {
+  transform: translateY(1px);
+}
+
+.download-btn {
+  margin-left: auto;
+  padding: 8px 14px;
+  background: #2f2f2f;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.download-btn:hover {
+  background: #353535;
+  border-color: var(--accent);
+}
+
+.download-btn {
+  margin-left: auto;
+}

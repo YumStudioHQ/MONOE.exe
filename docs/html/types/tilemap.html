@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>monoe.tilemap – Lua API</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="title">
+    <h1><a href="/docs/html/index.html">reference</a> monoe.tilemap</h1>
+    <div class="version">Lua API Reference</div>
+  </div>
+</div>
+
+<main>
+  <div class="panel">
+<p>Represents a 2D tilemap that can place tiles, fill areas, and draw patterns using tilesets.</p>
+<h2>Properties</h2>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>uid</code></td><td><code>integer</code></td><td>Engine-side unique ID</td></tr>
+<tr><td><code>tilesets</code></td><td><code>table<string</code></td><td>, integer&gt; Loaded tilesets by name</td></tr>
+<tr><td><code>last</code></td><td><code>integer</code></td><td>Last used ID or counter</td></tr>
+<tr><td><code>zindex</code></td><td><code>integer</code></td><td>The Z index of the tilemap. Won't be used if not used with monoe.layermap.</td></tr>
+</table>
+<h2>monoe.tilemap.new</h2>
+<p>Creates a new `monoe.tilemap` object.</p>
+<h3>Returns</h3>
+<ul>
+<li><code>monoe.tilemap Newly created tilemap</code></li>
+</ul>
+<hr>
+<h2>monoe.tilemap:place</h2>
+<p>Places a single tile at the specified tile coordinates.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>tile_x</code></td><td><code>integer</code></td><td>X coordinate on the tilemap</td></tr>
+<tr><td><code>tile_y</code></td><td><code>integer</code></td><td>Y coordinate on the tilemap</td></tr>
+<tr><td><code>tileset_name</code></td><td><code>string</code></td><td>Name of the tileset</td></tr>
+<tr><td><code>tileset_x</code></td><td><code>integer</code></td><td>X coordinate within the tileset</td></tr>
+<tr><td><code>tileset_y</code></td><td><code>integer</code></td><td>Y coordinate within the tileset</td></tr>
+</table>
+<hr>
+<h2>monoe.tilemap:load</h2>
+<p>Loads a tileset into the tilemap.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>name</code></td><td><code>string</code></td><td>Name of the tileset</td></tr>
+<tr><td><code>source</code></td><td><code>monoe.image|string</code></td><td>Either a `monoe.image` or a file path</td></tr>
+<tr><td><code>tile_width</code></td><td><code>integer</code></td><td>Tile width in pixels (default 16)</td></tr>
+<tr><td><code>tile_height</code></td><td><code>integer</code></td><td>Tile height in pixels (default = `tile_width`)</td></tr>
+</table>
+<hr>
+<h2>monoe.tilemap:scale</h2>
+<p>Scales the entire tilemap.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>number</code></td><td>Scale factor in X</td></tr>
+<tr><td><code>y</code></td><td><code>number</code></td><td>Scale factor in Y</td></tr>
+</table>
+<hr>
+<h2>monoe.tilemap:rectangle</h2>
+<p>Draws a filled rectangle of tiles.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>integer</code></td><td>Starting tile X</td></tr>
+<tr><td><code>y</code></td><td><code>integer</code></td><td>Starting tile Y</td></tr>
+<tr><td><code>width</code></td><td><code>integer</code></td><td>Width in tiles</td></tr>
+<tr><td><code>height</code></td><td><code>integer</code></td><td>Height in tiles</td></tr>
+<tr><td><code>tileset</code></td><td><code>string</code></td><td>Tileset name</td></tr>
+<tr><td><code>tileset_x</code></td><td><code>integer</code></td><td>Tileset X coordinate</td></tr>
+<tr><td><code>tileset_y</code></td><td><code>integer</code></td><td>Tileset Y coordinate</td></tr>
+</table>
+<hr>
+<h2>monoe.tilemap:fill</h2>
+<p>Fills a rectangular area with the same tile.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>integer</code></td><td>Starting tile X</td></tr>
+<tr><td><code>y</code></td><td><code>integer</code></td><td>Starting tile Y</td></tr>
+<tr><td><code>width</code></td><td><code>integer</code></td><td>Width in tiles</td></tr>
+<tr><td><code>height</code></td><td><code>integer</code></td><td>Height in tiles</td></tr>
+<tr><td><code>tileset</code></td><td><code>string</code></td><td>Tileset name</td></tr>
+<tr><td><code>tileset_x</code></td><td><code>integer</code></td><td>Tileset X coordinate</td></tr>
+<tr><td><code>tileset_y</code></td><td><code>integer</code></td><td>Tileset Y coordinate</td></tr>
+</table>
+<hr>
+<h2>monoe.tilemap:line</h2>
+<p>Draws a line of tiles between two points.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x0</code></td><td><code>integer</code></td><td>Start tile X</td></tr>
+<tr><td><code>y0</code></td><td><code>integer</code></td><td>Start tile Y</td></tr>
+<tr><td><code>x1</code></td><td><code>integer</code></td><td>End tile X</td></tr>
+<tr><td><code>y1</code></td><td><code>integer</code></td><td>End tile Y</td></tr>
+<tr><td><code>tileset</code></td><td><code>string</code></td><td>Tileset name</td></tr>
+<tr><td><code>tileset_x</code></td><td><code>integer</code></td><td>Tileset X coordinate</td></tr>
+<tr><td><code>tileset_y</code></td><td><code>integer</code></td><td>Tileset Y coordinate</td></tr>
+</table>
+<hr>
+<h2>monoe.tilemap:border</h2>
+<p>Draws a rectangular border of tiles.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>integer</code></td><td>Starting tile X</td></tr>
+<tr><td><code>y</code></td><td><code>integer</code></td><td>Starting tile Y</td></tr>
+<tr><td><code>width</code></td><td><code>integer</code></td><td>Width in tiles</td></tr>
+<tr><td><code>height</code></td><td><code>integer</code></td><td>Height in tiles</td></tr>
+<tr><td><code>tileset</code></td><td><code>string</code></td><td>Tileset name</td></tr>
+<tr><td><code>tileset_x</code></td><td><code>integer</code></td><td>Tileset X coordinate</td></tr>
+<tr><td><code>tileset_y</code></td><td><code>integer</code></td><td>Tileset Y coordinate</td></tr>
+</table>
+<hr>
+<h2>monoe.tilemap:stamp</h2>
+<p>Stamps a 2D pattern of tiles onto the map.
+Use `nil` in the pattern to skip a tile.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>integer</code></td><td>Top-left tile X</td></tr>
+<tr><td><code>y</code></td><td><code>integer</code></td><td>Top-left tile Y</td></tr>
+<tr><td><code>pattern</code></td><td><code>table</code></td><td>2D array of {tileset_x, tileset_y} or nil</td></tr>
+<tr><td><code>tileset</code></td><td><code>string</code></td><td>Tileset name</td></tr>
+</table>
+<hr>
+<h2>monoe.tilemap:place_random</h2>
+<p>Places a random tile from a list of choices.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>integer</code></td><td>Tile X</td></tr>
+<tr><td><code>y</code></td><td><code>integer</code></td><td>Tile Y</td></tr>
+<tr><td><code>tileset</code></td><td><code>string</code></td><td>Tileset name</td></tr>
+<tr><td><code>choices</code></td><td><code>table</code></td><td>Array of {tileset_x, tileset_y}</td></tr>
+</table>
+<hr>
+<h2>monoe.tilemap:noise</h2>
+<p>Fills an area using random tiles based on a probability threshold.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>integer</code></td><td>Starting tile X</td></tr>
+<tr><td><code>y</code></td><td><code>integer</code></td><td>Starting tile Y</td></tr>
+<tr><td><code>width</code></td><td><code>integer</code></td><td>Width in tiles</td></tr>
+<tr><td><code>height</code></td><td><code>integer</code></td><td>Height in tiles</td></tr>
+<tr><td><code>tileset</code></td><td><code>string</code></td><td>Tileset name</td></tr>
+<tr><td><code>tiles</code></td><td><code>table</code></td><td>Array of {tileset_x, tileset_y}</td></tr>
+<tr><td><code>threshold</code></td><td><code>number</code></td><td>Probability (0–1) for a tile to be placed (default 0.5)</td></tr>
+</table>
+<hr>
+<h2>monoe.tilemap:free</h2>
+<p>Frees engine resources associated with this tilemap.</p>
+<hr>
+<h2>monoe.tilemap:remove</h2>
+<p>Removes the instance from the rendering side.</p>
+<hr>
+
+  </div>
+</main>
+
+<footer>
+  Generated by MONOE LuaDoc
+</footer>
+
+</body>
+</html>

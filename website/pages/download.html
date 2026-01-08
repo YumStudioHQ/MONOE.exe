@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MONOE.exe — Download</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="/website/style/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a href="/index.html">
+      <img src="/icon.png" alt="MONOE.exe Logo" class="logo" />
+    </a>
+    <div class="title">
+      <h1>MONOE.exe</h1>
+      <span id="version" class="version">loading…</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Download the monoe editor</h2>
+      <p>
+        Choose your platform below to download the latest MONOE.exe runtime build.
+      </p>
+
+      <div class="download-grid">
+        <button data-file="win64.zip">Windows x64</button>
+        <button data-file="win32.zip">Windows x86 (32-bits)</button>
+        <button data-file="winarm64.zip">Windows ARM64</button>
+        
+        <button data-file="lin64.zip">Linux x64</button>
+        <button data-file="lin32.zip">Linux x86 (32-bits)</button>
+        <button data-file="linarm64.zip">Linux ARM64</button>
+
+        <button data-file="osx.zip">macOS (Universal)</button>
+        <button data-file="source">Source code</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Runtime-driven sandbox engine · Built on Godot</span>
+  </footer>
+
+  <script>
+    document.querySelectorAll(".download-grid button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const file = btn.dataset.file;
+        if (file === "source") {
+          window.location.href = "https://github.com/YumStudioHQ/MONOE.exe";
+        } else {
+          window.location.href =
+            `https://github.com/YumStudioHQ/MONOE.exe/releases/latest/download/${file}`;
+        }
+      });
+    });
+  </script>
+  <script src="/website/js/script.js"></script>
+</body>
+</html>

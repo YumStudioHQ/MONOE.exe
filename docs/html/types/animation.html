@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>monoe.animation – Lua API</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="title">
+    <h1><a href="/docs/html/index.html">reference</a> monoe.animation</h1>
+    <div class="version">Lua API Reference</div>
+  </div>
+</div>
+
+<main>
+  <div class="panel">
+<h2>Properties</h2>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>uid</code></td><td><code>integer</code></td><td>Unique ID for the engine-side animation object</td></tr>
+<tr><td><code>zindex</code></td><td><code>integer</code></td><td></td></tr>
+</table>
+<h2>monoe.animation.new</h2>
+<p>Creates a new `monoe.animation` object.</p>
+<h3>Returns</h3>
+<ul>
+<li><code>monoe.animation</code></li>
+</ul>
+<hr>
+<h2>monoe.animation:add</h2>
+<p>Adds a new animation by name.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>name</code></td><td><code>string</code></td><td>Name of the animation</td></tr>
+</table>
+<hr>
+<h2>monoe.animation:addframe</h2>
+<p>Adds a frame to an animation.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>name</code></td><td><code>string</code></td><td>Name of the animation</td></tr>
+<tr><td><code>frame</code></td><td><code>monoe.image</code></td><td>The frame image to add</td></tr>
+<tr><td><code>duration</code></td><td><code>number|nil</code></td><td>Duration of the frame in seconds (default 1.0)</td></tr>
+<tr><td><code>index</code></td><td><code>integer|nil</code></td><td>Index at which to insert the frame (-1 = append)</td></tr>
+</table>
+<hr>
+<h2>monoe.animation:play</h2>
+<p>Plays the specified animation.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>name</code></td><td><code>string</code></td><td>Animation name</td></tr>
+</table>
+<hr>
+<h2>monoe.animation:backwards</h2>
+<p>Plays an animation backwards.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>name</code></td><td><code>string</code></td><td>Animation name</td></tr>
+</table>
+<hr>
+<h2>monoe.animation:pause</h2>
+<p>Pauses the current animation.</p>
+<hr>
+<h2>monoe.animation:animations</h2>
+<p>Returns a list of all animation names.</p>
+<h3>Returns</h3>
+<ul>
+<li><code>string[]</code></li>
+</ul>
+<hr>
+<h2>monoe.animation:position</h2>
+<p>Sets or gets the position of the animation.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>number|nil</code></td><td></td></tr>
+<tr><td><code>y</code></td><td><code>number|nil</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>number x</code></li>
+<li><code>number y</code></li>
+</ul>
+<hr>
+<h2>monoe.animation:move</h2>
+<p>Moves the animation by a given offset.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>number</code></td><td></td></tr>
+<tr><td><code>y</code></td><td><code>number</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>number newX</code></li>
+<li><code>number newY</code></li>
+</ul>
+<hr>
+<h2>monoe.animation:scale</h2>
+<p>Scales the animation.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>number</code></td><td></td></tr>
+<tr><td><code>y</code></td><td><code>number</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>number newX</code></li>
+<li><code>number newY</code></li>
+</ul>
+<hr>
+<h2>monoe.animation:flip</h2>
+<p>Flips the animation on a given axis.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>state</code></td><td><code>boolean</code></td><td>True to flip, false to reset</td></tr>
+</table>
+<hr>
+<h2>monoe.animation:load</h2>
+<p>Loads an animation from a sprite sheet image.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>name</code></td><td><code>string</code></td><td>Animation name</td></tr>
+<tr><td><code>image</code></td><td><code>monoe.image</code></td><td>Source image</td></tr>
+<tr><td><code>width</code></td><td><code>integer</code></td><td>Frame width</td></tr>
+<tr><td><code>height</code></td><td><code>integer</code></td><td>Frame height</td></tr>
+<tr><td><code>fromcolumn</code></td><td><code>integer</code></td><td>Starting column</td></tr>
+<tr><td><code>tocolumn</code></td><td><code>integer</code></td><td>Ending column</td></tr>
+<tr><td><code>fromrow</code></td><td><code>integer</code></td><td>Starting row</td></tr>
+<tr><td><code>torow</code></td><td><code>integer</code></td><td>Ending row</td></tr>
+<tr><td><code>fps</code></td><td><code>number|nil</code></td><td>Frames per second (default 7.0)</td></tr>
+</table>
+<hr>
+<h2>monoe.animation:free</h2>
+<p>Frees engine resources associated with this animation.</p>
+<hr>
+<h2>monoe.animation:remove</h2>
+<p>Removes the instance from the rendering side.</p>
+<hr>
+
+  </div>
+</main>
+
+<footer>
+  Generated by MONOE LuaDoc
+</footer>
+
+</body>
+</html>
