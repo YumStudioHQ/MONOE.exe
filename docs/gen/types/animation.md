@@ -170,6 +170,28 @@ Loads an animation from a sprite sheet image.
 
 ---
 
+## monoe.animation:current
+
+Returns the current played animation.
+
+### Returns
+
+- `string`
+
+---
+
+## monoe.animation:waitfor
+
+Plays an animation once and waits until it ends.
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `anim` | `string` |  |
+
+---
+
 ## monoe.animation:free
 
 Frees engine resources associated with this animation.

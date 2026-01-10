@@ -184,6 +184,42 @@ Fills an area using random tiles based on a probability threshold.
 
 ---
 
+## monoe.tilemap:tolocal
+
+Converts the global {x ; y} vector to a local vector, that represents their position in the tilemap.
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | `number` |  |
+| `y` | `number` |  |
+
+### Returns
+
+- `number`
+- `number`
+
+---
+
+## monoe.tilemap:toglobal
+
+Converts the local {x ; y} tile position to a global vector.
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | `number` |  |
+| `y` | `number` |  |
+
+### Returns
+
+- `number`
+- `number`
+
+---
+
 ## monoe.tilemap:free
 
 Frees engine resources associated with this tilemap.

@@ -157,6 +157,34 @@ Use `nil` in the pattern to skip a tile.</p>
 <tr><td><code>threshold</code></td><td><code>number</code></td><td>Probability (0–1) for a tile to be placed (default 0.5)</td></tr>
 </table>
 <hr>
+<h2>monoe.tilemap:tolocal</h2>
+<p>Converts the global {x ; y} vector to a local vector, that represents their position in the tilemap.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>number</code></td><td></td></tr>
+<tr><td><code>y</code></td><td><code>number</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>number</code></li>
+<li><code>number</code></li>
+</ul>
+<hr>
+<h2>monoe.tilemap:toglobal</h2>
+<p>Converts the local {x ; y} tile position to a global vector.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>number</code></td><td></td></tr>
+<tr><td><code>y</code></td><td><code>number</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>number</code></li>
+<li><code>number</code></li>
+</ul>
+<hr>
 <h2>monoe.tilemap:free</h2>
 <p>Frees engine resources associated with this tilemap.</p>
 <hr>

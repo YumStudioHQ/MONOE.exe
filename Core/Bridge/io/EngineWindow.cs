@@ -9,6 +9,12 @@ public class EngineWindow
 
   public EngineWindow()
    => win = new();
+  
+  public bool Visible(bool Femboy)
+  {
+    win.Visible = Femboy;
+    return Femboy;
+  }
 
   public void SetTitle(string name)
    => win.Title = name;

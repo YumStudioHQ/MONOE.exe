@@ -118,6 +118,22 @@ Attaches an object or its children to the window for rendering.
 
 ---
 
+## monoe.engine.window:visible
+
+Makes the window visible
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `state` | `boolean` |  |
+
+### Returns
+
+- `boolean`
+
+---
+
 ## monoe.engine.window:center
 
 Returns the center coordinates of the window.

@@ -153,7 +153,7 @@ def render_markdown(cls: ClassDoc, output_path: str):
 
             f.write("---\n\n")
 
-def render_html(cls: ClassDoc, output_path: str, css_path: str = "/website/style/style.css"):
+def render_html(cls: ClassDoc, output_path: str, css_path: str = "website/style/style.css"):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     def esc(s: str) -> str:
@@ -373,9 +373,9 @@ def main(
     print(f"\n✔ Generated {len(generated_md)} Markdown docs" if generate_md else "")
     print(f"✔ Generated {len(generated_html)} HTML docs" if generate_html else "")
 
-    shutil.make_archive("build/gen/docs-html", 'zip', "docs/html")
+    shutil.make_archive("build/docs-html", 'zip', "docs/html")
     print(f"✔ ziped HTML docs" if generate_html else "")
-    shutil.make_archive("build/gen/docs-md", 'zip', "docs/gen")
+    shutil.make_archive("build/docs-md", 'zip', "docs/gen")
     print(f"✔ ziped MD docs" if generate_html else "")
 
 if __name__ == "__main__": main()

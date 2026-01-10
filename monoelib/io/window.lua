@@ -77,6 +77,13 @@ function monoe.engine.window:attach(obj)
   end
 end
 
+---Makes the window visible
+---@param state boolean
+---@return boolean
+function monoe.engine.window:visible(state)
+  return engine.call(self.uid, 'Visible', state)
+end
+
 ---Returns the center coordinates of the window.
 ---@return number center_x
 ---@return number center_y

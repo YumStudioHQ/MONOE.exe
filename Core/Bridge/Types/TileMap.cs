@@ -60,6 +60,18 @@ public class MTileMap : Exposable
     map.Scale = new((float)x, (float)y);
   }
 
+  public object[] ToLocal(double x, double y)
+  {
+    Vector2 vec = map.ToLocal(new Vector2((float)x, (float)y));
+    return [vec.X, vec.Y];
+  }
+
+  public object[] ToGlobal(double x, double y)
+  {
+    Vector2 vec = map.ToGlobal(new Vector2((float)x, (float)y));
+    return [vec.X, vec.Y];
+  }
+
   public override Node NRef()
    => map;
 

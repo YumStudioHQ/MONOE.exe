@@ -116,6 +116,18 @@ function monoe.animation:load(name, image, width, height, fromcolumn, tocolumn, 
   engine.call(self.uid, 'AnimationFromImage', name, image.uid, width, height, fromcolumn, tocolumn, fromrow, torow, fps or 7.0)
 end
 
+---Returns the current played animation.
+---@return string
+function monoe.animation:current()
+  return engine.call(self.uid, 'CurrentAnimation')
+end
+
+---Plays an animation once and waits until it ends.
+---@param anim string
+function monoe.animation:waitfor(anim)
+  engine.call(self.uid, 'PlayOnceAsync', anim)
+end
+
 ---Frees engine resources associated with this animation.
 function monoe.animation:free()
   engine.call(self.uid, 'Free')

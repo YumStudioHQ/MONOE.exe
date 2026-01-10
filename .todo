@@ -4,7 +4,8 @@
 * [!] Implement a C interface and API.
 * [x] Support mouth position.
 * [!] Window access extension: resizable, expand-mode, settings, ...
-* [!] Static-objects?
+* [x] Static-objects?
+* [x] lua bindings (Animation)
 
 # Editor
 

@@ -7,4 +7,6 @@ public interface IScalable2D
 
   public object[] GetSize();
   public object[] GetScale();
+
+  public object[] Scale(double x, double y);
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Godot;
 using monoe.exe.Core.Bridge.Types.Interfaces;
 using monoe.exe.Core.Manager;
@@ -154,6 +155,16 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
 
   public void FlipV(bool state)
    => animation.FlipV = state;
+
+  public string CurrentAnimation()
+   => animation.Animation;
+
+  public async Task PlayOnceAsync(string name)
+  {
+    animation.Play(name);
+    await animation.ToSignal(animation, AnimatedSprite2D.SignalName.AnimationFinished);
+    animation.Stop();
+  }
 
   protected override void _Free()
   {

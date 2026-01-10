@@ -53,4 +53,10 @@ public class RenderingDelegate : Exposable, IPositionable2D, IScalable2D
   {
     return GetSize();
   }
+
+  object[] IScalable2D.Scale(double x, double y)
+  {
+    node.Scale += new Vector2((float)x, (float)y);
+    return [node.Scale.X, node.Scale.Y];
+  }
 }

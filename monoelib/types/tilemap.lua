@@ -192,6 +192,27 @@ function monoe.tilemap:noise(x, y, width, height, tileset, tiles, threshold)
   end
 end
 
+
+---Converts the global {x ; y} vector to a local vector, that represents their position in the tilemap.
+---@param x number
+---@param y number
+---@return number
+---@return number
+function monoe.tilemap:tolocal(x, y)
+  ---@diagnostic disable-next-line: missing-return-value, return-type-mismatch
+  return engine.call(self.uid, 'ToLocal', x, y)
+end
+
+---Converts the local {x ; y} tile position to a global vector.
+---@param x number
+---@param y number
+---@return number
+---@return number
+function monoe.tilemap:toglobal(x, y)
+  ---@diagnostic disable-next-line: missing-return-value, return-type-mismatch
+  return engine.call(self.uid, 'ToGlobal', x, y)
+end
+
 ---Frees engine resources associated with this tilemap.
 function monoe.tilemap:free()
   engine.call(self.uid, 'Free')

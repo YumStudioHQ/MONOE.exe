@@ -16,5 +16,6 @@
 - [monoe.query](gen/linq.md)
 - [monoe.shape](gen/types/shape.md)
 - [monoe.sprite](gen/types/sprite.md)
+- [monoe.stobj](gen/types/stobj.md)
 - [monoe.tilemap](gen/types/tilemap.md)
 - [monoe.winmain](gen/io/mainwin.md)
