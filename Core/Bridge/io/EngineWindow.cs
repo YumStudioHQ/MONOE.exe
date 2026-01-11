@@ -1,9 +1,10 @@
 using Godot;
 using monoe.exe.Core.Bridge.Types;
+using monoe.exe.Core.Bridge.Types.Interfaces;
 
 namespace monoe.exe.Core.Bridge.io;
 
-public class EngineWindow
+public class EngineWindow : Exposable, IPositionable2D, IScalable2D
 {
   private readonly Window win;
 
@@ -62,7 +63,53 @@ public class EngineWindow
 
   public void Attach(object[] uids)
   {
-    foreach (var o in uids) if (o is long uid) Exposable.Expose(win, uid);
+    foreach (var o in uids) if (o is long uid) Expose(win, uid);
+  }
+
+  void IPositionable2D.SetPosition(double x, double y)
+  {
+    SetPosition(x, y);
+  }
+
+  public object[] GetPosition()
+  {
+    return [win.Position.X, win.Position.Y];
+  }
+
+  public object[] Deplace(double x, double y)
+  {
+    return Move(x, y);
+  }
+
+  void IScalable2D.SetSize(double x, double y)
+  {
+    SetSize(x, y);
+  }
+
+  public void SetScale(double x, double y)
+  {
+    Scale(x, y);
+  }
+
+  public object[] GetSize()
+  {
+    return [win.Size.X, win.Size.Y];
+  }
+
+  public object[] GetScale()
+  {
+    // Assuming scale is derived from the size
+    return [win.Size.X, win.Size.Y];
+  }
+
+  public override Node NRef()
+  {
+    return win;
+  }
+
+  public override void Remove()
+  {
+    win.QueueFree();
   }
 }
 
@@ -74,7 +121,6 @@ public static class EngineMainWindow
   {
     foreach (var o in uids) if (o is long uid) Exposable.Expose(win, uid);
   }
-
 
   public static void SetTitle(string name)
    => win.Title = name;
