@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace monoe.exe.Core.Engine.Resources;
 
@@ -21,26 +22,23 @@ public static class EngineResources
     return $"';{path}/?.lua'";
   }
 
-  private static RuntimeResource GetMacOSRuntime()
-  {
-    string name = "osx";
-    string path = GetResourceDir("runtimes", name);
-    string resources = "monoe.exe.app/Contents/Resources";
-    return new(name, path, resources);
-  }
-
   static EngineResources()
   {
-    List<RuntimeResource> runtimes = [
-      GetMacOSRuntime()
-    ];
-
-    string[] runtimeNames = ["lin64", "lin32", "linarm64", "win64", "win32", "winarm64"];
-
-    foreach (string name in runtimeNames)
+    List<RuntimeResource> runtimes = [];
+    var dir = GetResourceDir("runtimes");
+    var files = Directory.GetFiles(dir)
+                         .Where(file => file.EndsWith(".zip"))
+                         .ToArray();
+    
+    foreach (var file in files)
     {
-      string path = GetResourceDir("runtimes", name);
-      runtimes.Add(new(name, path, ""));
+      var resrel = "";
+      if (file.Contains("osx"))
+      {
+        resrel = "Contents/Resources/";
+      }
+
+      runtimes.Add(new(file.Replace(".zip", ""), Path.Join(dir, Path.GetFileName(file)), resrel));
     }
 
     runtimeResources = [..runtimes];

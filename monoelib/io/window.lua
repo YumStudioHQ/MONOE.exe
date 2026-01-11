@@ -3,30 +3,30 @@ local engine = require('monoelib.engine')
 local rendering = require('monoelib.rendering')
 
 monoe = monoe or {}
-monoe.engine = monoe.engine or {}
+monoe.io = monoe.io or {}
 
 ---@class monoe.engine.window
 ---@field uid integer
 ---Provides functions to manipulate the main engine window.
-monoe.engine.window = {}
-monoe.engine.window.__index = monoe.engine.window
+monoe.io.window = {}
+monoe.io.window.__index = monoe.io.window
 
 ---Creates a new window.
 ---@param _uid integer|nil
 ---@return monoe.engine.window
-function monoe.engine.window.new(_uid)
+function monoe.io.window.new(_uid)
   local uid = _uid or engine.import("monoe.exe.Core.Bridge.io.EngineWindow")
 
   if uid == -1 then
     error('got bad UID when creating a new window')
   end
 
-  return setmetatable({ uid = uid }, monoe.engine.window)
+  return setmetatable({ uid = uid }, monoe.io.window)
 end
 
 ---Changes the title of the main window.
 ---@param title string New window title
-function monoe.engine.window:title(title)
+function monoe.io.window:title(title)
   engine.call(self.uid, 'SetTitle', title)
 end
 
@@ -35,7 +35,7 @@ end
 ---@param height number|nil New height in pixels
 ---@return integer current_width
 ---@return integer current_height
-function monoe.engine.window:size(width, height)
+function monoe.io.window:size(width, height)
   return engine.call(self.uid, 'SetSize', width, height)
 end
 
@@ -44,7 +44,7 @@ end
 ---@param y number|nil New y position
 ---@return integer current_x
 ---@return integer current_y
-function monoe.engine.window:position(x, y)
+function monoe.io.window:position(x, y)
   return engine.call(self.uid, 'SetPosition', x, y)
 end
 
@@ -53,7 +53,7 @@ end
 ---@param y number Scale factor Y
 ---@return integer scaled_width
 ---@return integer scaled_height
-function monoe.engine.window:scale(x, y)
+function monoe.io.window:scale(x, y)
   return engine.call(self.uid, 'Scale', x or 0, y or 0)
 end
 
@@ -62,13 +62,13 @@ end
 ---@param dy number Vertical offset
 ---@return integer new_x
 ---@return integer new_y
-function monoe.engine.window:move(dx, dy)
+function monoe.io.window:move(dx, dy)
   return engine.call(self.uid, 'Move', dx or 0, dy or 0)
 end
 
 ---Attaches an object or its children to the window for rendering.
 ---@param obj table Object with `.uid` or `.root` property
-function monoe.engine.window:attach(obj)
+function monoe.io.window:attach(obj)
   if type(obj) == "table" and obj.root then
     rendering.attach_tree(obj.root, obj)
     self:attach(obj.root)
@@ -80,20 +80,20 @@ end
 ---Makes the window visible
 ---@param state boolean
 ---@return boolean
-function monoe.engine.window:visible(state)
+function monoe.io.window:visible(state)
   return engine.call(self.uid, 'Visible', state)
 end
 
 ---Returns the center coordinates of the window.
 ---@return number center_x
 ---@return number center_y
-function monoe.engine.window:center()
+function monoe.io.window:center()
   local width, height = self:size()
   return width / 2, height / 2
 end
 
 _G.monoe = monoe
-_G.monoe.engine = monoe.engine
-_G.monoe.engine.window = monoe.engine.window
+_G.monoe.io = monoe.io
+_G.monoe.io.window = monoe.io.window
 
-return monoe.engine.window
+return monoe.io.window
