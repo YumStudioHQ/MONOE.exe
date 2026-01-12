@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Godot;
 using monoe.exe.Core.Bridge.Types.Interfaces;
 using monoe.exe.Core.Manager;
@@ -9,6 +8,12 @@ namespace monoe.exe.Core.Bridge.Types;
 public class Animation2D : Exposable, IPositionable2D, IScalable2D
 {
   protected AnimatedSprite2D animation;
+  private readonly string eventName = "";
+
+  protected void OnFinished()
+  {
+    Base.MainBase.Emit(eventName);
+  }
 
   public Animation2D()
   {
@@ -16,7 +21,11 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
     {
       SpriteFrames = new()
     };
+    animation.AnimationFinished += OnFinished;
+    eventName = $"@on#{UID}-finished";
   }
+
+  public string GetEventName() => eventName;
 
   public void NewAnimation(string name)
   {
@@ -37,8 +46,11 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
     else throw new KeyNotFoundException($"UID: {uid} is not an image");
   }
 
-  public void Play(string name)
-   => animation.Play(name);
+  public void Play(string name, bool loop)
+  {
+    animation.Play(name);
+    animation.SpriteFrames.SetAnimationLoop(name, loop);
+  }
 
   public void PlayBackwards(string name)
    => animation.PlayBackwards(name);
@@ -158,13 +170,6 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
 
   public string CurrentAnimation()
    => animation.Animation;
-
-  public async Task PlayOnceAsync(string name)
-  {
-    animation.Play(name);
-    await animation.ToSignal(animation, AnimatedSprite2D.SignalName.AnimationFinished);
-    animation.Stop();
-  }
 
   protected override void _Free()
   {

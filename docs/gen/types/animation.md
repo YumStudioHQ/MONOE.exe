@@ -53,6 +53,7 @@ Plays the specified animation.
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | `string` | Animation name |
+| `loop` | `boolean` | If the animation should loop or not. |
 
 ---
 
@@ -180,15 +181,16 @@ Returns the current played animation.
 
 ---
 
-## monoe.animation:waitfor
+## monoe.animation:finished
 
-Plays an animation once and waits until it ends.
+Calls the given function when an animation finishes.
 
 ### Parameters
 
 | Name | Type | Description |
 |------|------|-------------|
-| `anim` | `string` |  |
+| `func` | `function` |  |
+| `isonce` | `boolean` |  |
 
 ---
 

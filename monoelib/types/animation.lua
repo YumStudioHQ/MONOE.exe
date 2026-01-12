@@ -2,6 +2,7 @@
 
 local engine = require('monoelib.engine')
 local image = require('monoelib.types.image')
+local event = require('monoelib.event')
 
 monoe = monoe or {}
 
@@ -42,8 +43,9 @@ end
 
 ---Plays the specified animation.
 ---@param name string Animation name
-function monoe.animation:play(name)
-  engine.call(self.uid, 'Play', name)
+---@param loop boolean If the animation should loop or not.
+function monoe.animation:play(name, loop)
+  engine.call(self.uid, 'Play', name, loop or false)
 end
 
 ---Plays an animation backwards.
@@ -122,10 +124,16 @@ function monoe.animation:current()
   return engine.call(self.uid, 'CurrentAnimation')
 end
 
----Plays an animation once and waits until it ends.
----@param anim string
-function monoe.animation:waitfor(anim)
-  engine.call(self.uid, 'PlayOnceAsync', anim)
+---Calls the given function when an animation finishes.
+---@param func function
+---@param isonce boolean
+function monoe.animation:finished(func, isonce)
+  ---@type string
+  local name = engine.call(self.uid, 'GetEventName')
+  if isonce then
+    event.once(name, func)
+  else event.subscribe(name, func)
+  end
 end
 
 ---Frees engine resources associated with this animation.
