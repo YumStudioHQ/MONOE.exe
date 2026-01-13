@@ -110,4 +110,9 @@ public static class Shell
       Base.MainBase.EnqueueOnMain(() => { Base.MainBase.Run(line); });
     }
   }
+
+  internal static void ExecuteCommand(object value)
+  {
+    throw new NotImplementedException();
+  }
 }

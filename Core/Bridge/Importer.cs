@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Godot;
 using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Bridge;
@@ -46,6 +45,8 @@ public static class Importer
 
       object instance = ctor.Invoke(null);
       long uid = ObjectRegistry.Register(instance);
+
+      if (instance is ManagedObject o) o.SetUID(uid);
 
       return [uid];
     }

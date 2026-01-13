@@ -54,6 +54,7 @@
 <table>
 <tr><th>Name</th><th>Type</th><th>Description</th></tr>
 <tr><td><code>name</code></td><td><code>string</code></td><td>Animation name</td></tr>
+<tr><td><code>loop</code></td><td><code>boolean</code></td><td>If the animation should loop or not.</td></tr>
 </table>
 <hr>
 <h2>monoe.animation:backwards</h2>
@@ -147,12 +148,13 @@
 <li><code>string</code></li>
 </ul>
 <hr>
-<h2>monoe.animation:waitfor</h2>
-<p>Plays an animation once and waits until it ends.</p>
+<h2>monoe.animation:finished</h2>
+<p>Calls the given function when an animation finishes.</p>
 <h3>Parameters</h3>
 <table>
 <tr><th>Name</th><th>Type</th><th>Description</th></tr>
-<tr><td><code>anim</code></td><td><code>string</code></td><td></td></tr>
+<tr><td><code>func</code></td><td><code>function</code></td><td></td></tr>
+<tr><td><code>isonce</code></td><td><code>boolean</code></td><td></td></tr>
 </table>
 <hr>
 <h2>monoe.animation:free</h2>

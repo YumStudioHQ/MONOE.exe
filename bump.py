@@ -14,7 +14,6 @@ VERSION_REGEX = re.compile(
 
 SEMVER_REGEX = re.compile(r"^\d+\.\d+\.\d+$")
 
-
 def bump_version(major: int, minor: int, fix:int, bump_type: str) -> tuple[int, int, int]:
     if bump_type == "major":
         return major + 1, 0, 0
@@ -23,6 +22,18 @@ def bump_version(major: int, minor: int, fix:int, bump_type: str) -> tuple[int, 
     else:  # fix / patch
         return major, minor, fix + 1
 
+def get_version() -> str:
+    if not PROJECT_FILE.exists():
+        raise FileNotFoundError("project.godot not found")
+
+    content = PROJECT_FILE.read_text(encoding="utf-8")
+    match = VERSION_REGEX.search(content)
+
+    if not match:
+        raise ValueError("Version not found in project.godot")
+
+    major, minor, fix = map(int, match.groups())
+    return f"{major}.{minor}.{fix}"
 
 def main():
     args = sys.argv[1:]

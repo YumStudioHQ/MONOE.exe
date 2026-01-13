@@ -50,6 +50,11 @@ public class MCollisionShape2D : Exposable
     // Do nothing for now... Idk how to implement this.
   }
 
+  protected override void _Free()
+  {
+    collisionShape.QueueFree();
+  }
+
   public override Node NRef() => collisionShape;
 
   public override void Remove()

@@ -6,7 +6,7 @@ Provides functions to manipulate the main engine window.
 
 - **uid** (`integer`): 
 
-## monoe.engine.window.new
+## monoe.io.window.new
 
 Creates a new window.
 
@@ -22,7 +22,7 @@ Creates a new window.
 
 ---
 
-## monoe.engine.window:title
+## monoe.io.window:title
 
 Changes the title of the main window.
 
@@ -34,7 +34,7 @@ Changes the title of the main window.
 
 ---
 
-## monoe.engine.window:size
+## monoe.io.window:size
 
 Sets or queries the size of the main window.
 
@@ -52,7 +52,7 @@ Sets or queries the size of the main window.
 
 ---
 
-## monoe.engine.window:position
+## monoe.io.window:position
 
 Sets or queries the position of the main window.
 
@@ -70,7 +70,7 @@ Sets or queries the position of the main window.
 
 ---
 
-## monoe.engine.window:scale
+## monoe.io.window:scale
 
 Scales the window.
 
@@ -88,7 +88,7 @@ Scales the window.
 
 ---
 
-## monoe.engine.window:move
+## monoe.io.window:move
 
 Moves the window by a relative offset.
 
@@ -106,7 +106,7 @@ Moves the window by a relative offset.
 
 ---
 
-## monoe.engine.window:attach
+## monoe.io.window:attach
 
 Attaches an object or its children to the window for rendering.
 
@@ -118,7 +118,7 @@ Attaches an object or its children to the window for rendering.
 
 ---
 
-## monoe.engine.window:visible
+## monoe.io.window:visible
 
 Makes the window visible
 
@@ -134,7 +134,7 @@ Makes the window visible
 
 ---
 
-## monoe.engine.window:center
+## monoe.io.window:center
 
 Returns the center coordinates of the window.
 

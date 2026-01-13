@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Godot;
 using monoe.exe.Core.Bridge.Types.Interfaces;
 using monoe.exe.Core.Manager;
@@ -9,6 +9,12 @@ namespace monoe.exe.Core.Bridge.Types;
 public class Animation2D : Exposable, IPositionable2D, IScalable2D
 {
   protected AnimatedSprite2D animation;
+  private readonly string eventName = "";
+
+  protected void OnFinished()
+  {
+    Base.MainBase.Emit(eventName);
+  }
 
   public Animation2D()
   {
@@ -16,7 +22,11 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
     {
       SpriteFrames = new()
     };
+    animation.AnimationFinished += OnFinished;
+    eventName = $"@on#{Random.Shared.Next()}-finished";
   }
+
+  public string GetEventName() => eventName;
 
   public void NewAnimation(string name)
   {
@@ -37,8 +47,11 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
     else throw new KeyNotFoundException($"UID: {uid} is not an image");
   }
 
-  public void Play(string name)
-   => animation.Play(name);
+  public void Play(string name, bool loop)
+  {
+    animation.Play(name);
+    animation.SpriteFrames.SetAnimationLoop(name, loop);
+  }
 
   public void PlayBackwards(string name)
    => animation.PlayBackwards(name);
@@ -51,18 +64,18 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
 
   public void SetPosition(double x, double y)
   {
-    animation.Position = new((float)x, (float)y);
+    animation.GlobalPosition = new((float)x, (float)y);
   }
 
   public object[] GetPosition()
   {
-    return [animation.Position.X, animation.Position.Y];
+    return [animation.GlobalPosition.X, animation.GlobalPosition.Y];
   }
 
   public object[] Deplace(double x, double y)
   {
-    animation.Position = new(animation.Position.X + (float)x, animation.Position.Y + (float)y);
-    return [animation.Position.X, animation.Position.Y];
+    animation.GlobalPosition = new(animation.GlobalPosition.X + (float)x, animation.GlobalPosition.Y + (float)y);
+    return [animation.GlobalPosition.X, animation.GlobalPosition.Y];
   }
 
   public object[] Scale(double x, double y)
@@ -158,13 +171,6 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
 
   public string CurrentAnimation()
    => animation.Animation;
-
-  public async Task PlayOnceAsync(string name)
-  {
-    animation.Play(name);
-    await animation.ToSignal(animation, AnimatedSprite2D.SignalName.AnimationFinished);
-    animation.Stop();
-  }
 
   protected override void _Free()
   {
