@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Godot;
 using monoe.exe.Core.Bridge.Types.Interfaces;
@@ -22,7 +23,7 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
       SpriteFrames = new()
     };
     animation.AnimationFinished += OnFinished;
-    eventName = $"@on#{UID}-finished";
+    eventName = $"@on#{Random.Shared.Next()}-finished";
   }
 
   public string GetEventName() => eventName;
@@ -63,18 +64,18 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
 
   public void SetPosition(double x, double y)
   {
-    animation.Position = new((float)x, (float)y);
+    animation.GlobalPosition = new((float)x, (float)y);
   }
 
   public object[] GetPosition()
   {
-    return [animation.Position.X, animation.Position.Y];
+    return [animation.GlobalPosition.X, animation.GlobalPosition.Y];
   }
 
   public object[] Deplace(double x, double y)
   {
-    animation.Position = new(animation.Position.X + (float)x, animation.Position.Y + (float)y);
-    return [animation.Position.X, animation.Position.Y];
+    animation.GlobalPosition = new(animation.GlobalPosition.X + (float)x, animation.GlobalPosition.Y + (float)y);
+    return [animation.GlobalPosition.X, animation.GlobalPosition.Y];
   }
 
   public object[] Scale(double x, double y)

@@ -18,4 +18,5 @@
 - [monoe.sprite](gen/types/sprite.md)
 - [monoe.stobj](gen/types/stobj.md)
 - [monoe.tilemap](gen/types/tilemap.md)
+- [monoe.vec2](gen/types/vec2.md)
 - [monoe.winmain](gen/io/mainwin.md)

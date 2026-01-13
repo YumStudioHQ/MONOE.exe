@@ -20,18 +20,18 @@ public class Entity2D : Exposable, IPositionable2D, IScalable2D
 
   public void SetPosition(double x, double y)
   {
-    node.Position = new((float)x, (float)y);
+    node.GlobalPosition = new((float)x, (float)y);
   }
 
   public object[] GetPosition()
   {
-    return [node.Position.X, node.Position.Y];
+    return [node.GlobalPosition.X, node.GlobalPosition.Y];
   }
 
   public object[] Deplace(double x, double y)
   {
-    node.Position = new(node.Position.X + (float)x, node.Position.Y + (float)y);
-    return [node.Position.X, node.Position.Y];
+    node.GlobalPosition = new(node.GlobalPosition.X + (float)x, node.GlobalPosition.Y + (float)y);
+    return [node.GlobalPosition.X, node.GlobalPosition.Y];
   }
 
   public object[] Scale(double x, double y)

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>monoe.vec2 – Lua API</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="title">
+    <h1><a href="/docs/html/index.html">reference</a> monoe.vec2</h1>
+    <div class="version">Lua API Reference</div>
+  </div>
+</div>
+
+<main>
+  <div class="panel">
+<h2>Properties</h2>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>number</code></td><td>-- X component</td></tr>
+<tr><td><code>y</code></td><td><code>number</code></td><td>-- Y component</td></tr>
+</table>
+<h2>monoe.vec2.new</h2>
+<p>Creates a new 2D vector.
+If no values are provided, defaults to (0, 0).</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>number|nil</code></td><td></td></tr>
+<tr><td><code>y</code></td><td><code>number|nil</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>monoe.vec2</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2.zero</h2>
+<p>Returns a zero vector (0, 0).</p>
+<h3>Returns</h3>
+<ul>
+<li><code>monoe.vec2</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:add</h2>
+<p>Adds another vector to this one.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>v</code></td><td><code>monoe.vec2</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>monoe.vec2 result</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:sub</h2>
+<p>Subtracts another vector from this one.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>v</code></td><td><code>monoe.vec2</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>monoe.vec2 result</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:mul</h2>
+<p>Multiplies this vector by a scalar.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>s</code></td><td><code>number</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>monoe.vec2 result</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:div</h2>
+<p>Divides this vector by a scalar.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>s</code></td><td><code>number</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>monoe.vec2 result</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:length_sq</h2>
+<p>Returns the squared length of the vector.
+Useful when you want distance comparisons without sqrt().</p>
+<h3>Returns</h3>
+<ul>
+<li><code>number</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:length</h2>
+<p>Returns the length (magnitude) of the vector.</p>
+<h3>Returns</h3>
+<ul>
+<li><code>number</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:distance</h2>
+<p>Returns the distance between this vector and another one.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>v</code></td><td><code>monoe.vec2</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>number</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:normalized</h2>
+<p>Returns a normalized (unit) vector and the original length.
+If the vector is zero, returns (0,0) and length 0.</p>
+<h3>Returns</h3>
+<ul>
+<li><code>monoe.vec2 normalized</code></li>
+<li><code>number length</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:dot</h2>
+<p>Returns the dot product between this vector and another.
+Useful for angles, projections, and direction checks.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>v</code></td><td><code>monoe.vec2</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>number</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:lerp</h2>
+<p>Linearly interpolates between this vector and another.
+t = 0 → this vector
+t = 1 → target vector</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>v</code></td><td><code>monoe.vec2</code></td><td></td></tr>
+<tr><td><code>t</code></td><td><code>number</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>monoe.vec2</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:clamp_length</h2>
+<p>Clamps the vector length so it does not exceed max_len.
+Keeps direction the same.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>max_len</code></td><td><code>number</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>monoe.vec2</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:unpack</h2>
+<p>Returns x and y as separate values.
+Useful for APIs that expect unpacked numbers.</p>
+<h3>Returns</h3>
+<ul>
+<li><code>number x</code></li>
+<li><code>number y</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:set</h2>
+<p>Sets the vector components directly.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>x</code></td><td><code>number</code></td><td></td></tr>
+<tr><td><code>y</code></td><td><code>number</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>self</code></li>
+</ul>
+<hr>
+<h2>monoe.vec2:inside_aabb</h2>
+<p>Checks if this vector (point) is inside an axis-aligned bounding box.
+`min` is bottom-left, `max` is top-right.</p>
+<h3>Parameters</h3>
+<table>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>min</code></td><td><code>monoe.vec2</code></td><td></td></tr>
+<tr><td><code>max</code></td><td><code>monoe.vec2</code></td><td></td></tr>
+</table>
+<h3>Returns</h3>
+<ul>
+<li><code>boolean</code></li>
+</ul>
+<hr>
+
+  </div>
+</main>
+
+<footer>
+  Generated by MONOE LuaDoc
+</footer>
+
+</body>
+</html>

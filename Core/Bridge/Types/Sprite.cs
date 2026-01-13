@@ -20,18 +20,18 @@ public class Sprite : Exposable, IPositionable2D, IScalable2D
 
   public void SetPosition(double x, double y)
   {
-    sprite.Position = new((float)x, (float)y);
+    sprite.GlobalPosition = new((float)x, (float)y);
   }
 
   public object[] GetPosition()
   {
-    return [sprite.Position.X, sprite.Position.Y];
+    return [sprite.GlobalPosition.X, sprite.GlobalPosition.Y];
   }
 
   public object[] Deplace(double x, double y)
   {
-    sprite.Position = new(sprite.Position.X + (float)x, sprite.Position.Y + (float)y);
-    return [sprite.Position.X, sprite.Position.Y];
+    sprite.GlobalPosition = new(sprite.GlobalPosition.X + (float)x, sprite.GlobalPosition.Y + (float)y);
+    return [sprite.GlobalPosition.X, sprite.GlobalPosition.Y];
   }
 
   public object[] Scale(double x, double y)

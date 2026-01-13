@@ -20,23 +20,23 @@ public class RenderingDelegate : Exposable, IPositionable2D, IScalable2D
 
   public void SetPosition(double x, double y)
   {
-    node.Position = new((float)x, (float)y);
+    node.GlobalPosition = new((float)x, (float)y);
   }
 
   public object[] GetPosition()
   {
-    return [node.Position.X, node.Position.Y];
+    return [node.GlobalPosition.X, node.GlobalPosition.Y];
   }
 
   public object[] Deplace(double x, double y)
   {
-    node.Position += new Vector2((float)x, (float)y);
-    return [node.Position.X, node.Position.Y];
+    node.GlobalPosition += new Vector2((float)x, (float)y);
+    return [node.GlobalPosition.X, node.GlobalPosition.Y];
   }
 
   public void SetSize(double x, double y)
   {
-    node.Scale = node.Position = new((float)x, (float)y);
+    node.Scale = node.GlobalPosition = new((float)x, (float)y);
   }
 
   public void SetScale(double x, double y)

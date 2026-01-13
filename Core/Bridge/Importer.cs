@@ -46,6 +46,8 @@ public static class Importer
       object instance = ctor.Invoke(null);
       long uid = ObjectRegistry.Register(instance);
 
+      if (instance is ManagedObject o) o.SetUID(uid);
+
       return [uid];
     }
     string err = $"bad arguments (expected string at position #1, got {args[0].GetType().FullName})";
