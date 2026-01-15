@@ -161,13 +161,13 @@ public static class BuiltIns
       {
         if (!long.TryParse(struid, out long uid))
         {
-          EngineConsole.WriteError($"[!] Expected integer UID, got '{struid}'");
+          EngineConsole.WriteError($"Expected integer UID, got '{struid}'");
           continue;
         }
 
         if (!ObjectRegistry.TryGet(uid, out object o))
         {
-          EngineConsole.WriteError($"[!] No object found for UID {uid}");
+          EngineConsole.WriteError($"No object found for UID {uid}");
           continue;
         }
 
@@ -285,7 +285,7 @@ public static class BuiltIns
     {
       if (args.Length < 0)
       {
-        EngineConsole.WriteError("[!] Expected path");
+        EngineConsole.WriteError("Expected path");
         return;
       }
       try
@@ -302,7 +302,7 @@ public static class BuiltIns
 
           if (!Directory.Exists(source))
           {
-            EngineConsole.WriteError($"[!] Source folder not found: {source}");
+            EngineConsole.WriteError($"Source folder not found: {source}");
             continue;
           }
 
@@ -312,7 +312,7 @@ public static class BuiltIns
       }
       catch (Exception ex)
       {
-        EngineConsole.WriteError($"[!] Failed to copy folders: {ex.Message}");
+        EngineConsole.WriteError($"Failed to copy folders: {ex.Message}");
       }
     };
   }
@@ -324,7 +324,7 @@ public static class BuiltIns
     {
       if (args.Length < 0)
       {
-        EngineConsole.WriteError("[!] Expected path");
+        EngineConsole.WriteError("Expected path");
         return;
       }
 

@@ -11,11 +11,7 @@ config_version=5
 [application]
 
 config/name="monoe.exe"
-<<<<<<< HEAD
-config/version="2.5.18"
-=======
-config/version="2.4.1"
->>>>>>> 44ffe6c (this version is messed)
+config/version="2.5.13"
 run/main_scene="uid://n0ipngfcc2e8"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="uid://bj7tile0lexte"

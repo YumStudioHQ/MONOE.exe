@@ -53,7 +53,7 @@ Plays the specified animation.
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | `string` | Animation name |
-| `loop` | `boolean` | If the animation should loop or not. |
+| `loop` | `boolean` | If the animation should loop or not |
 
 ---
 
@@ -66,6 +66,7 @@ Plays an animation backwards.
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | `string` | Animation name |
+| `loop` | `boolean` | If the animation should loop or not |
 
 ---
 

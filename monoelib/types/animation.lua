@@ -43,14 +43,15 @@ end
 
 ---Plays the specified animation.
 ---@param name string Animation name
----@param loop boolean If the animation should loop or not.
+---@param loop boolean If the animation should loop or not
 function monoe.animation:play(name, loop)
   engine.call(self.uid, 'Play', name, loop or false)
 end
 
 ---Plays an animation backwards.
 ---@param name string Animation name
-function monoe.animation:backwards(name)
+---@param loop boolean If the animation should loop or not
+function monoe.animation:backwards(name, loop)
   engine.call(self.uid, 'PlayBackwards', name)
 end
 

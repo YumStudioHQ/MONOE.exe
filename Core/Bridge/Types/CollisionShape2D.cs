@@ -1,6 +1,5 @@
 using System;
 using Godot;
-using monoe.exe.Core.Engine;
 
 namespace monoe.exe.Core.Bridge.Types;
 
@@ -48,6 +47,11 @@ public class MCollisionShape2D : Exposable
   public void Debug(long color)
   {
     // Do nothing for now... Idk how to implement this.
+  }
+
+  public void ReShape(string shape)
+  {
+    collisionShape.Shape = CreateShapeFromString(shape);
   }
 
   protected override void _Free()

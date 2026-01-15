@@ -41,3 +41,21 @@ Removes the instance from the rendering side.
 
 ---
 
+## monoe.shape:shape
+
+Reshapes the actual shape.
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shape` | `string` |  |
+
+---
+
+## monoe.shape:free
+
+Frees the shape. (won't be usable after that, unless you create a new one)
+
+---
+

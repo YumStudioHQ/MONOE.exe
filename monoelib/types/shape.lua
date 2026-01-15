@@ -39,6 +39,17 @@ function monoe.shape:remove()
   engine.call(self.uid, 'Remove')
 end
 
+---Reshapes the actual shape.
+---@param shape string
+function monoe.shape:shape(shape)
+  engine.call(self.uid, 'ReShape', shape)
+end
+
+---Frees the shape. (won't be usable after that, unless you create a new one)
+function monoe.shape:free()
+  engine.call(self.uid, 'Free')
+end
+
 -- Expose globally
 _G.monoe = monoe
 _G.monoe.shape = monoe.shape

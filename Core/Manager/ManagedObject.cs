@@ -9,7 +9,7 @@ public abstract class ManagedObject : IDisposable
 
   public void SetUID(long uid) => UID = uid;
 
-  protected virtual void _Free() { }
+  protected abstract void _Free();
 
   public void Free()
   {

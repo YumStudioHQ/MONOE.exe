@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using Godot;
 
 namespace monoe.exe.Core.Engine;
 
@@ -74,7 +75,10 @@ public static class EngineConsole
   public static void Verbose(params object[] args)
   {
     if (IsVerbose)
-      WriteLine($"> {string.Join("\t", args.Select(arg => arg?.ToString() ?? ""))}", ConsoleColor.DarkGray);
+    {
+      var time = Time.GetTimeStringFromSystem();
+      WriteLine($"[V@{time}] {string.Join("\t", args.Select(arg => arg?.ToString() ?? ""))}", ConsoleColor.DarkGray);
+    }
   }
 
   /// <summary>
@@ -128,7 +132,7 @@ public static class EngineConsole
   /// </summary>
   public static void WriteError(string message)
   {
-    WriteLine(message, ConsoleColor.Red);
+    WriteLine($"[!] {message}", ConsoleColor.Red);
   }
 
   public static void WriteError(Exception e)

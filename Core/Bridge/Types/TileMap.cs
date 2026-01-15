@@ -19,7 +19,7 @@ public class MTileMap : Exposable
     map.TileSet.TileSize = tileSize;
     var source = new TileSetAtlasSource
     {
-      Texture = image.Texture,
+      Texture = image.myImage,
       TextureRegionSize = tileSize
     };
 
@@ -40,7 +40,6 @@ public class MTileMap : Exposable
 
     return sourceId;
   }
-
 
   public long AddImage(long uid, long tileW, long tileH)
   {
@@ -77,4 +76,7 @@ public class MTileMap : Exposable
 
   public override void Remove()
    => map.GetParent().RemoveChild(map);
+
+  protected override void _Free()
+   => map.QueueFree();
 }

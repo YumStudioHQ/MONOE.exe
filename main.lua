@@ -1,14 +1,7 @@
 local engine = require('monoelib.engine')
+local text = require('monoelib.ui.text')
+local mainwin = require('monoelib.io.mainwin')
 
-monoe = monoe or {}
-monoe.editor = {}
-local editor = monoe.editor -- Such a lazy dev...
-
-function editor.ready()
-  print('Hi ! Welcome to the monoe.editor editor~')
+function main()
 
 end
-
-function deps()end
-
-engine.qualify(editor)

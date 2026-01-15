@@ -122,9 +122,9 @@ public partial class MainBase : Node
       locked = true;
     };
 
-    if (! /* Hot reload is optional! */ gameSettings.HasHotReload)
+    if (/* Hot reload is optional! */ gameSettings.HasHotReload)
     {
-      watcher = new(Directory.GetCurrentDirectory())
+      watcher = new(Directory.GetParent(gameSettings.MainFile).FullName)
       {
         NotifyFilter = NotifyFilters.Attributes
                      | NotifyFilters.CreationTime
@@ -374,7 +374,7 @@ public partial class MainBase : Node
     if (e.ChangeType != WatcherChangeTypes.Changed) return;
     EngineConsole.WriteLine($"\n> file changed {e.FullPath}", ConsoleColor.DarkGray);
 
-    if (e.Name == "project.lua")
+    if (Path.GetFullPath(e.Name) == Path.GetFullPath(gameSettings.MainFile))
     {
       EngineConsole.Verbose("requested reboot...");
       mainThreadQueue.Enqueue(() =>

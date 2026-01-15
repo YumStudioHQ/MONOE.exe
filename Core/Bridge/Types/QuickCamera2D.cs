@@ -11,4 +11,7 @@ public class QuickCamera2D : Exposable
   
   public override void Remove()
    => cam.GetParent().RemoveChild(cam);
+
+  protected override void _Free() 
+   => cam.QueueFree();
 }

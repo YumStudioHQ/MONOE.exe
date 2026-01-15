@@ -59,4 +59,7 @@ public class RenderingDelegate : Exposable, IPositionable2D, IScalable2D
     node.Scale += new Vector2((float)x, (float)y);
     return [node.Scale.X, node.Scale.Y];
   }
+
+  protected override void _Free()
+   => node.QueueFree();
 }

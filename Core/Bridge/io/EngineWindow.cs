@@ -109,6 +109,11 @@ public class EngineWindow : Exposable, IPositionable2D, IScalable2D
 
   public override void Remove()
   {
+    win.GetParent().RemoveChild(win);
+  }
+
+  protected override void _Free()
+  {
     win.QueueFree();
   }
 }

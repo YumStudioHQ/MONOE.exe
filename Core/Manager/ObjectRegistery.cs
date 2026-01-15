@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
+using Godot;
+using monoe.exe.Core.Engine;
 
 namespace monoe.exe.Core.Manager;
 
@@ -34,14 +36,19 @@ public static class ObjectRegistry
 
   public static void Clear()
   {
+    EngineConsole.Verbose("clearing managed objects ...");
     var oldObjects = Interlocked.Exchange(ref _objects, new ConcurrentDictionary<long, object>());
+    EngineConsole.Verbose($"{oldObjects.Count} objects will be deleted");
 
     foreach (var obj in oldObjects.Values)
     {
       if (obj is ManagedObject mo)
       {
         try { mo.Free(); } catch { }
-      }
+      } else if (obj is Node n) n.QueueFree();
+
     }
+    
+    EngineConsole.Verbose($"{oldObjects.Count} objects have been deleted");
   }
 }

@@ -2,14 +2,20 @@
 
 * [!] Implement a C# interface and API.
 * [!] Implement a C interface and API.
-* [x] Support mouth position.
-* [!] Window access extension: resizable, expand-mode, settings, ...
-* [x] Static-objects?
-* [x] lua bindings (Animation)
-* [!] ZIP runtimes
+
+### Importants
+
 * [!] Label, Texts, ...
 * [!] Export .ignore (in the .monoe/)
+* [!] Window access extension: resizable, expand-mode, settings, ...
+* [!] TextureButton, Button, Scrollable, V/HBox containers.
+* [!] Hot-reload on qualified tables
+
+### Features
+
+* [!] Internet access (download etc. files)
 
 # Editor
 
 * [!] Support integrated small editor. Editable
+* [!] Add-on folder?

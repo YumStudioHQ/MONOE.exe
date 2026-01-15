@@ -7,7 +7,10 @@ monoe = monoe or {}
 ---Imports a class by name.
 ---@param class string Name of the class to import.
 ---@return integer uid Returns the unique ID of the created instance or -1 on failure.
-function monoe.import(class) return -1 end
+function monoe.import(class)
+  print('warn: default function called')
+  return -1
+end
 
 ---Calls a method on an instance.
 ---@param uid integer The unique ID of the object.

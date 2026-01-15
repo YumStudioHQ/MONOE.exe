@@ -7,7 +7,7 @@ namespace monoe.exe.Core.Engine.Resources;
 
 public static class EngineResources
 {
-  private readonly static RuntimeResource[] runtimeResources = [];
+  private static RuntimeResource[] runtimeResources = [];
 
   public static string GetResourceDir()
    => Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName; 
@@ -22,7 +22,7 @@ public static class EngineResources
     return $"';{path}/?.lua'";
   }
 
-  static EngineResources()
+  private static void Init()
   {
     List<RuntimeResource> runtimes = [];
     var dir = GetResourceDir("runtimes");
@@ -42,6 +42,18 @@ public static class EngineResources
     }
 
     runtimeResources = [..runtimes];
+  }
+
+  static EngineResources()
+  {
+    try
+    {
+      Init();
+    }
+    catch (Exception e)
+    {
+      EngineConsole.WriteError(e);
+    }
   }
 
   public static RuntimeResource[] GetRuntimes()
