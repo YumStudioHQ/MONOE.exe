@@ -76,7 +76,7 @@ public static class EngineConsole
   {
     if (IsVerbose)
     {
-      var time = Time.GetTimeStringFromSystem();
+      var time = DateTime.Now.ToString("HH:mm:ss.fff");
       WriteLine($"[V@{time}] {string.Join("\t", args.Select(arg => arg?.ToString() ?? ""))}", ConsoleColor.DarkGray);
     }
   }
@@ -99,7 +99,7 @@ public static class EngineConsole
     }
     catch (Exception ex)
     {
-      WriteLine("Console ReadLine Error: " + ex.Message, ConsoleColor.Red);
+      WriteLine("[!] Console ReadLine Error: " + ex.Message, ConsoleColor.Red);
       return "";
     }
 
@@ -121,7 +121,7 @@ public static class EngineConsole
       }
       catch (Exception ex)
       {
-        WriteLine("Console ReadKey Error: " + ex.Message, ConsoleColor.Red);
+        WriteLine("[!] Console ReadKey Error: " + ex.Message, ConsoleColor.Red);
         return new ConsoleKeyInfo();
       }
     }

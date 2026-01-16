@@ -28,14 +28,14 @@ function monoe.system.fswatcher.new(path, filter)
 end
 
 ---Calls the callback when the event is fired.
----@param func function<string> The callback.
----@param once boolean If the callback should be called once.
 ---@param kind 'changed'|'created'|'deleted'|'renamed' Event type
-function monoe.system.fswatcher:set(func, kind, once)
+---@param once boolean If the callback should be called once.
+---@param func function<string> The callback.
+function monoe.system.fswatcher:set(kind, once, func)
   if once then
     event.once(self.event .. kind, func)
   else
-    event.subscribe(self.event .. kind, func)
+    event.subscribe(self.event .. '_' .. kind, func)
   end
 end
 

@@ -1,0 +1,1 @@
+namespace monoe.exe.Core.Bridge.Types.LibSys;

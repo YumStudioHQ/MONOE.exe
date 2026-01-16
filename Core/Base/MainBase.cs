@@ -269,6 +269,7 @@ public partial class MainBase : Node
     Manager.ObjectRegistry.Clear();
     EngineConsole.Verbose("exit event fired");
     Emit("onexit");
+    Emit("onfree");
     main?.Dispose();
     watcher?.Dispose();
 
@@ -278,7 +279,7 @@ public partial class MainBase : Node
       {
         action();
       }
-      else EngineConsole.WriteError("Failled to deque an element !");
+      else EngineConsole.WriteError("[rejected]: Failled to deque an element !");
     }
 
     EngineConsole.Verbose("process finished");
