@@ -2,12 +2,15 @@ local event = require('monoelib.event')
 local rendering = require('monoelib.rendering')
 
 ---@class monoe
+---monoe.exe's engine base class. This class provides you a quick yet deep access to the engine's internals -- Assemblies.
+---You may check out monoe.system in order to get deeper or more low-level features.
 monoe = monoe or {}
 
 ---Imports a class by name.
 ---@param class string Name of the class to import.
+---@param ... any Optional arguments that you can pass to the constructor.
 ---@return integer uid Returns the unique ID of the created instance or -1 on failure.
-function monoe.import(class)
+function monoe.import(class, ...)
   print('warn: default function called')
   return -1
 end
@@ -49,23 +52,52 @@ local function fullpath(path)
 end
 
 -- Subscribe table methods to events if they exist
-local function subscribe_all(table)
+local function subscribe_table(table)
   if type(table) ~= "table" then return end
 
   if type(table.process) == "function" then
-    event.subscribe('process', function(delta) table.process(delta) end)
+    event.subscribe('process', table.process)
   end
 
   if type(table.physics) == "function" then
-    event.subscribe('physics', function(delta) table.physics(delta) end)
+    event.subscribe('physics', table.physics)
   end
 
   if type(table.ready) == "function" then
     table.ready()
   end
 
+  if type(table.input) == "function" then
+    event.subscribe('input', table.input)
+  end
+
   if type(table.exit) == "function" then
-    event.subscribe('onexit', function() table.exit() end)
+    event.subscribe('onexit', table.exit)
+  end
+end
+
+-- Subscribe table methods to events if they exist
+local function subscribe_object(table)
+  if type(table) ~= "table" then return end
+
+  if type(table.process) == "function" then
+    event.subscribe('process', function (delta) table:process(delta) end)
+  end
+
+  if type(table.physics) == "function" then
+    event.subscribe('physics', function (delta) table:physics(delta) end)
+  end
+
+  if type(table.ready) == "function" then
+    table:ready()
+  end
+
+  if type(table.input) == "function" then
+    event.subscribe('input', function () table:input() end)
+  end
+
+  if type(table.exit) == "function" then
+    event.subscribe('onexit', function () table:exit() end)
   end
 end
 
@@ -90,7 +122,7 @@ function monoe.load(name, path)
   event.once('@load', function ()
     package.loaded[path] = nil
     _G[name] = require(path)
-    subscribe_all(_G[name])
+    subscribe_table(_G[name])
   end)
 
   local mpath = path:gsub('%.', '/')
@@ -112,8 +144,9 @@ end
 monoe.debug = monoe.debug
 
 ---Triggers a breakpoint in Lua.
-function monoe.breakpoint()
-  error('breakpoint' .. debug.traceback())
+---@param ... unknown Some debut infos you can add.
+function monoe.breakpoint(...)
+  error('breakpoint' .. debug.traceback(), ...)
 end
 
 ---Pauses execution for a specified number of milliseconds.
@@ -132,11 +165,17 @@ local function _attach(obj)
 end
 
 ---Subscribes all known methods of a table to events.
----@param table table
-function monoe.qualify(table)
-  subscribe_all(table)
-  if type(table.root) == "table" then
-    _attach(table)
+---@param self table
+---@param static boolean|nil
+function monoe.qualify(self, static)
+  if static then
+    subscribe_object(self)
+  else
+    subscribe_table(self)
+  end
+
+  if type(self.root) == "table" then
+    _attach(self)
   end
 end
 

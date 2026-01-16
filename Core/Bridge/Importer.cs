@@ -14,7 +14,7 @@ public static class Importer
   private static readonly Dictionary<string, Type> types = [];
   private static readonly ConcurrentDictionary<(string type, string method), MethodInfo> staticMethodCache = new();
 
-  public static Assembly[] GetAssemblies() => [..assemblies];
+  public static Assembly[] GetAssemblies() => [.. assemblies];
 
   public static void LoadAssemblies(string[] strings)
   {
@@ -31,28 +31,58 @@ public static class Importer
   public static void Clear()
   {
     assemblies.Clear();
+    types.Clear();
+    staticMethodCache.Clear();
   }
 
   public static object[] Limport(object[] args)
   {
-    if (args.Length >= 1 && args[0] is string @base)
+    if (args.Length < 1 || args[0] is not string typeName)
+      return [invaliduid, "bad arguments (expected type name as string)"];
+
+    if (!types.TryGetValue(typeName, out var type))
+      return [invaliduid, $"type '{typeName}' not found"];
+
+    var ctorArgs = args.Skip(1).ToArray();
+
+    var ctor = type.GetConstructors()
+      .FirstOrDefault(c =>
+      {
+        var parameters = c.GetParameters();
+        if (parameters.Length != ctorArgs.Length)
+          return false;
+
+        for (int i = 0; i < parameters.Length; i++)
+        {
+          if (ctorArgs[i] == null)
+            continue;
+
+          if (!parameters[i].ParameterType
+                .IsAssignableFrom(ctorArgs[i].GetType()))
+            return false;
+        }
+
+        return true;
+      });
+
+    if (ctor == null)
+      return [invaliduid, $"no matching constructor found for '{type.FullName}'"];
+
+    try
     {
-      var selection = types[@base];
+      var instance = ctor.Invoke(ctorArgs);
 
-      var ctor = selection.GetConstructor(Type.EmptyTypes);
-      if (ctor == null)
-        return [invaliduid, $"type {selection.FullName} has no parameterless constructor"];
-
-      object instance = ctor.Invoke(null);
       long uid = ObjectRegistry.Register(instance);
 
-      if (instance is ManagedObject o) o.SetUID(uid);
+      if (instance is ManagedObject mo)
+        mo.SetUID(uid);
 
       return [uid];
     }
-    string err = $"bad arguments (expected string at position #1, got {args[0].GetType().FullName})";
-  
-    return [invaliduid, err];
+    catch (Exception e)
+    {
+      return [invaliduid, e.InnerException?.ToString() ?? e.ToString()];
+    }
   }
 
   public static object[] Lcall(object[] args)
