@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading;
-using Godot;
 
 namespace monoe.exe.Core.Engine;
 
@@ -66,6 +65,11 @@ public static class EngineConsole
   }
 
   public static void WriteLine() => WriteLine("", null);
+  public static void WriteLine(params object[] args) 
+   => WriteLine(string.Join("", args.Select(arg => arg?.ToString() ?? "")));
+
+  public static void Write(params object[] args)
+   => Write(string.Join("", args.Select(arg => arg?.ToString() ?? "")));
 
   public static void Print(params object[] args)
   {
@@ -76,8 +80,8 @@ public static class EngineConsole
   {
     if (IsVerbose)
     {
-      var time = DateTime.Now.ToString("HH:mm:ss.fff");
-      WriteLine($"[V@{time}] {string.Join("\t", args.Select(arg => arg?.ToString() ?? ""))}", ConsoleColor.DarkGray);
+      var time = DateTime.Now.ToString("HH:mm:ss.ffff");
+      WriteLine($"[V] [{time}] {string.Join("\t", args.Select(arg => arg?.ToString() ?? ""))}", ConsoleColor.DarkGray);
     }
   }
 
@@ -102,7 +106,6 @@ public static class EngineConsole
       WriteLine("[!] Console ReadLine Error: " + ex.Message, ConsoleColor.Red);
       return "";
     }
-
   }
 
   /// <summary>
@@ -132,11 +135,24 @@ public static class EngineConsole
   /// </summary>
   public static void WriteError(string message)
   {
-    WriteLine($"[!] {message}", ConsoleColor.Red);
+    var time = DateTime.Now.ToString("HH:mm:ss.ffff");
+    WriteLine($"[!] [{time}] {message}", ConsoleColor.Red);
   }
 
   public static void WriteError(Exception e)
   {
     WriteError($"{e}");
+  }
+
+  public static void WriteWarning(params object[] args)
+  {
+    var time = DateTime.Now.ToString("HH:mm:ss.ffff");
+    WriteLine($"[w] [{time}] {string.Join("", args.Select(obj => obj.ToString() ?? ""))}", ConsoleColor.Yellow);
+  }
+
+  public static void WriteError(params object[] args)
+  {
+    var time = DateTime.Now.ToString("HH:mm:ss.ffff");
+    WriteError(string.Join("", args.Select(obj => obj.ToString() ?? "")));
   }
 }
