@@ -20,7 +20,7 @@ local base = 'monoe.exe.Core.Bridge.Types.LibSys.ManagedThread'
 ---@param libs boolean True if the thread should open Lua's standard libraries.
 ---@return monoe.system.threading
 function monoe.system.threading.new(source, entry, finished, libs)
-  local uid, err = engine.import(base, source, entry, finished, libs)
+  local uid, err = engine.import(base)
 
   if uid == -1 then
     error('got invalid uid when creating an instance of monoe.system.thread, ' .. err)

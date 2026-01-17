@@ -1,6 +1,7 @@
 # monoe
 
-
+monoe.exe's engine base class. This class provides you a quick yet deep access to the engine's internals -- Assemblies.
+You may check out monoe.system in order to get deeper or more low-level features.
 
 ## monoe.import
 
@@ -75,7 +76,13 @@ Returns the full path of a file.
 
 ---
 
-## subscribe_all
+## subscribe_table
+
+
+
+---
+
+## subscribe_object
 
 
 
@@ -141,7 +148,8 @@ Subscribes all known methods of a table to events.
 
 | Name | Type | Description |
 |------|------|-------------|
-| `table` | `table` |  |
+| `self` | `table` |  |
+| `static` | `boolean|nil` |  |
 
 ---
 
