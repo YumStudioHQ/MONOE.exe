@@ -26,6 +26,7 @@ public partial class MainBase : Node
   public readonly static ConcurrentQueue<Action> GarbageCollector = [];
   private static Action reloadRequestAction = () => { };
   private static Action exitRequestionAction = () => { };
+  private volatile bool exitTreeCalled = false;
 
   public static void Emit(string @event, params object[] args)
   {
@@ -38,6 +39,7 @@ public partial class MainBase : Node
   }
 
   public static void EnqueueOnMain(Action action) => mainThreadQueue.Enqueue(action);
+
   public static void RequestReload()
   {
     EngineConsole.WriteLine();
@@ -264,13 +266,16 @@ public partial class MainBase : Node
 
   public override void _ExitTree()
   {
+    if (exitTreeCalled) return;
     EngineConsole.WriteLine();
     EngineConsole.Verbose("exit requested...");
-    Manager.ObjectRegistry.Clear();
     EngineConsole.Verbose("exit event fired");
     Emit("onexit");
-    main?.Dispose();
+    Emit("onfree");
+    Manager.ObjectRegistry.Clear();
     watcher?.Dispose();
+
+    main?.Dispose();
 
     while (!GarbageCollector.IsEmpty)
     {
@@ -278,7 +283,7 @@ public partial class MainBase : Node
       {
         action();
       }
-      else EngineConsole.WriteError("Failled to deque an element !");
+      else EngineConsole.WriteError("[rejected]: Failled to deque an element !");
     }
 
     EngineConsole.Verbose("process finished");
@@ -289,7 +294,7 @@ public partial class MainBase : Node
     Emit("input");
   }
 
-  private static object[] Lsleep(object[] args)
+  public static object[] Lsleep(object[] args)
   {
     if (args.Length > 0)
     {
@@ -333,6 +338,8 @@ public partial class MainBase : Node
     main.PushCallback("monoe.wait", Lsleep);
     main.PushCallback("monoe.shell", Shell.Prompt);
     string injection = """
+                       monoe = monoe or {}
+                       monoe.event = monoe.event or {}
                        monoe.event.emit = monoe.event.emit or function(name)end
 
                        print = function(...)
@@ -367,6 +374,16 @@ public partial class MainBase : Node
      *
      * Note: Your file will be in _G.module_name!
      */
+  }
+
+  private void SetUpEngineLifeTime()
+  {
+    AppDomain.CurrentDomain.ProcessExit += (_, _) =>
+    {
+      if (exitTreeCalled) return;
+      _ExitTree();
+      exitTreeCalled = true;
+    };
   }
 
   private void OnFileChanged(object sender, FileSystemEventArgs e)
