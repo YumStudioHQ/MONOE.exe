@@ -22,7 +22,7 @@ public class SystemError
 
   public string Comment() => Conversion.LStringToString(err.comment);
   public syserr_category Category() => err.category;
-  public string StringCategory() => $"err.category";
+  public static string StringCategory() => $"err.category";
 
   public override string ToString()
   {

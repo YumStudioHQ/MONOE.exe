@@ -9,6 +9,7 @@ using monoe.exe.Core.Engine;
 using monoe.exe.Core.Engine.Resources;
 using monoe.exe.Core.Engine.Shell;
 using monoe.exe.Core.Settings;
+using monoe.exe.YumSharp.Managed;
 using Script = monoe.exe.Core.Bridge.Script;
 using Timer = Godot.Timer;
 
@@ -101,7 +102,10 @@ public partial class MainBase : Node
   public static void Run(string code) // This Run method is only for string injections!
    => main.Run(code, false);
 
-  public MainBase() { }
+  public MainBase()
+  {
+    EngineConsole.WriteLine($"monoe.exe meta-runtime | monoe.exe@{Version.All}");
+  }
 
   public MainBase(GameSettings settings)
   {
@@ -111,7 +115,6 @@ public partial class MainBase : Node
   public override void _EnterTree()
   {
     EngineConsole.IsVerbose = gameSettings.IsVerbose;
-    EngineConsole.WriteLine($"monoe.exe meta-runtime | monoe.exe@{Version.All}");
     EngineConsole.Verbose("monoe.exe: booting...");
     EngineConsole.Verbose($"engine resources path {EngineResources.GetResourceDir()}");
 
@@ -167,8 +170,10 @@ public partial class MainBase : Node
       GetTree().Quit();
     };
 
-    // Then, the shell
-    if (gameSettings.HasShell) Shell.Init();
+    //// Then, the shell
+    //if (gameSettings.HasShell) Shell.Init();
+    // Small setup (internals, etc., and all that shit!)
+    SetUpEngineLifeTime();
   }
 
   public override void _Ready()
@@ -182,6 +187,9 @@ public partial class MainBase : Node
     try
     {
       LoadProject();
+    } catch (YumException e)
+    {
+      EngineConsole.WriteError(e);
     } catch (Exception e)
     {
       EngineConsole.WriteError("cannot load project!");

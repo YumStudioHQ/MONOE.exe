@@ -44,7 +44,7 @@ public class MCollisionShape2D : Exposable
     collisionShape.Shape = CreateShapeFromString(shape);
   }
 
-  public void Debug(long color)
+  public static void Debug(long color)
   {
     // Do nothing for now... Idk how to implement this.
   }

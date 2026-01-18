@@ -7,9 +7,9 @@ namespace monoe.exe.Core.Engine;
 
 public static class EngineAssembly
 {
-  public static List<Type> GetTypes(Assembly[] assemblies)
+  public static Type[] GetTypes(params Assembly[] assemblies)
   {
-    Assembly[] full = [.. assemblies];
+    Assembly[] full = [.. assemblies, ..GetEngineAssembly()];
     return [.. full
       .SelectMany(a =>
       {

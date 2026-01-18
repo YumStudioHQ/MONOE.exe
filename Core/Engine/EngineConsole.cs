@@ -8,7 +8,7 @@ public static class EngineConsole
 {
   // Lock object for thread safety
   private static readonly Lock consoleLock = new();
-  public static bool IsVerbose = true;
+  public static bool IsVerbose = false;
 
   /// <summary>
   /// Thread-safe write with optional color

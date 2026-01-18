@@ -11,7 +11,7 @@ namespace monoe.exe.Core;
 
 public partial class Main : Base.MainBase
 {
-  private string GetBootFile()
+  private static string GetBootFile()
   {
     if (File.Exists("res/main.lua")) return "res/main.lua";
 
@@ -21,34 +21,21 @@ public partial class Main : Base.MainBase
     return "main.lua";
   }
 
+  private bool nr = false;
+
   public Main()
   {
-    if (OS.GetCmdlineArgs().Contains("-cli"))
+    var margs = OS.GetCmdlineArgs();
+
+    for (int i = 0; i < margs.Length; i++)
     {
-      Shell.Init();
-      var argl = string.Join(' ', OS.GetCmdlineArgs().Where(arg => arg != "-cli"));
-      var args = argl.Split(',');
-      foreach (var arg in args)
+      var arg = margs[i];
+      if (arg == "-nr") nr = true;
+      else if (arg == "-dev") continue;
+      else
       {
-        if (arg.StartsWith('-')) Shell.ExecuteCommand(string.Concat(":", arg.AsSpan(1)));
-        else Shell.ExecuteCommand(arg);
-      }
-      GetTree().Quit(0);
-    } else if (OS.GetCmdlineArgs().Contains("-file"))
-    {
-      var file = OS.GetCmdlineArgs().Where(arg => !arg.StartsWith('-'))
-                                    .Where(arg => File.Exists(arg))
-                                    .FirstOrDefault("main.lua");
-      YumState state = new(true);
-      try
-      {
-        state.Run(file, true);
-        GetTree().Quit(0);
-      }
-      catch (Exception e)
-      {
-        EngineConsole.WriteError(e);
-        GetTree().Quit(1);
+        Shell.ExecuteCommand(arg.StartsWith('-') ? arg[1..] : arg, i + 1 >= margs.Length ? [] : margs[(i+1)..]);
+        break;
       }
     }
 
@@ -72,5 +59,23 @@ public partial class Main : Base.MainBase
         MainFile = "res/main.lua"
       };
     }
+  }
+
+  public override void _EnterTree()
+  {
+    DisplayServer.WindowSetSize(Vector2I.One);
+    if (nr)
+    {
+      GetTree().Quit();
+    } else
+    {
+      base._EnterTree();
+    }
+  }
+
+  public override void _Ready()
+  {
+    if (nr) return;
+    else base._Ready();
   }
 }
