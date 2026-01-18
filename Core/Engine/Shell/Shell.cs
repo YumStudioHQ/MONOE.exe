@@ -8,34 +8,57 @@ namespace monoe.exe.Core.Engine.Shell;
 
 public static class Shell
 {
-  private static readonly Dictionary<string, MethodInfo> commands = [];
+  private static readonly Dictionary<string, Action<string[]>> commands = [];
   private static int commandRunning = 0;
 
-  public static void Init()
+  static Shell()
   {
-    EngineConsole.Verbose("starting shell...");
+    var types = EngineAssembly.GetTypes()
+        .Where(t => t.GetCustomAttribute<ShellCommandDelegateAttribute>() != null);
 
-    var methods = typeof(BuiltIns)
-      .GetMethods(BindingFlags.Public | BindingFlags.Static)
-      .Select(m => (Method: m, Attr: m.GetCustomAttribute<BuiltInAttribute>()))
-      .Where(x => x.Attr != null);
+    foreach (var type in types)
+    {
+      var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)
+                        .Where(m => m.GetCustomAttribute<ShellCommandAttribute>() != null);
 
-    foreach (var (Method, Attr) in methods) commands[Method.Name.ToLower()] = Method;
+      foreach (var method in methods)
+      {
+        var attr = method.GetCustomAttribute<ShellCommandAttribute>();
+        if (attr != null)
+        {
+          void action(string[] args)
+          {
+            try
+            {
+              object instance = method.IsStatic ? null : Activator.CreateInstance(type);
+              method.Invoke(instance, [args]);
+            }
+            catch (Exception e)
+            {
+              EngineConsole.WriteError(e);
+            }
+          }
+
+          commands[attr.Name] = action;
+        }
+      }
+    }
   }
 
   public static object[] Prompt(object[] args)
   {
-    foreach (var arg in args) if (arg is string s) ExecuteCommand(s);
+    foreach (var arg in args)
+      if (arg is string s) ExecuteCommand(s);
+
     return [];
   }
 
   public static void Prompt()
   {
-    EngineConsole.Verbose("monoe shell — type `:<cmd>` in order to execute built-in command <cmd>, or, write lua code.");
+    EngineConsole.Verbose("monoe shell — type `:<cmd>` to execute commands, or write Lua code.");
 
     while (!AppLifetime.IsShuttingDown)
     {
-      // Wait until no command is running
       while (Volatile.Read(ref commandRunning) != 0)
         Thread.Sleep(1);
 
@@ -47,72 +70,43 @@ public static class Shell
         return;
       }
 
-      if (line.StartsWith(':'))
-      {
-        Interlocked.Increment(ref commandRunning);
+      Interlocked.Increment(ref commandRunning);
 
-        Base.MainBase.EnqueueOnMain(() =>
+      Base.MainBase.EnqueueOnMain(() =>
+      {
+        try
         {
-          try
-          {
+          if (line.StartsWith(':'))
             ExecuteCommand(line);
-          }
-          finally
-          {
-            Interlocked.Decrement(ref commandRunning);
-          }
-        });
-      }
-      else
-      {
-        Interlocked.Increment(ref commandRunning);
-
-        Base.MainBase.EnqueueOnMain(() =>
-        {
-          try
-          {
+          else
             Base.MainBase.Run(line);
-          }
-          finally
-          {
-            Interlocked.Decrement(ref commandRunning);
-          }
-        });
-      }
+        }
+        finally
+        {
+          Interlocked.Decrement(ref commandRunning);
+        }
+      });
     }
-
   }
 
   public static void ExecuteCommand(string line)
   {
-    if (line.StartsWith(':'))
-    {
-      var args = Parser.SplitShellArgs(line[1..]);
-      if (args.Count > 0)
-      {
-        if (commands.TryGetValue(args[0], out MethodInfo method))
-        {
-          try
-          {
-            ((Action)method.Invoke(null, [args[1..].ToArray()]))();
-          }
-          catch (Exception e)
-          {
-            EngineConsole.WriteError(e);
-          }
-        }
-        else
-          EngineConsole.WriteError($"unknown command '{args[0]}'");
-      }
-    }
+    if (!line.StartsWith(':')) return;
+
+    var args = Parser.SplitShellArgs(line[1..]);
+    if (args.Count == 0) return;
+
+    if (commands.TryGetValue(args[0], out var action))
+      action([.. args.Skip(1)]);
     else
-    {
-      Base.MainBase.EnqueueOnMain(() => { Base.MainBase.Run(line); });
-    }
+      EngineConsole.WriteError($"unknown command '{args[0]}'");
   }
 
-  internal static void ExecuteCommand(object value)
+  public static void ExecuteCommand(string cmd, params string[] args)
   {
-    throw new NotImplementedException();
+    if (commands.TryGetValue(cmd, out var action))
+      action(args);
+    else
+      EngineConsole.WriteError($"unknown command '{cmd}'");
   }
 }

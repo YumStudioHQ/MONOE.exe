@@ -4,6 +4,7 @@ using System.Threading;
 using monoe.exe.Core.Base;
 using monoe.exe.Core.Engine;
 using monoe.exe.Core.Engine.Shell;
+using monoe.exe.Core.Engine.Shell.Lua;
 using monoe.exe.Core.Manager;
 using monoe.exe.YumSharp.Managed;
 
@@ -32,12 +33,6 @@ public class ManagedThread : ManagedObject
   {
     object[] threadArgs = [.. execParams, .. args];
     thread.Start(threadArgs);
-  }
-
-  private static bool IsLuaFile(string input)
-  {
-    return File.Exists(input) &&
-           Path.GetExtension(input).Equals(".lua", StringComparison.OrdinalIgnoreCase);
   }
 
   private static void SetUp(YumState state)
@@ -77,7 +72,7 @@ public class ManagedThread : ManagedObject
     object[] args = parameters.Length > 4 ? parameters[4..] : [];
 
     using YumState state = new(libs);
-    state.Run(code, IsLuaFile(code));
+    state.Run(code, LuaCLIService.IsLuaFile(code));
     SetUp(state);
     state.PushCallback("monoe.exit_requested", (_) => { return [ShouldExit()]; });
     var result = state.Call(entry, args);

@@ -11,9 +11,11 @@ config_version=5
 [application]
 
 config/name="monoe.exe"
-config/version="2.6.1"
+config/version="2.7.0"
 run/main_scene="uid://n0ipngfcc2e8"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
+boot_splash/bg_color=Color(0, 0, 0, 0)
+boot_splash/show_image=false
 config/icon="uid://bj7tile0lexte"
 
 [dotnet]
