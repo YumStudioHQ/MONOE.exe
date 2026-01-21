@@ -63,9 +63,9 @@ public partial class Main : Base.MainBase
 
   public override void _EnterTree()
   {
-    DisplayServer.WindowSetSize(Vector2I.One);
     if (nr)
     {
+      DisplayServer.WindowSetSize(Vector2I.One);
       GetTree().Quit();
     } else
     {

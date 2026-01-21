@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using monoe.exe.Core.Engine;
 using monoe.exe.Core.Engine.Resources;
 using monoe.exe.YumSharp.Managed;
 
@@ -30,7 +29,7 @@ public class Script : YumState, IDisposable
   public void Reload()
   {
     Clear();
-    base.Run($"package.path = package.path .. {EngineResources.LuaLibrariesFmt()}", false);
+    base.Run($"package.path = package.path .. {EngineResources.LuaLibrariesFmt().Replace("\\", "\\\\")}", false);
 
     try
     {
