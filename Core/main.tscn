@@ -1,6 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://n0ipngfcc2e8"]
+[gd_scene load_steps=3 format=3 uid="uid://n0ipngfcc2e8"]
 
+[ext_resource type="Theme" uid="uid://cfkmorw0ajrf5" path="res://Core/Themes/main.tres" id="1_5yh6k"]
 [ext_resource type="Script" uid="uid://cngok0as6w1dl" path="res://Core/Main.cs" id="1_ha1x3"]
 
-[node name="Node" type="Node"]
+[node name="Node" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_5yh6k")
 script = ExtResource("1_ha1x3")

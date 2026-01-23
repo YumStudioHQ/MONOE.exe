@@ -36,7 +36,7 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
   }
 
   private void _AddFrame(string name, Image frame, float duration, int pos)
-   => animation.SpriteFrames.AddFrame(name, frame.myImage, duration, pos);
+   => animation.SpriteFrames.AddFrame(name, frame.Texture, duration, pos);
 
   public void AddFrame(string name, long uid, double duration, long pos)
   {
@@ -109,8 +109,8 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
       double fps
     )
   {
-    int textureWidth = image.myImage.GetWidth();
-    int textureHeight = image.myImage.GetHeight();
+    int textureWidth = image.Texture.GetWidth();
+    int textureHeight = image.Texture.GetHeight();
 
     int columns = textureWidth / frameWidth;
     int rows = textureHeight / frameHeight;
@@ -140,7 +140,7 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
 
         AtlasTexture atlas = new()
         {
-          Atlas = image.myImage,
+          Atlas = image.Texture,
           Region = region
         };
 

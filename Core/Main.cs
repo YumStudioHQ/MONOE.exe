@@ -2,10 +2,8 @@ using System;
 using System.IO;
 using System.Linq;
 using Godot;
-using monoe.exe.Core.Engine;
 using monoe.exe.Core.Engine.Resources;
 using monoe.exe.Core.Engine.Shell;
-using monoe.exe.YumSharp.Managed;
 
 namespace monoe.exe.Core;
 

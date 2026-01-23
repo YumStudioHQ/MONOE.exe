@@ -76,13 +76,26 @@ Sets the text of the label
 
 ---
 
-## monoe.text:gettext
+## monoe.text:get
 
 Returns the text of the label
 
 ### Returns
 
 - `string`
+
+---
+
+## monoe.text:font
+
+Sets the font
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | `string|nil|` | '!' |
+| `size` | `integer|nil` |  |
 
 ---
 

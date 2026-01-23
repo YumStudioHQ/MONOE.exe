@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using monoe.exe.Core.Engine;
 using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Bridge;
@@ -95,7 +96,8 @@ public static class Importer
             .GetMethod(methodname,
                  BindingFlags.Public
                | BindingFlags.Instance
-               | BindingFlags.Static)
+               | BindingFlags.Static
+               | BindingFlags.NonPublic)
                ?? throw new MissingMethodException($"method {methodname} not found in base {instance.GetType().FullName}");
 
         var callArgs = args.Skip(2).ToArray();

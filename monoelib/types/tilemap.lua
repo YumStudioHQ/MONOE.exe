@@ -50,7 +50,7 @@ end
 function monoe.tilemap:load(name, source, tile_width, tile_height)
   local img = source
   local allocated = false
-  
+
   if type(source) == "string" then
     img = image.new(source)
   end
@@ -196,8 +196,8 @@ end
 ---Converts the global {x ; y} vector to a local vector, that represents their position in the tilemap.
 ---@param x number
 ---@param y number
----@return number
----@return number
+---@return integer
+---@return integer
 function monoe.tilemap:tolocal(x, y)
   ---@diagnostic disable-next-line: missing-return-value, return-type-mismatch
   return engine.call(self.uid, 'ToLocal', x, y)

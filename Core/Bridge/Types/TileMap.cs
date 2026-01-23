@@ -8,18 +8,21 @@ public class MTileMap : Exposable
 {
   private readonly TileMapLayer map = new()
   {
-    TileSet = new()
+    TileSet = new(),
+    GlobalPosition = Vector2.Zero
   };
 
   public void PlaceTile(long x, long y, long tileIndex, long tX, long tY)
-   => map.SetCell(new((int)x, (int)y), (int)tileIndex, new((int)tX, (int)tY));
+  {
+    map.SetCell(new((int)x, (int)y), (int)tileIndex, new((int)tX, (int)tY));
+  }
 
   private long _AddImage(Image image, Vector2I tileSize)
   {
     map.TileSet.TileSize = tileSize;
     var source = new TileSetAtlasSource
     {
-      Texture = image.myImage,
+      Texture = image.Texture,
       TextureRegionSize = tileSize
     };
 
@@ -61,13 +64,14 @@ public class MTileMap : Exposable
 
   public object[] ToLocal(double x, double y)
   {
-    Vector2 vec = map.ToLocal(new Vector2((float)x, (float)y));
+    Vector2I vec = map.LocalToMap(new Vector2((float)x, (float)y));
     return [vec.X, vec.Y];
   }
 
-  public object[] ToGlobal(double x, double y)
+  public object[] ToGlobal(long x, long y)
   {
-    Vector2 vec = map.ToGlobal(new Vector2((float)x, (float)y));
+    Vector2 vec = map.MapToLocal(new Vector2I((int)x, (int)y));
+    vec = map.ToGlobal(vec);
     return [vec.X, vec.Y];
   }
 

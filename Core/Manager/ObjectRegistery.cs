@@ -36,7 +36,7 @@ public static class ObjectRegistry
 
   public static void Clear()
   {
-    EngineConsole.Verbose("clearing managed objects ...");
+    EngineConsole.Verbose("cleaning managed objects ...");
     var oldObjects = Interlocked.Exchange(ref _objects, new ConcurrentDictionary<long, object>());
     EngineConsole.Verbose($"{oldObjects.Count} objects will be deleted");
 
