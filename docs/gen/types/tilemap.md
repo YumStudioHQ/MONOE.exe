@@ -197,8 +197,8 @@ Converts the global {x ; y} vector to a local vector, that represents their posi
 
 ### Returns
 
-- `number`
-- `number`
+- `integer`
+- `integer`
 
 ---
 

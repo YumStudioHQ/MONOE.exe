@@ -99,3 +99,30 @@ Sets the font
 
 ---
 
+## monoe.text:color
+
+Sets the font color
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `r` | `number` | Red |
+| `g` | `number` | Green |
+| `b` | `number` | Blue |
+| `a` | `number|nil` | Alpha |
+
+---
+
+## monoe.text:free
+
+Frees the resources (no longer usable)
+
+---
+
+## monoe.text:remove
+
+Removes the object from its rendering server
+
+---
+

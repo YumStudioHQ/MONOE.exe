@@ -21,6 +21,7 @@
 - [monoe.system.console](gen/system/console.md)
 - [monoe.system.fswatcher](gen/system/fswatcher.md)
 - [monoe.system.threading](gen/system/threading.md)
+- [monoe.system.timer](gen/system/timer.md)
 - [monoe.text](gen/ui/text.md)
 - [monoe.tilemap](gen/types/tilemap.md)
 - [monoe.vec2](gen/types/vec2.md)
