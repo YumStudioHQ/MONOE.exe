@@ -15,7 +15,7 @@ using Timer = Godot.Timer;
 
 namespace monoe.exe.Core.Base;
 
-public partial class MainBase : Node
+public partial class MainBase : Control
 {
   private static Script main = null;
   protected GameSettings gameSettings;
@@ -281,9 +281,8 @@ public partial class MainBase : Node
     Emit("onexit");
     Emit("onfree");
     Manager.ObjectRegistry.Clear();
+    ResourceManager.Clear();
     watcher?.Dispose();
-
-    main?.Dispose();
 
     while (!GarbageCollector.IsEmpty)
     {
@@ -293,6 +292,8 @@ public partial class MainBase : Node
       }
       else EngineConsole.WriteError("[rejected]: Failled to deque an element !");
     }
+
+    main?.Dispose();
 
     EngineConsole.Verbose("process finished");
   }

@@ -1,6 +1,6 @@
 namespace monoe.exe.Core.Engine.Resources;
 
-public class RuntimeResource(string name, string path, string resources)
+public class MonoeRuntimeInfo(string name, string path, string resources)
 {
   public string Name { get; private set; } = name;
 

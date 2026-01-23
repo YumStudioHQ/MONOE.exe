@@ -42,18 +42,56 @@ public static class KeyResolver
       => _map.TryGetValue(Normalize(input), out key);
 }
 
-
+/// <summary>
+/// Primitive-only keyboard input bridge.
+/// Exposes physical keys and Godot actions using strings and booleans.
+/// </summary>
 public static class Keyboard
 {
+  /// <summary>
+  /// Returns true if a physical key is currently pressed.
+  /// Example keys: "a", "space", "enter", "esc", "left", "right"
+  /// </summary>
   public static bool KeyPressed(string key)
   {
-    if (KeyResolver.TryResolve(key, out Key Gkey))
-      return Input.IsPhysicalKeyPressed(Gkey);
-
-    return false;
+    return KeyResolver.TryResolve(key, out var k)
+      && Input.IsPhysicalKeyPressed(k);
   }
 
-  public static bool ActionPressed(string name) => Input.IsActionPressed(name);
-  public static bool ActionJustPressed(string name) => Input.IsActionJustPressed(name);
-  public static bool ActionReleased(string name) => Input.IsActionJustReleased(name);
+  /// <summary>
+  /// Returns true if a Godot input action is currently pressed.
+  /// </summary>
+  public static bool ActionPressed(string action)
+    => Input.IsActionPressed(action);
+
+  /// <summary>
+  /// Returns true if a Godot input action was just pressed this frame.
+  /// </summary>
+  public static bool ActionJustPressed(string action)
+    => Input.IsActionJustPressed(action);
+
+  /// <summary>
+  /// Returns true if a Godot input action was just released this frame.
+  /// </summary>
+  public static bool ActionJustReleased(string action)
+    => Input.IsActionJustReleased(action);
+
+  /// <summary>
+  /// Returns the strength of a Godot input action (0.0 → 1.0).
+  /// Useful for analog input.
+  /// </summary>
+  public static double ActionStrength(string action)
+    => Input.GetActionStrength(action);
+
+  /// <summary> True if Shift is pressed </summary>
+  public static bool Shift() => Input.IsKeyPressed(Key.Shift);
+
+  /// <summary> True if Ctrl is pressed </summary>
+  public static bool Ctrl() => Input.IsKeyPressed(Key.Ctrl);
+
+  /// <summary> True if Alt is pressed </summary>
+  public static bool Alt() => Input.IsKeyPressed(Key.Alt);
+
+  /// <summary> True if Meta / Super is pressed </summary>
+  public static bool Meta() => Input.IsKeyPressed(Key.Meta);
 }

@@ -7,7 +7,7 @@ namespace monoe.exe.Core.Engine.Resources;
 
 public static class EngineResources
 {
-  private static RuntimeResource[] runtimeResources = [];
+  private static MonoeRuntimeInfo[] runtimeResources = [];
 
   public static string GetResourceDir()
    => Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName; 
@@ -24,7 +24,7 @@ public static class EngineResources
 
   private static void Init()
   {
-    List<RuntimeResource> runtimes = [];
+    List<MonoeRuntimeInfo> runtimes = [];
     var dir = GetResourceDir("runtimes");
     var files = Directory.GetFiles(dir)
                          .Where(file => file.EndsWith(".zip"))
@@ -56,6 +56,6 @@ public static class EngineResources
     }
   }
 
-  public static RuntimeResource[] GetRuntimes()
+  public static MonoeRuntimeInfo[] GetRuntimes()
    => runtimeResources;
 }

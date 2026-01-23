@@ -5,25 +5,25 @@ namespace monoe.exe.Core.Bridge.Types;
 
 public class Image : ManagedObject
 {
-  public Texture2D myImage { get; protected set; }
+  public Texture2D Texture { get; protected set; }
   protected string path;
 
   public Image() { }
 
   public Image(Texture2D texture)
   {
-    myImage = texture;
+    Texture = texture;
   }
 
   public void LoadImage(string path)
   {
-    myImage = ImageTexture.CreateFromImage(Godot.Image.LoadFromFile(path));
+    Texture = ImageTexture.CreateFromImage(Godot.Image.LoadFromFile(path));
     this.path = path;
   }
 
   public void Clear()
   {
-    myImage = null;
+    Texture = null;
     path = "";
   }
 
@@ -39,10 +39,10 @@ public class Image : ManagedObject
 
   public void ReplaceColor(string fromU, string toU)
   {
-    if (myImage == null)
+    if (Texture == null)
       return;
 
-    var image = myImage.GetImage();
+    var image = Texture.GetImage();
 
     var from = Color.FromString(fromU, new Color());
     var to = Color.FromString(toU, new Color());
@@ -58,15 +58,10 @@ public class Image : ManagedObject
       }
     }
 
-    myImage = ImageTexture.CreateFromImage(image);
+    Texture = ImageTexture.CreateFromImage(image);
   }
-
-
 
   public string GetPath() => path;
 
-  protected override void _Free()
-  {
-    myImage.Free();
-  }
+  protected override void _Free() {}
 }

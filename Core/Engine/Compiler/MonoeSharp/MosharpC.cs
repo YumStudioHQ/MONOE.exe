@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using monoe.exe.Core.Engine.Shell;
-using System.Reflection;
 
 namespace monoe.exe.Core.Engine.Compiler.MonoeSharp;
 
@@ -56,7 +55,14 @@ public sealed class CSharpCompiler
 
     foreach (var dll in Directory.GetFiles(runtimeDir, "*.dll"))
     {
-      references.Add(MetadataReference.CreateFromFile(dll));
+      try
+      {
+        references.Add(MetadataReference.CreateFromFile(dll));
+      }
+      catch (BadImageFormatException)
+      {
+        // Native DLL → ignore
+      }
     }
 
     references = [.. references

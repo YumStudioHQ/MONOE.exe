@@ -79,6 +79,20 @@ function monoe.event.emit(name, ...)
   end
 end
 
+monoe.event.subscribe("onfree", function()
+  for name, list in pairs(monoe.event._once) do
+    if not list or #list == 0 then
+      monoe.event._once[name] = nil
+    end
+  end
+
+  for name, list in pairs(monoe.event._listeners) do
+    if not list or #list == 0 then
+      monoe.event._listeners[name] = nil
+    end
+  end
+end)
+
 _G.monoe = monoe
 _G.monoe.event = monoe.event
 
