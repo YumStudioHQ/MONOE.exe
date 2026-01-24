@@ -325,8 +325,10 @@ public partial class MainBase : Control
     else
     {
       main = new(gameSettings.MainFile, true, luaErrorHandler);
-      main.Run("deps = deps or function()end", false); // Ensure the next call.
     }
+
+    // After issue #29, as the editor itself ... does not have it (yet).
+    main.Run("deps = deps or function()end", false);
 
     // 2. Load dependencies
     var libs = main.Call("deps")
