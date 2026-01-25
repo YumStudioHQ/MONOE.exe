@@ -5,11 +5,11 @@
 
 ### Importants
 
-* [!] Label, Texts, ...
+* [x] Label, Texts, ...
 * [!] Export .ignore (in the .monoe/)
 * [!] Window access extension: resizable, expand-mode, settings, ...
 * [!] TextureButton, Button, Scrollable, V/HBox containers.
-* [!] Hot-reload on qualified tables
+* [x] Hot-reload on qualified tables
 
 ### Features
 

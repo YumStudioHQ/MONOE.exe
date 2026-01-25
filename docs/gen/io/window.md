@@ -145,3 +145,16 @@ Returns the center coordinates of the window.
 
 ---
 
+## monoe.io.window:close_request
+
+Registers a callable that'll be called when a window closing is requested.
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | `function` |  |
+| `once` | `boolean|nil` |  |
+
+---
+

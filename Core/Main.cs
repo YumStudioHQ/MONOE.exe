@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Godot;
+using monoe.exe.Core.Engine;
 using monoe.exe.Core.Engine.Resources;
 using monoe.exe.Core.Engine.Shell;
 
@@ -29,7 +30,7 @@ public partial class Main : Base.MainBase
     {
       var arg = margs[i];
       if (arg == "-nr") nr = true;
-      else if (arg == "-dev") continue;
+      else if (arg == "-dev") Application.IsDevMode = true;
       else
       {
         Shell.ExecuteCommand(arg.StartsWith('-') ? arg[1..] : arg, i + 1 >= margs.Length ? [] : margs[(i+1)..]);
@@ -56,6 +57,7 @@ public partial class Main : Base.MainBase
         IsVerbose = OS.GetCmdlineArgs().Contains("-mverb"),
         MainFile = "res/main.lua"
       };
+      Application.IsEditor = false;
     }
   }
 

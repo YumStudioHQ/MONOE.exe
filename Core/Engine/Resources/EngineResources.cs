@@ -10,17 +10,25 @@ public static class EngineResources
   private static MonoeRuntimeInfo[] runtimeResources = [];
 
   public static string GetResourceDir()
-   => Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName; 
-  
+   => Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName;
+
+  public static string GetRuntimeResourceDir()
+   => Application.IsDevMode ? Path.GetFullPath("./res/") : GetResourceDir();
+
   public static string GetResourceDir(params string[] paths)
-   => Path.Join([GetResourceDir(), ..paths]);
+   => Path.Join([GetResourceDir(), .. paths]);
 
   public static string LuaLibrariesFmt()
-  { 
-    var path = GetResourceDir();
-    path = !path.EndsWith('/') ? path : path[..(path.Length - 1)];
+  {
+    var path = GetResourceDir()
+              .Replace('\\', '/');
+
+    if (path.EndsWith('/'))
+      path = path[..^1];
+
     return $"';{path}/?.lua'";
   }
+
 
   private static void Init()
   {
@@ -29,7 +37,7 @@ public static class EngineResources
     var files = Directory.GetFiles(dir)
                          .Where(file => file.EndsWith(".zip"))
                          .ToArray();
-    
+
     foreach (var file in files)
     {
       var resrel = "";
@@ -41,7 +49,7 @@ public static class EngineResources
       runtimes.Add(new(file.Replace(".zip", ""), Path.Join(dir, Path.GetFileName(file)), resrel));
     }
 
-    runtimeResources = [..runtimes];
+    runtimeResources = [.. runtimes];
   }
 
   static EngineResources()

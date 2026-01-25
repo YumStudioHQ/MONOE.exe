@@ -21,13 +21,13 @@ end
 ---Writes in the console. Arguments are not formated.
 ---@param ... any
 function monoe.system.console.write(...)
-  engine.staticcall(base, 'Write', get_strings(...))
+  engine.staticcall(base, 'LWrite', get_strings(...))
 end
 
 ---Writes in the console, and adds a line at the end. Arguments are not formated.
 ---@param ... any
 function monoe.system.console.writeline(...)
-  engine.staticcall(base, 'WriteLine', get_strings(...))
+  engine.staticcall(base, 'LWriteLine', get_strings(...))
 end
 
 ---Writes a warning in the console. The warning is printed in yellow, with a time stamp.

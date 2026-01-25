@@ -1,6 +1,7 @@
 ---@diagnostic disable: return-type-mismatch, missing-return-value
 local engine = require('monoelib.engine')
 local rendering = require('monoelib.rendering')
+local event = require('monoelib.event')
 
 monoe = monoe or {}
 monoe.io = monoe.io or {}
@@ -90,6 +91,18 @@ end
 function monoe.io.window:center()
   local width, height = self:size()
   return width / 2, height / 2
+end
+
+---Registers a callable that'll be called when a window closing is requested.
+---@param func function
+---@param once boolean|nil
+function monoe.io.window:close_request(func, once)
+  ---@type string
+  ---@diagnostic disable-next-line: assign-type-mismatch
+  local name = engine.call(self.uid, 'GetEventName')
+  if once then event.once(name, func)
+  else event.subscribe(name, func)
+  end
 end
 
 _G.monoe = monoe

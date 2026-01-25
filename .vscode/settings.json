@@ -1,12 +1,23 @@
 {
-  "Lua.workspace.ignoreDir": [
-    "release", "build"
+  "Lua.runtime.path": [
+    "./?.lua",
+    "./?/init.lua",
+    "./monoelib/?.lua",
+    "./monoelib/?/init.lua"
   ],
-  "C_Cpp.errorSquiggles": "enabled",
+
+  "Lua.workspace.library": [
+    "./",
+  ],
+
+  "Lua.workspace.ignoreDir": [
+    "release",
+    "build",
+    "/Applications/monoe.exe.app"
+  ],
+
   "Lua.diagnostics.disable": [
     "lowercase-global"
   ],
-  "Lua.workspace.library": [
-    "./"
-  ]
+  "Lua.workspace.checkThirdParty": false
 }

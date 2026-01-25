@@ -6,6 +6,21 @@ local rendering = require('monoelib.rendering')
 ---You may check out monoe.system in order to get deeper or more low-level features.
 monoe = monoe or {}
 
+---@class monoe.info
+monoe.info = monoe.info or {
+  os = {
+    name = 'unknown',
+    version = 'unknown',
+    argv = {},
+    exit = function(code) end
+  },
+  runtime = {
+    version = 'unknown',
+    isdev = false,
+    iseditor = false,
+  },
+}
+
 ---Imports a class by name.
 ---@param class string Name of the class to import.
 ---@param ... any Optional arguments that you can pass to the constructor.
@@ -175,6 +190,8 @@ function monoe.qualify(self, static)
   end
 
   if type(self.root) == "table" then
+    _attach(self)
+  elseif type(self.uid) == 'number' then
     _attach(self)
   end
 end

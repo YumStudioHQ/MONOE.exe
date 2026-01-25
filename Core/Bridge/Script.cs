@@ -29,11 +29,10 @@ public class Script : YumState, IDisposable
   public void Reload()
   {
     Clear();
-    base.Run($"package.path = package.path .. {EngineResources.LuaLibrariesFmt().Replace("\\", "\\\\")}", false);
+    base.Run($"package.path = package.path .. {EngineResources.LuaLibrariesFmt()}", false);
 
     try
     {
-      base.Run("function ready()end function process()end function physics()end function exit()end", false);
       base.Run(src, isFile);
     } 
     catch (YumException e)

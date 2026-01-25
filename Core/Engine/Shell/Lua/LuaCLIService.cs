@@ -37,7 +37,7 @@ public static class LuaCLIService
   public static void LuaCLI(YumState state)
   {
     EngineConsole.WriteLine($"monoe lua -- based on monoe.exe@{Version.All}");
-    while (!AppLifetime.IsShuttingDown)
+    while (!Application.IsShuttingDown)
     {
       var line = EngineConsole.ReadLine("> ", System.ConsoleColor.Green);
       if (line.Trim() == ":exit") return;

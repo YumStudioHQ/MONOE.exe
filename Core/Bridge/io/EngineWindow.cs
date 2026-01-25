@@ -1,4 +1,5 @@
 using Godot;
+using monoe.exe.Core.Base;
 using monoe.exe.Core.Bridge.Types;
 using monoe.exe.Core.Bridge.Types.Interfaces;
 
@@ -7,10 +8,20 @@ namespace monoe.exe.Core.Bridge.io;
 public class EngineWindow : Exposable, IPositionable2D, IScalable2D
 {
   private readonly Window win;
+  private string eventName;
 
   public EngineWindow()
-   => win = new();
-  
+  {
+    win = new();
+    win.Connect("close_requested", Callable.From(OnCloseRequested));
+  }
+
+  public string GetEventName()
+  {
+    eventName = $"@win:on_close_request#{UID}";
+    return eventName;
+  }
+
   public bool Visible(bool Femboy)
   {
     win.Visible = Femboy;
@@ -116,6 +127,9 @@ public class EngineWindow : Exposable, IPositionable2D, IScalable2D
   {
     win.QueueFree();
   }
+
+  public void OnCloseRequested()
+   => MainBase.Emit(eventName);
 }
 
 public static class EngineMainWindow

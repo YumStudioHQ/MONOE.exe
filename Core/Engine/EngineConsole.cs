@@ -155,4 +155,7 @@ public static class EngineConsole
     var time = DateTime.Now.ToString("HH:mm:ss.ffff");
     WriteError(string.Join("", args.Select(obj => obj.ToString() ?? "")));
   }
+
+  public static void LWrite(params object[] s) => Write(s);
+  public static void LWriteLine(params object[] s) => WriteLine(s);
 }

@@ -17,7 +17,7 @@ namespace monoe.exe.Core.Base;
 
 public partial class MainBase : Control
 {
-  private static Script main = null;
+  private static Script mainState = null;
   protected GameSettings gameSettings;
   private FileSystemWatcher watcher;
   private static readonly ConcurrentQueue<Action> mainThreadQueue = new();
@@ -26,17 +26,17 @@ public partial class MainBase : Control
   private Timer cleanupTimer;
   public readonly static ConcurrentQueue<Action> GarbageCollector = [];
   private static Action reloadRequestAction = () => { };
-  private static Action exitRequestionAction = () => { };
+  private static Action<int> exitRequestionAction = (_) => { };
   private volatile bool exitTreeCalled = false;
 
   public static void Emit(string @event, params object[] args)
   {
-    main?.Call("monoe.event.emit", [@event, .. args]);
+    mainState?.Call("monoe.event.emit", [@event, .. args]);
   }
 
   public static object[] LCall(string method, params object[] args)
   {
-    return main.Call(method, args);
+    return mainState.Call(method, args);
   }
 
   public static void EnqueueOnMain(Action action) => mainThreadQueue.Enqueue(action);
@@ -61,15 +61,15 @@ public partial class MainBase : Control
     });
   }
 
-  public static void RequestExit()
+  public static void RequestExit(int code = 0)
   {
     EnqueueOnMain(() =>
     {
-      if (AppLifetime.IsShuttingDown)
+      if (Application.IsShuttingDown)
         return;
 
-      AppLifetime.IsShuttingDown = true;
-      exitRequestionAction();
+      Application.IsShuttingDown = true;
+      exitRequestionAction(code);
     });
   }
 
@@ -100,7 +100,7 @@ public partial class MainBase : Control
   }
 
   public static void Run(string code) // This Run method is only for string injections!
-   => main.Run(code, false);
+   => mainState.Run(code, false);
 
   public MainBase()
   {
@@ -159,15 +159,15 @@ public partial class MainBase : Control
     {
       EngineConsole.Verbose("reloading...");
       Manager.ObjectRegistry.Clear();
-      main.Reload();
+      mainState.Reload();
       LoadProject();
     };
 
     // And exit!
 
-    exitRequestionAction = () =>
+    exitRequestionAction = (c) =>
     {
-      GetTree().Quit();
+      GetTree().Quit(c);
     };
 
     //// Then, the shell
@@ -194,7 +194,7 @@ public partial class MainBase : Control
     {
       EngineConsole.WriteError("cannot load project!");
       EngineConsole.WriteError(e);
-      AppLifetime.IsShuttingDown = true;
+      Application.IsShuttingDown = true;
       GetTree().Quit(-1);
     }
 
@@ -243,7 +243,7 @@ public partial class MainBase : Control
 
   public override void _Process(double delta)
   {
-    if (AppLifetime.IsShuttingDown) return;
+    if (Application.IsShuttingDown) return;
     /*
      * Seen as `process` event in Lua, this function is designed in order to update the game.
      * If you need to update physics, use the `physics` event instead.
@@ -262,7 +262,7 @@ public partial class MainBase : Control
 
   public override void _PhysicsProcess(double delta)
   {
-    if (AppLifetime.IsShuttingDown) return;
+    if (Application.IsShuttingDown) return;
     /*
      * Updates physics.
      */
@@ -293,7 +293,7 @@ public partial class MainBase : Control
       else EngineConsole.WriteError("[rejected]: Failled to deque an element !");
     }
 
-    main?.Dispose();
+    mainState?.Dispose();
 
     EngineConsole.Verbose("process finished");
   }
@@ -320,18 +320,18 @@ public partial class MainBase : Control
     {
       var path = Path.Combine(EngineResources.GetResourceDir(), "main.lua");
       EngineConsole.Verbose($"loading editor at {path}");
-      main = new(path, true, luaErrorHandler); 
+      mainState = new(path, true, luaErrorHandler); 
     }
     else
     {
-      main = new(gameSettings.MainFile, true, luaErrorHandler);
+      mainState = new(gameSettings.MainFile, true, luaErrorHandler);
     }
 
     // After issue #29, as the editor itself ... does not have it (yet).
-    main.Run("deps = deps or function()end", false);
+    mainState.Run("deps = deps or function()end", false);
 
     // 2. Load dependencies
-    var libs = main.Call("deps")
+    var libs = mainState.Call("deps")
                    .Where(o => o is string s && string.IsNullOrEmpty(s.Trim()))
                    .Cast<string>()
                    .ToArray();
@@ -343,12 +343,12 @@ public partial class MainBase : Control
      * Note: these callbacks are "visible" in monolib.lua and unique_event.lua files!
      * But you can absolutely use them without these files — They are designed only for IDEs!
      */
-    main.PushCallback("monoe.import", Importer.Limport);
-    main.PushCallback("monoe.call", Importer.Lcall);
-    main.PushCallback("monoe.staticcall", Importer.Lstaticcall);
-    main.PushCallback("monoe.wait", Lsleep);
-    main.PushCallback("monoe.shell", Shell.Prompt);
-    string injection = """
+    mainState.PushCallback("monoe.import", Importer.Limport);
+    mainState.PushCallback("monoe.call", Importer.Lcall);
+    mainState.PushCallback("monoe.staticcall", Importer.Lstaticcall);
+    mainState.PushCallback("monoe.wait", Lsleep);
+    mainState.PushCallback("monoe.shell", Shell.Prompt);
+    string injection = $$"""
                        monoe = monoe or {}
                        monoe.event = monoe.event or {}
                        monoe.event.emit = monoe.event.emit or function(name)end
@@ -361,13 +361,14 @@ public partial class MainBase : Control
                          end
                          monoe.staticcall("monoe.exe.Core.Engine.EngineConsole", "Print", table.unpack(args))
                        end
+                       {{LoadRuntimeInformations()}}
                        """;
-    main.Run(injection, false);
+    mainState.Run(injection, false);
 
     // 5. Call main.
     Run("main = main or function() end");
 
-    var margs = main.Call("main");
+    var margs = mainState.Call("main");
 
     // 6. Load scripts (They are generally requested from the main function!)
     Emit("@load");
@@ -397,12 +398,39 @@ public partial class MainBase : Control
     };
   }
 
+  private static string LoadRuntimeInformations()
+  => $$"""
+     monoe.info = {
+       os = {
+         name = '{{OS.GetName()}}',
+         version = '{{OS.GetVersion()}}',
+         argv = {{{GetFormatedCmdlineArgs()}}},
+         exit = function(code) monoe.staticcall('monoe.exe.Core.Engine.Application', 'Exit', code or 0)end
+       },
+       runtime = {
+         version = '{{Version.All}}',
+         isdev = {{(Application.IsDevMode ? "true" : "false")}},
+         iseditor = {{(Application.IsEditor ? "true" : "false")}},
+       }
+     }
+     """;
+
+  private static string GetFormatedCmdlineArgs()
+  {
+    string s = "{";
+
+    foreach (var arg in OS.GetCmdlineArgs())
+      s += $"'{arg}',";
+
+    return s + '}';
+  }
+
   private void OnFileChanged(object sender, FileSystemEventArgs e)
   {
     if (e.ChangeType != WatcherChangeTypes.Changed) return;
     EngineConsole.WriteLine($"\n> file changed {e.FullPath}", ConsoleColor.DarkGray);
 
-    if (Path.GetFullPath(e.Name) == Path.GetFullPath(gameSettings.MainFile))
+    if (Path.GetFullPath(e.FullPath) == Path.GetFullPath(gameSettings.MainFile))
     {
       EngineConsole.Verbose("requested reboot...");
       mainThreadQueue.Enqueue(() =>

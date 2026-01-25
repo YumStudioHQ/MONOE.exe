@@ -57,7 +57,7 @@ public static class Shell
   {
     EngineConsole.Verbose("monoe shell — type `:<cmd>` to execute commands, or write Lua code.");
 
-    while (!AppLifetime.IsShuttingDown)
+    while (!Application.IsShuttingDown)
     {
       while (Volatile.Read(ref commandRunning) != 0)
         Thread.Sleep(1);
