@@ -5,6 +5,8 @@
 - [monoe.audio](gen/types/audio.md)
 - [monoe.cam](gen/types/cam.md)
 - [monoe.color](gen/colors.md)
+- [monoe.container](gen/ui/container.md)
+- [monoe.csbuff](gen/types/csbuff.md)
 - [monoe.engine.window](gen/io/window.md)
 - [monoe.entity](gen/types/entity.md)
 - [monoe.event](gen/event.md)

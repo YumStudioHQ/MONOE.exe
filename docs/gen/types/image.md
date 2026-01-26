@@ -64,6 +64,20 @@ replaces the color a by the color b.
 
 ---
 
+## monoe.image:overlay
+
+Adds an overlay
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `img` | `monoe.image|integer|string` |  |
+| `x` | `integer` |  |
+| `y` | `integer` |  |
+
+---
+
 ## monoe.image:free
 
 Frees the engine-side resources associated with this image.

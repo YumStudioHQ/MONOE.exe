@@ -7,7 +7,6 @@ monoe = monoe or {}
 
 ---@class monoe.sprite
 ---@field uid integer Unique ID for the engine-side sprite object
----@field zindex integer
 monoe.sprite = {}
 monoe.sprite.__index = monoe.sprite
 
@@ -28,7 +27,7 @@ function monoe.sprite.new(path)
     engine.call(uid, 'LoadImage', path)
   end
 
-  return setmetatable({ uid = uid, zindex = 0 }, monoe.sprite)
+  return setmetatable({ uid = uid }, monoe.sprite)
 end
 
 ---Clears the sprite image.
@@ -37,9 +36,12 @@ function monoe.sprite:clear()
 end
 
 ---Loads an image into the sprite.
----@param path string File path of the image
+---@param path string|integer|monoe.image File path of the image
 function monoe.sprite:load(path)
-  engine.call(self.uid, 'LoadImage', path)
+  if type(path) == "string" or type(path) == 'number' then
+    engine.call(self.uid, 'LoadImage', path)
+  else engine.call(self.uid, 'LoadImage', path.uid)
+  end
 end
 
 ---Sets or gets the position of the sprite.
@@ -77,7 +79,7 @@ end
 ---Returns the sprite's image object.
 ---@return monoe.image
 function monoe.sprite:image()
----@diagnostic disable-next-line: param-type-mismatch
+  ---@diagnostic disable-next-line: param-type-mismatch
   return image.new(engine.call(self.uid, 'GetImageUID'))
 end
 

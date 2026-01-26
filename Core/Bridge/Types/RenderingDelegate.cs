@@ -3,7 +3,7 @@ using monoe.exe.Core.Bridge.Types.Interfaces;
 
 namespace monoe.exe.Core.Bridge.Types;
 
-public class RenderingDelegate : Exposable, IPositionable2D, IScalable2D
+public class RenderingDelegate : Exposable, IPositionable2D, IScalable2D, IAttacher
 {
   private readonly Node2D node = new();
 

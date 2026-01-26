@@ -1,5 +1,7 @@
 using System.IO;
+using monoe.exe.Core.Bridge.Types;
 using monoe.exe.Core.Engine.Resources;
+using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Bridge.io;
 
@@ -30,8 +32,13 @@ public static class PathLib
   public static void CopyFile(string sourcePath, string destPath) 
    => File.Copy(FullPath(sourcePath), FullPath(destPath));
 
-  public static object[] GetContent(string path) 
-   => [..Directory.GetFiles(FullPath(path)), ..Directory.GetDirectories(FullPath(path))];
+  public static long GetContent(string path)
+  {
+    return ObjectRegistry.Register(new LazyReadonlyBuffer()
+    {
+      Hold = [..Directory.GetFiles(FullPath(path)), ..Directory.GetDirectories(FullPath(path))]
+    });
+  }
 
   public static string GetParent(string path) => FullPath(Directory.GetParent(path).FullName);
 

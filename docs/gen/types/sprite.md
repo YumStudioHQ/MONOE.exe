@@ -5,7 +5,6 @@
 ## Properties
 
 - **uid** (`integer`): Unique ID for the engine-side sprite object
-- **zindex** (`integer`): 
 
 ## monoe.sprite.new
 
@@ -38,7 +37,7 @@ Loads an image into the sprite.
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | File path of the image |
+| `path` | `string|integer|monoe.image` | File path of the image |
 
 ---
 

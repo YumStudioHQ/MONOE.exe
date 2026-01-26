@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 using monoe.exe.Core.Bridge.Types.Interfaces;
 using monoe.exe.Core.Manager;
@@ -8,9 +9,16 @@ public class Sprite : Exposable, IPositionable2D, IScalable2D
 {
   private readonly Sprite2D sprite = new();
 
-  public void LoadImage(string path)
+  public void LoadImage(object obj)
   {
-    sprite.Texture = ImageTexture.CreateFromImage(Godot.Image.LoadFromFile(path));
+    if (obj is string path)
+      sprite.Texture = ImageTexture.CreateFromImage(Godot.Image.LoadFromFile(path));
+    else if (obj is long uid)
+    {
+      if (ObjectRegistry.TryGet(uid, out Image image))
+        sprite.Texture = image.Texture;
+      else throw new KeyNotFoundException($"UID: {uid} is not an image");
+    }
   }
 
   public void Clear()

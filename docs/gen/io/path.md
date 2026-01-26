@@ -108,3 +108,19 @@ Checks if a path exists
 
 ---
 
+## monoe.path.filename
+
+Returns the file's name
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | `string` |  |
+
+### Returns
+
+- `string`
+
+---
+

@@ -1,4 +1,5 @@
 local engine = require('monoelib.engine')
+local csbuff = require('monoelib.types.csbuff')
 
 monoe = monoe or {}
 
@@ -22,7 +23,7 @@ end
 ---@param dst string Destination path
 function monoe.path.copy(isdir, src, dst)
     if not isdir then
-        engine.staticcall(base, 'CopyFile', src, dst)
+      engine.staticcall(base, 'CopyFile', src, dst)
     else
         engine.staticcall(base, 'CopyDirectory', src, dst)
     end
@@ -32,7 +33,8 @@ end
 ---@param path string
 ---@return string[]
 function monoe.path.content(path)
-    return engine.staticcall(base, 'GetContent', path)
+    local content = csbuff.new(engine.staticcall(base, 'GetContent', path))
+    return content:unpack()
 end
 
 ---Returns the parent directory of a path
@@ -60,6 +62,13 @@ end
 ---@return boolean
 function monoe.path.exist(path)
     return engine.staticcall(base, 'Exist', path)
+end
+
+---Returns the file's name
+---@param path string
+---@return string
+function monoe.path.filename(path)
+  return path:match("^.+[/\\](.+)$") or path
 end
 
 _G.monoe = _G.monoe or {}

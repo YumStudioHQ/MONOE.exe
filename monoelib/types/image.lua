@@ -72,6 +72,21 @@ function monoe.image:replace(a, b)
   engine.call(self.uid, 'ReplaceColor', _a, _b)
 end
 
+---Adds an overlay
+---@param img monoe.image|integer|string
+---@param x integer
+---@param y integer
+function monoe.image:overlay(img, x, y)
+  if type(img) == "table" then
+    engine.call(self.uid, 'OverlayImage', img.uid, x, y)
+  elseif type(img) == "number" then
+    engine.call(self.uid, 'OverlayImage', img, x, y)
+  else
+    ---@diagnostic disable-next-line: param-type-mismatch
+    engine.call(self.uid, 'OverlayImage', monoe.image.new(img), x, y)
+  end
+end
+
 ---Frees the engine-side resources associated with this image.
 function monoe.image:free()
   engine.call(self.uid, 'Free')

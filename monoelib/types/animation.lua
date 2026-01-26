@@ -8,7 +8,6 @@ monoe = monoe or {}
 
 ---@class monoe.animation
 ---@field uid integer Unique ID for the engine-side animation object
----@field zindex integer
 monoe.animation = {}
 monoe.animation.__index = monoe.animation
 
@@ -23,7 +22,7 @@ function monoe.animation.new()
     error('Failed to create monoe.animation object: invalid UID!')
   end
 
-  return setmetatable({ uid = uid, zindex = 0 }, monoe.animation)
+  return setmetatable({ uid = uid }, monoe.animation)
 end
 
 ---Adds a new animation by name.

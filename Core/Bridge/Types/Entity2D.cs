@@ -3,7 +3,7 @@ using monoe.exe.Core.Bridge.Types.Interfaces;
 
 namespace monoe.exe.Core.Bridge.Types;
 
-public class Entity2D : Exposable, IPositionable2D, IScalable2D
+public class Entity2D : Exposable, IPositionable2D, IScalable2D, IAttacher
 {
   protected CharacterBody2D node;
 

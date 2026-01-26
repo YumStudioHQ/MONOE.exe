@@ -1,11 +1,14 @@
+using System.Collections.Generic;
 using Godot;
+using monoe.exe.Core.Engine;
 using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Bridge.Types;
 
-public class Image : ManagedObject
+public class Image : Exposable
 {
   public Texture2D Texture { get; protected set; }
+  public TextureRect RenderingRect = null;
   protected string path;
 
   public Image() { }
@@ -36,7 +39,6 @@ public class Image : ManagedObject
         Mathf.Abs(a.A - b.A) < 0.01f;
   }
 
-
   public void ReplaceColor(string fromU, string toU)
   {
     if (Texture == null)
@@ -61,7 +63,56 @@ public class Image : ManagedObject
     Texture = ImageTexture.CreateFromImage(image);
   }
 
+  private void _OverlayImage(Godot.Image overlay, Vector2I position)
+  {
+    if (Texture == null || overlay == null)
+    {
+      EngineConsole.WriteWarning($"{this.GetType().FullName}.{nameof(OverlayImage)}: one of the two images is null. (skipping)");
+      return;
+    }
+
+    var baseImage = Texture.GetImage();
+
+    baseImage.Convert(Godot.Image.Format.Rgba8);
+    overlay.Convert(Godot.Image.Format.Rgba8);
+
+    var rect = new Rect2I(
+      Vector2I.Zero,
+      overlay.GetSize()
+    );
+
+    baseImage.BlendRect(overlay, rect, position);
+
+    Texture = ImageTexture.CreateFromImage(baseImage);
+  }
+
+  public void OverlayImage(long uid, long x, long y)
+  {
+    if (ObjectRegistry.TryGet(uid, out Image image))
+    {
+      _OverlayImage(image.Texture.GetImage(), new((int)x, (int)y));
+    }
+    else throw new KeyNotFoundException($"UID: {uid} is not an image");
+  }
+
   public string GetPath() => path;
 
-  protected override void _Free() {}
+  protected override void _Free()
+  {
+    RenderingRect?.QueueFree();
+  }
+
+  public override Node NRef()
+  {
+    RenderingRect ??= new()
+    {
+      Texture = Texture
+    };
+    return RenderingRect;
+  }
+
+  public override void Remove()
+  {
+    RenderingRect?.GetParent().RemoveChild(RenderingRect);
+  }
 }

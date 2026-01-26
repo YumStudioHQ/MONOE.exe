@@ -20,7 +20,6 @@
 <table>
 <tr><th>Name</th><th>Type</th><th>Description</th></tr>
 <tr><td><code>uid</code></td><td><code>integer</code></td><td>Unique ID for the engine-side sprite object</td></tr>
-<tr><td><code>zindex</code></td><td><code>integer</code></td><td></td></tr>
 </table>
 <h2>monoe.sprite.new</h2>
 <p>Creates a new `monoe.sprite` object.
@@ -43,7 +42,7 @@ If a path is provided, it will load it as an image.</p>
 <h3>Parameters</h3>
 <table>
 <tr><th>Name</th><th>Type</th><th>Description</th></tr>
-<tr><td><code>path</code></td><td><code>string</code></td><td>File path of the image</td></tr>
+<tr><td><code>path</code></td><td><code>string|integer|monoe.image</code></td><td>File path of the image</td></tr>
 </table>
 <hr>
 <h2>monoe.sprite:position</h2>

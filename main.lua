@@ -4,6 +4,9 @@ local mainwin = require('monoelib.io.mainwin')
 local event = require('monoelib.event')
 local system = require('monoelib.system.monsys')
 local node = require('monoelib.types.node')
+local image = require('monoelib.types.image')
+local sprite = require('monoelib.types.sprite')
+local container = require('monoelib.ui.container')
 
 local app = {
   ---@type monoe.node
@@ -28,12 +31,21 @@ function app.ready()
 
   label:font('!', 32)
   app.attach(label)
-  local win = system.windows.win.new()
-  win:close_request(function ()
-    print('nuh uh, never.')
-    engine.info.os.exit(1)
-  end)
-  engine.qualify(win)
+
+  local vbox = container.new('vbox')
+  for i = 1, 100, 1 do
+    local l = text.new('hihi', i)
+    l:font('!', 20)
+    vbox:attach(l.uid)
+  end
+
+  vbox:position(mainwin:center())
+  mainwin.attach(vbox)
+
+  local arr = system.path.content('./')
+  for key, value in pairs(arr) do
+    print(key, value)
+  end
 end
 
 function app.attach(element)
