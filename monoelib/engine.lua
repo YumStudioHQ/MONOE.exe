@@ -183,7 +183,7 @@ end
 ---@param self table
 ---@param static boolean|nil
 function monoe.qualify(self, static)
-  if static then
+  if not static then
     subscribe_object(self)
   else
     subscribe_table(self)

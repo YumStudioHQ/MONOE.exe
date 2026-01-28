@@ -8,12 +8,16 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="monoe.exe"
-config/version="2.8.8"
+config/version="2.8.23"
 run/main_scene="uid://n0ipngfcc2e8"
-config/features=PackedStringArray("4.5", "C#", "Forward Plus")
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 boot_splash/bg_color=Color(0, 0, 0, 0)
 boot_splash/show_image=false
 config/icon="uid://bj7tile0lexte"

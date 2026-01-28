@@ -1,6 +1,8 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Godot;
 using monoe.exe.Core.Engine;
 using monoe.exe.Core.Engine.Resources;
@@ -12,10 +14,22 @@ public partial class Main : Base.MainBase
 {
   private static string GetBootFile()
   {
-    if (File.Exists("res/main.lua")) return "res/main.lua";
+    string localProject = Path.Join(OS.GetEnvironment("PWD"), "res", "main.lua");
+
+    if (File.Exists(localProject))
+    {
+      EngineConsole.Verbose($"local project found ... '{localProject}'");
+      return localProject;
+    }
+
+    EngineConsole.Verbose($"local project not found ... '{localProject}'");
 
     var localMainPath = EngineResources.GetResourceDir("res", "main.lua");
-    if (File.Exists(localMainPath)) return localMainPath;
+    if (File.Exists(localMainPath))
+    {
+      EngineConsole.Verbose($"using built-in project '{localMainPath}'");
+      return localMainPath;
+    }
 
     return "main.lua";
   }
@@ -24,6 +38,7 @@ public partial class Main : Base.MainBase
 
   public Main()
   {
+    EngineConsole.IsVerbose = OS.GetCmdlineArgs().Contains("-dev");
     var margs = OS.GetCmdlineArgs();
 
     for (int i = 0; i < margs.Length; i++)
@@ -31,6 +46,7 @@ public partial class Main : Base.MainBase
       var arg = margs[i];
       if (arg == "-nr") nr = true;
       else if (arg == "-dev") Application.IsDevMode = true;
+      else if (arg == "-mverb") continue;
       else
       {
         Shell.ExecuteCommand(arg.StartsWith('-') ? arg[1..] : arg, i + 1 >= margs.Length ? [] : margs[(i+1)..]);
@@ -38,16 +54,12 @@ public partial class Main : Base.MainBase
       }
     }
 
-    var query = OS.GetCmdlineArgs().Where(arg => !arg.StartsWith('-'))
-                                   .Where(arg => File.Exists(arg))
-                                   .ToArray();
-
-    if (OS.GetCmdlineArgs().Contains("-dev")) gameSettings = new()
+    if (Application.IsDevMode) gameSettings = new()
     {
       HasHotReload = !OS.GetCmdlineArgs().Contains("-no-hot-reload"),
       HasShell = !OS.GetCmdlineArgs().Contains("-no-shell"),
       IsVerbose = !OS.GetCmdlineArgs().Contains("-silent"),
-      MainFile = query.Length > 0 ? query[0] : GetBootFile()
+      MainFile = GetBootFile()
     }; else
     {
       gameSettings = new()
@@ -59,6 +71,9 @@ public partial class Main : Base.MainBase
       };
       Application.IsEditor = false;
     }
+
+    Directory.SetCurrentDirectory(Directory.GetParent(gameSettings.MainFile).Parent.FullName);
+    EngineConsole.Verbose($"current directory: {Directory.GetCurrentDirectory()}");
   }
 
   public override void _EnterTree()

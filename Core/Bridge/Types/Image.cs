@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using monoe.exe.Core.Bridge.io;
 using monoe.exe.Core.Engine;
 using monoe.exe.Core.Manager;
 
@@ -20,7 +21,7 @@ public class Image : Exposable
 
   public void LoadImage(string path)
   {
-    Texture = ImageTexture.CreateFromImage(Godot.Image.LoadFromFile(path));
+    Texture = ImageTexture.CreateFromImage(Godot.Image.LoadFromFile(PathLib.FullPath(path)));
     this.path = path;
   }
 

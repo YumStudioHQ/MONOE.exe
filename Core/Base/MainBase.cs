@@ -199,6 +199,7 @@ public partial class MainBase : Control
     }
 
     EngineConsole.Verbose("project ready!");
+    EngineConsole.Verbose($"project path: {Path.GetFullPath(gameSettings.MainFile)}");
 
     /*
      * The free event is not fired directly after the first frame!
@@ -315,17 +316,7 @@ public partial class MainBase : Control
 
   private void LoadProject()
   {
-    // 1. Detect the project.
-    if (OS.GetCmdlineArgs().Contains("-editor") || !File.Exists(gameSettings.MainFile))
-    {
-      var path = Path.Combine(EngineResources.GetResourceDir(), "main.lua");
-      EngineConsole.Verbose($"loading editor at {path}");
-      mainState = new(path, true, luaErrorHandler); 
-    }
-    else
-    {
-      mainState = new(gameSettings.MainFile, true, luaErrorHandler);
-    }
+    mainState = new(gameSettings.MainFile, true, luaErrorHandler);
 
     // After issue #29, as the editor itself ... does not have it (yet).
     mainState.Run("deps = deps or function()end", false);

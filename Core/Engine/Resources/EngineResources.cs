@@ -58,10 +58,14 @@ public static class EngineResources
     {
       Init();
     }
+    #if !DEBUG
     catch (Exception e)
     {
       EngineConsole.WriteError(e);
     }
+    #else
+    catch (Exception) {}
+    #endif
   }
 
   public static MonoeRuntimeInfo[] GetRuntimes()
