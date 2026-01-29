@@ -31,7 +31,7 @@ public partial class MainBase : Control
 
   public static void Emit(string @event, params object[] args)
   {
-    mainState?.Call("monoe.event.emit", [@event, .. args]);
+    mainState.Call("monoe.event.emit", [@event, .. args]);
   }
 
   public static object[] LCall(string method, params object[] args)
@@ -294,7 +294,7 @@ public partial class MainBase : Control
       else EngineConsole.WriteError("[rejected]: Failled to deque an element !");
     }
 
-    mainState?.Dispose();
+    mainState.Dispose();
 
     EngineConsole.Verbose("process finished");
   }
@@ -316,7 +316,7 @@ public partial class MainBase : Control
 
   private void LoadProject()
   {
-    mainState = new(gameSettings.MainFile, true, luaErrorHandler);
+    mainState = new(Path.GetFullPath(gameSettings.MainFile), true, luaErrorHandler);
 
     // After issue #29, as the editor itself ... does not have it (yet).
     mainState.Run("deps = deps or function()end", false);

@@ -16,6 +16,7 @@ public class YumState : IDisposable
   private bool disposed = false;
   private bool libs = false;
 
+
   private string Ensure(string path)
   {
     var parts = path.Split('.');
@@ -62,8 +63,9 @@ public class YumState : IDisposable
 
       for (ulong i = 0; i < outc; i++)
       {
-        output[(int)i] = Conversion.VariantToObject(outa[i]);
+        output[i] = Conversion.VariantToObject(outa[i]);
       }
+
       INative.yumfree_all(outa, outc);
     }
 
