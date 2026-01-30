@@ -170,10 +170,9 @@ public partial class MainBase : Control
       GetTree().Quit(c);
     };
 
-    //// Then, the shell
-    //if (gameSettings.HasShell) Shell.Init();
-    // Small setup (internals, etc., and all that shit!)
     SetUpEngineLifeTime();
+
+    if (gameSettings.HasDiagnostics) AddChild(new Engine.Layers.DebugLayer());
   }
 
   public override void _Ready()

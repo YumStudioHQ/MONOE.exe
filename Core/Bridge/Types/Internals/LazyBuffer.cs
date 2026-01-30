@@ -1,6 +1,6 @@
 using monoe.exe.Core.Manager;
 
-namespace monoe.exe.Core.Bridge.Types;
+namespace monoe.exe.Core.Bridge.Types.Internals;
 
 public class LazyReadonlyBuffer : ManagedObject
 {

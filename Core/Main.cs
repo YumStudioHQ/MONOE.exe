@@ -34,19 +34,32 @@ public partial class Main : Base.MainBase
     return "main.lua";
   }
 
+  private static bool IsAppCmd(string cmd)
+  {
+    return cmd == "-diagnostics" || cmd == "-mverb";
+  }
+
   private bool nr = false;
 
   public Main()
   {
     EngineConsole.IsVerbose = OS.GetCmdlineArgs().Contains("-dev");
     var margs = OS.GetCmdlineArgs();
+    var mainFile = GetBootFile();
 
     for (int i = 0; i < margs.Length; i++)
     {
       var arg = margs[i];
       if (arg == "-nr") nr = true;
       else if (arg == "-dev") Application.IsDevMode = true;
-      else if (arg == "-mverb") continue;
+      else if (IsAppCmd(arg)) continue;
+      else if (arg == "-file")
+      {
+        if (i + 1 >= margs.Length) throw new ArgumentException($"expected an argument after argument #{i}, got nil (nul)");
+        mainFile = margs[i+1];
+        i++;
+      }
+      else if (arg == "-local-libs") Application.Libraries.Add("@PWD");
       else
       {
         Shell.ExecuteCommand(arg.StartsWith('-') ? arg[1..] : arg, i + 1 >= margs.Length ? [] : margs[(i+1)..]);
@@ -56,23 +69,27 @@ public partial class Main : Base.MainBase
 
     if (Application.IsDevMode) gameSettings = new()
     {
-      HasHotReload = !OS.GetCmdlineArgs().Contains("-no-hot-reload"),
-      HasShell = !OS.GetCmdlineArgs().Contains("-no-shell"),
-      IsVerbose = !OS.GetCmdlineArgs().Contains("-silent"),
-      MainFile = GetBootFile()
+      HasHotReload = !margs.Contains("-no-hot-reload"),
+      HasShell = !margs.Contains("-no-shell"),
+      IsVerbose = !margs.Contains("-silent"),
+      MainFile = mainFile,
+      HasDiagnostics = margs.Contains("-diagnostics")
     }; else
     {
       gameSettings = new()
       {
         HasHotReload = false,
         HasShell = false,
-        IsVerbose = OS.GetCmdlineArgs().Contains("-mverb"),
-        MainFile = "res/main.lua"
+        IsVerbose = margs.Contains("-mverb"),
+        MainFile = "res/main.lua",
+        HasDiagnostics = margs.Contains("-diagnostics")
       };
+
       Application.IsEditor = false;
     }
 
-    Directory.SetCurrentDirectory(Directory.GetParent(gameSettings.MainFile).Parent.FullName);
+    Directory.SetCurrentDirectory(Directory.GetParent(gameSettings.MainFile).FullName);
+    Application.PWD = Directory.GetCurrentDirectory();
     EngineConsole.Verbose($"current directory: {Directory.GetCurrentDirectory()}");
   }
 

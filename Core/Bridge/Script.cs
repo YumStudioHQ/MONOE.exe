@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using monoe.exe.Core.Engine;
 using monoe.exe.Core.Engine.Resources;
 using monoe.exe.YumSharp.Managed;
 

@@ -1,5 +1,6 @@
 using System.IO;
 using monoe.exe.Core.Bridge.Types;
+using monoe.exe.Core.Bridge.Types.Internals;
 using monoe.exe.Core.Engine.Resources;
 using monoe.exe.Core.Manager;
 

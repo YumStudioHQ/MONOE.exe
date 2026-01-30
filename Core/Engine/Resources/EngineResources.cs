@@ -18,15 +18,27 @@ public static class EngineResources
   public static string GetResourceDir(params string[] paths)
    => Path.Join([GetResourceDir(), .. paths]);
 
-  public static string LuaLibrariesFmt()
+  private static string FormatPathForLua(string path)
   {
-    var path = GetResourceDir()
-              .Replace('\\', '/');
+    if (path.Trim() == "") return "";
+
+    path = path.Replace("@PWD", Application.PWD)
+               .Replace('\\', '/');
 
     if (path.EndsWith('/'))
       path = path[..^1];
 
     return $"';{path}/?.lua'";
+  }
+
+  public static string LuaLibrariesFmt()
+  {
+    var query = "''";
+
+    foreach (var libdel in Application.Libraries)
+      query += ".." + FormatPathForLua(libdel);
+
+    return query;
   }
 
 
