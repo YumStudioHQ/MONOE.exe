@@ -1,11 +1,7 @@
-local anim = require('monoelib.types.animation')
-local image = require('monoelib.types.image')
-local event = require('monoelib.event')
+local system = require('monoelib.system.monsys')
 
 function main()
-  event.subscribe('process', process)
-end
-
-function process(delta)
-
+  system.console.warn('todo: load<T>!')
+  system.console.warn('todo: icon')
+  system.console.warn('todo: frame freeze + AddChild(Freezer) + ??')
 end

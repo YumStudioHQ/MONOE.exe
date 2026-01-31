@@ -85,6 +85,15 @@ public static class EngineConsole
     }
   }
 
+  public static void Verbose(string msg, ConsoleColor? color = ConsoleColor.DarkGray)
+  {
+    if (IsVerbose)
+    {
+      var time = DateTime.Now.ToString("HH:mm:ss.ffff");
+      WriteLine($"[V] [{time}] {msg}", color);
+    }
+  }
+
   /// <summary>
   /// Thread-safe read line
   /// </summary>

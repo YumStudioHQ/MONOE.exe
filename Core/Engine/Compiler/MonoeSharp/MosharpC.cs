@@ -8,7 +8,7 @@ using monoe.exe.Core.Engine.Shell;
 
 namespace monoe.exe.Core.Engine.Compiler.MonoeSharp;
 
-[ShellCommandDelegate]
+[ShellCommandHolder]
 public sealed class CSharpCompiler
 {
   public sealed record CompilationResult(

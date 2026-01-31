@@ -14,7 +14,7 @@ public static class Shell
   static Shell()
   {
     var types = EngineAssembly.GetTypes()
-        .Where(t => t.GetCustomAttribute<ShellCommandDelegateAttribute>() != null);
+        .Where(t => t.GetCustomAttribute<ShellCommandHolderAttribute>() != null);
 
     foreach (var type in types)
     {

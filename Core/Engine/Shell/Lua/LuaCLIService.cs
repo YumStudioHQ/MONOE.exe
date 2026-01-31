@@ -6,7 +6,7 @@ using monoe.exe.YumSharp.Managed;
 
 namespace monoe.exe.Core.Engine.Shell.Lua;
 
-[ShellCommandDelegate]
+[ShellCommandHolder]
 public static class LuaCLIService
 {
   public static bool IsLuaFile(string input)

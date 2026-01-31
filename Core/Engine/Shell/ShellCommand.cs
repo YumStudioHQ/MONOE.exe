@@ -11,4 +11,4 @@ public class ShellCommandAttribute(string name, string help = "", string[] args 
 }
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
-public class ShellCommandDelegateAttribute : Attribute { }
+public class ShellCommandHolderAttribute : Attribute { }

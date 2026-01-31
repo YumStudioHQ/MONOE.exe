@@ -171,8 +171,6 @@ public partial class MainBase : Control
     };
 
     SetUpEngineLifeTime();
-
-    if (gameSettings.HasDiagnostics) AddChild(new Engine.Layers.DebugLayer());
   }
 
   public override void _Ready()
@@ -199,6 +197,7 @@ public partial class MainBase : Control
 
     EngineConsole.Verbose("project ready!");
     EngineConsole.Verbose($"project path: {Path.GetFullPath(gameSettings.MainFile)}");
+    EngineConsole.Verbose($"devs: {CurrentProject.PROJECT.DEV_NAME}, from {CurrentProject.PROJECT.COMPANY_NAME}");
 
     /*
      * The free event is not fired directly after the first frame!
@@ -215,6 +214,8 @@ public partial class MainBase : Control
     {
       Emit("onfree");
     };
+
+    if (gameSettings.HasDiagnostics) AddChild(new Engine.Layers.DebugLayer());
 
     if (gameSettings.HasShell)
     {
@@ -274,7 +275,14 @@ public partial class MainBase : Control
 
   public override void _ExitTree()
   {
-    if (exitTreeCalled) return;
+    if (Application.IsShuttingDown || exitTreeCalled)
+    {
+      EngineConsole.WriteError("[rejecteed] exit rejected: already exiting.");
+      return;
+    }
+
+    exitTreeCalled = true;
+
     EngineConsole.WriteLine();
     EngineConsole.Verbose("exit requested...");
     EngineConsole.Verbose("exit event fired");
@@ -315,6 +323,9 @@ public partial class MainBase : Control
 
   private void LoadProject()
   {
+    MonoeProjectSettings.LoadProject();
+    SetUp.Launch(this);
+
     mainState = new(Path.GetFullPath(gameSettings.MainFile), true, luaErrorHandler);
 
     // After issue #29, as the editor itself ... does not have it (yet).
@@ -380,11 +391,23 @@ public partial class MainBase : Control
 
   private void SetUpEngineLifeTime()
   {
+    Console.CancelKeyPress += (_, e) =>
+    {
+      if (Application.IsShuttingDown || exitTreeCalled)
+      {
+        EngineConsole.Verbose("[rejected]: rejecting exit request: already exiting");
+        e.Cancel = true;
+      } else
+      {
+        RequestExit();
+      }
+    };
+
     AppDomain.CurrentDomain.ProcessExit += (_, _) =>
     {
+      if (Application.IsShuttingDown) return;
       if (exitTreeCalled) return;
       _ExitTree();
-      exitTreeCalled = true;
     };
   }
 

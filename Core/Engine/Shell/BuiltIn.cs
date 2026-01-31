@@ -11,7 +11,7 @@ using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Engine.Shell;
 
-[ShellCommandDelegate]
+[ShellCommandHolder]
 public static class BuiltIns
 {
   [ShellCommand("dump", help: "Dumps a Lua table", args: ["<table> (default: _G)"])]
@@ -77,7 +77,7 @@ public static class BuiltIns
   {
     var commands =
       EngineAssembly.GetTypes()
-        .Where(t => t.GetCustomAttribute<ShellCommandDelegateAttribute>() != null)
+        .Where(t => t.GetCustomAttribute<ShellCommandHolderAttribute>() != null)
         .SelectMany(t =>
           t.GetMethods(BindingFlags.Public | BindingFlags.Static)
            .Select(m => (Method: m, Attr: m.GetCustomAttribute<ShellCommandAttribute>()))
