@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://n0ipngfcc2e8"]
+[gd_scene format=3 uid="uid://n0ipngfcc2e8"]
 
 [ext_resource type="Theme" uid="uid://cfkmorw0ajrf5" path="res://Core/Themes/main.tres" id="1_5yh6k"]
 [ext_resource type="Script" uid="uid://cngok0as6w1dl" path="res://Core/Main.cs" id="1_ha1x3"]
 
-[node name="Node" type="Control"]
+[node name="Node" type="Control" unique_id=621192749]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

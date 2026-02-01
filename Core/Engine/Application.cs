@@ -1,19 +1,37 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Godot;
 using monoe.exe.Core.Base;
+using monoe.exe.Core.Engine.Resources;
+using monoe.exe.Core.Engine.Shell;
 
 namespace monoe.exe.Core.Engine;
 
+[ShellCommandHolder]
 public static class Application
 {
-  public static volatile bool IsShuttingDown = false;
-  public static volatile bool IsDevMode = OS.GetCmdlineArgs().Contains("-dev");
-  public static volatile bool IsEditor = true;
+  internal static volatile bool IsShuttingDown = false;
+  internal static volatile bool IsDevMode = OS.GetCmdlineArgs().Contains("-dev");
+  internal static volatile bool IsEditor = true;
+  internal static string PWD { get; set; } = Directory.GetCurrentDirectory();
 
-  public static void Exit(long code)
+  public static List<string> Libraries { get; set; } = [
+    EngineResources.GetResourceDir(),
+  ];
+
+  [ShellCommand("exit", help: "Quits the engine")]
+  public static void Exit(string[]_)
   {
-    EngineConsole.Verbose("exit requested by internals...");
-    MainBase.RequestExit((int)code);
-    MainBase.Lsleep([10]);
+    MainBase.RequestExit();
+  }
+
+  public static string ProjectSettingsFile()
+  {
+    return Path.Combine(
+      EngineResources.GetRuntimeResourceDir(),
+      "project.lua"
+    );
   }
 }

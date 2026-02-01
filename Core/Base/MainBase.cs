@@ -31,7 +31,7 @@ public partial class MainBase : Control
 
   public static void Emit(string @event, params object[] args)
   {
-    mainState?.Call("monoe.event.emit", [@event, .. args]);
+    mainState.Call("monoe.event.emit", [@event, .. args]);
   }
 
   public static object[] LCall(string method, params object[] args)
@@ -61,15 +61,18 @@ public partial class MainBase : Control
     });
   }
 
-  public static void RequestExit(int code = 0)
+  public static void RequestExit(long code = 0)
   {
     EnqueueOnMain(() =>
     {
       if (Application.IsShuttingDown)
+      {
+        EngineConsole.Verbose("exit rejected: already exiting!");
         return;
+      }
 
       Application.IsShuttingDown = true;
-      exitRequestionAction(code);
+      exitRequestionAction((int)code);
     });
   }
 
@@ -105,11 +108,6 @@ public partial class MainBase : Control
   public MainBase()
   {
     EngineConsole.WriteLine($"monoe.exe meta-runtime | monoe.exe@{Version.All}");
-  }
-
-  public MainBase(GameSettings settings)
-  {
-    gameSettings = settings;
   }
 
   public override void _EnterTree()
@@ -169,11 +167,6 @@ public partial class MainBase : Control
     {
       GetTree().Quit(c);
     };
-
-    //// Then, the shell
-    //if (gameSettings.HasShell) Shell.Init();
-    // Small setup (internals, etc., and all that shit!)
-    SetUpEngineLifeTime();
   }
 
   public override void _Ready()
@@ -199,22 +192,15 @@ public partial class MainBase : Control
     }
 
     EngineConsole.Verbose("project ready!");
+    EngineConsole.Verbose($"project path: {Path.GetFullPath(gameSettings.MainFile)}");
+    EngineConsole.Verbose($"devs: {CurrentProject.PROJECT.DEV_NAME}, from {CurrentProject.PROJECT.COMPANY_NAME}");
 
     /*
-     * The free event is not fired directly after the first frame!
+     * Some events are fired at a fixed point, so people can "free a bit later"
      */
-    cleanupTimer = new()
-    {
-      WaitTime = 0.5,
-      OneShot = false,
-    };
+    SetUpTimers();
 
-    AddChild(cleanupTimer);
-
-    cleanupTimer.Timeout += () =>
-    {
-      Emit("onfree");
-    };
+    if (gameSettings.HasDiagnostics) AddChild(new Engine.Layers.DebugLayer());
 
     if (gameSettings.HasShell)
     {
@@ -239,6 +225,8 @@ public partial class MainBase : Control
 
       thread.Start();
     }
+
+    GetTree().AutoAcceptQuit = false;
   }
 
   public override void _Process(double delta)
@@ -256,7 +244,7 @@ public partial class MainBase : Control
 
     if (!locked)
     {
-      Emit("process", delta);
+      Emit("@process", delta);
     }
   }
 
@@ -268,18 +256,26 @@ public partial class MainBase : Control
      */
     if (!locked)
     {
-      Emit("physics", delta);
+      Emit("@physics", delta);
+      Emit("@collect");
     }
   }
 
   public override void _ExitTree()
   {
-    if (exitTreeCalled) return;
+    if (exitTreeCalled)
+    {
+      return;
+    }
+
+    exitTreeCalled = true;
+
     EngineConsole.WriteLine();
     EngineConsole.Verbose("exit requested...");
     EngineConsole.Verbose("exit event fired");
-    Emit("onexit");
-    Emit("onfree");
+    Emit("@onexit");
+    Emit("@collect");
+    Emit("@cleanup");
     Manager.ObjectRegistry.Clear();
     ResourceManager.Clear();
     watcher?.Dispose();
@@ -293,14 +289,14 @@ public partial class MainBase : Control
       else EngineConsole.WriteError("[rejected]: Failled to deque an element !");
     }
 
-    mainState?.Dispose();
+    mainState.Dispose();
 
     EngineConsole.Verbose("process finished");
   }
 
   public override void _Input(InputEvent @event)
   {
-    Emit("input");
+    Emit("@input");
   }
 
   public static object[] Lsleep(object[] args)
@@ -313,19 +309,21 @@ public partial class MainBase : Control
     return [];
   }
 
+  public override void _Notification(int what)
+  {
+    if (what == NotificationWMCloseRequest)
+    {
+      mainState.Call("monoe.exit_requested", 0);
+      return;
+    }
+  }
+
   private void LoadProject()
   {
-    // 1. Detect the project.
-    if (OS.GetCmdlineArgs().Contains("-editor") || !File.Exists(gameSettings.MainFile))
-    {
-      var path = Path.Combine(EngineResources.GetResourceDir(), "main.lua");
-      EngineConsole.Verbose($"loading editor at {path}");
-      mainState = new(path, true, luaErrorHandler); 
-    }
-    else
-    {
-      mainState = new(gameSettings.MainFile, true, luaErrorHandler);
-    }
+    MonoeProjectSettings.LoadProject();
+    SetUp.Launch(this);
+
+    mainState = new(Path.GetFullPath(gameSettings.MainFile), true, luaErrorHandler);
 
     // After issue #29, as the editor itself ... does not have it (yet).
     mainState.Run("deps = deps or function()end", false);
@@ -361,7 +359,9 @@ public partial class MainBase : Control
                          end
                          monoe.staticcall("monoe.exe.Core.Engine.EngineConsole", "Print", table.unpack(args))
                        end
+
                        {{LoadRuntimeInformations()}}
+                       monoe.exit_requested = function(code) monoe.info.os.exit(code or 0) end
                        """;
     mainState.Run(injection, false);
 
@@ -374,7 +374,7 @@ public partial class MainBase : Control
     Emit("@load");
 
     // 7. Finally, call ready!
-    Emit("ready", margs);
+    Emit("@ready", margs);
 
     /* Quick note!
      * Generally, users love hot reloading. So, the function 'load' in monoe allows
@@ -388,14 +388,23 @@ public partial class MainBase : Control
      */
   }
 
-  private void SetUpEngineLifeTime()
+  private void SetUpTimers()
   {
-    AppDomain.CurrentDomain.ProcessExit += (_, _) =>
+    /* Quick note!
+     * There is indeed two cleaning events ;
+     * * @collect, called after each physic process,
+     * * @cleanup, called at a fixed point (not something stable through versions!)
+     * Depending what you're doing, you may change your event's usage!
+     */
+    cleanupTimer = new()
     {
-      if (exitTreeCalled) return;
-      _ExitTree();
-      exitTreeCalled = true;
+      WaitTime = 1.5,
+      OneShot = false,
     };
+
+    cleanupTimer.Timeout += () => { Emit("@cleanup"); };
+
+    AddChild(cleanupTimer);
   }
 
   private static string LoadRuntimeInformations()
@@ -405,7 +414,13 @@ public partial class MainBase : Control
          name = '{{OS.GetName()}}',
          version = '{{OS.GetVersion()}}',
          argv = {{{GetFormatedCmdlineArgs()}}},
-         exit = function(code) monoe.staticcall('monoe.exe.Core.Engine.Application', 'Exit', code or 0)end
+         processorcount = {{System.Environment.ProcessorCount}},
+         isos64 = {{System.Environment.Is64BitOperatingSystem.ToString().ToLower()}},
+         isproc64 = {{System.Environment.Is64BitProcess.ToString().ToLower()}},
+         ispriviliged = {{System.Environment.IsPrivilegedProcess.ToString().ToLower()}},
+         machinename = '{{System.Environment.MachineName.Replace("\'", "\\\'")}}',
+         procid = {{System.Environment.ProcessId}},
+         exit = function(code) monoe.staticcall('monoe.exe.Core.Base.MainBase', 'RequestExit', code or 0) end
        },
        runtime = {
          version = '{{Version.All}}',

@@ -46,7 +46,6 @@ public static class ObjectRegistry
       {
         try { mo.Free(); } catch { }
       } else if (obj is Node n) n.QueueFree();
-
     }
     
     EngineConsole.Verbose($"{oldObjects.Count} objects have been deleted");

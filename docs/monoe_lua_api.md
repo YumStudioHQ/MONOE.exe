@@ -17,6 +17,7 @@
 - [monoe.node](gen/types/node.md)
 - [monoe.path](gen/io/path.md)
 - [monoe.query](gen/linq.md)
+- [monoe.resources](gen/resources.md)
 - [monoe.shape](gen/types/shape.md)
 - [monoe.sprite](gen/types/sprite.md)
 - [monoe.stobj](gen/types/stobj.md)

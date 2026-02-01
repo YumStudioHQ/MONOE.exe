@@ -12,25 +12,54 @@ public partial class Main : Base.MainBase
 {
   private static string GetBootFile()
   {
-    if (File.Exists("res/main.lua")) return "res/main.lua";
+    string localProject = Path.Join(OS.GetEnvironment("PWD"), "res", "main.lua");
+
+    if (File.Exists(localProject))
+    {
+      EngineConsole.Verbose($"local project found ... '{localProject}'");
+      return localProject;
+    }
+
+    EngineConsole.Verbose($"local project not found ... '{localProject}'");
 
     var localMainPath = EngineResources.GetResourceDir("res", "main.lua");
-    if (File.Exists(localMainPath)) return localMainPath;
+    if (File.Exists(localMainPath))
+    {
+      EngineConsole.Verbose($"using built-in project '{localMainPath}'");
+      return localMainPath;
+    }
 
     return "main.lua";
+  }
+
+  private static bool IsAppCmd(string cmd)
+  {
+    return cmd == "-diagnostics" || cmd == "-mverb";
   }
 
   private bool nr = false;
 
   public Main()
   {
+    EngineConsole.IsVerbose = OS.GetCmdlineArgs().Contains("-dev");
     var margs = OS.GetCmdlineArgs();
+    var mainFile = GetBootFile();
 
     for (int i = 0; i < margs.Length; i++)
     {
       var arg = margs[i];
       if (arg == "-nr") nr = true;
-      else if (arg == "-dev") Application.IsDevMode = true;
+      else if (arg == "-dev")
+      {
+        Application.IsDevMode = true;
+        if (i + 1 < margs.Length)
+        {
+          mainFile = margs[i+1];
+          i++;
+        }
+      }
+      else if (IsAppCmd(arg)) continue;
+      else if (arg == "-local-libs") Application.Libraries.Add("@PWD"); // @PWD is then expanded to the actual PWD!
       else
       {
         Shell.ExecuteCommand(arg.StartsWith('-') ? arg[1..] : arg, i + 1 >= margs.Length ? [] : margs[(i+1)..]);
@@ -38,27 +67,43 @@ public partial class Main : Base.MainBase
       }
     }
 
-    var query = OS.GetCmdlineArgs().Where(arg => !arg.StartsWith('-'))
-                                   .Where(arg => File.Exists(arg))
-                                   .ToArray();
+    var pwd = Directory.GetCurrentDirectory();
 
-    if (OS.GetCmdlineArgs().Contains("-dev")) gameSettings = new()
+    if (Directory.Exists(mainFile) && Application.IsDevMode)
     {
-      HasHotReload = !OS.GetCmdlineArgs().Contains("-no-hot-reload"),
-      HasShell = !OS.GetCmdlineArgs().Contains("-no-shell"),
-      IsVerbose = !OS.GetCmdlineArgs().Contains("-silent"),
-      MainFile = query.Length > 0 ? query[0] : GetBootFile()
+      Application.Libraries.Add(mainFile);
+      pwd = Path.GetFullPath(mainFile);
+      mainFile = Path.Combine(mainFile, "res", "main.lua");
+    } 
+    else if (File.Exists(mainFile) && Application.IsDevMode)
+    {
+      pwd = Path.GetDirectoryName(mainFile);
+    }
+
+    if (Application.IsDevMode) gameSettings = new()
+    {
+      HasHotReload = !margs.Contains("-no-hot-reload"),
+      HasShell = !margs.Contains("-no-shell"),
+      IsVerbose = !margs.Contains("-silent"),
+      MainFile = mainFile,
+      HasDiagnostics = margs.Contains("-diagnostics")
     }; else
     {
       gameSettings = new()
       {
         HasHotReload = false,
         HasShell = false,
-        IsVerbose = OS.GetCmdlineArgs().Contains("-mverb"),
-        MainFile = "res/main.lua"
+        IsVerbose = margs.Contains("-mverb"),
+        MainFile = "res/main.lua",
+        HasDiagnostics = margs.Contains("-diagnostics")
       };
+
       Application.IsEditor = false;
     }
+
+    Directory.SetCurrentDirectory(pwd);
+    Application.PWD = pwd;
+    EngineConsole.Verbose($"PWD: {Directory.GetCurrentDirectory()}");
   }
 
   public override void _EnterTree()
@@ -77,5 +122,10 @@ public partial class Main : Base.MainBase
   {
     if (nr) return;
     else base._Ready();
+  }
+
+  public override void _Notification(int what)
+  {
+    base._Notification(what);
   }
 }

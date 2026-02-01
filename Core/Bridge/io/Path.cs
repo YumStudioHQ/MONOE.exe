@@ -1,5 +1,6 @@
 using System.IO;
 using monoe.exe.Core.Bridge.Types;
+using monoe.exe.Core.Bridge.Types.Internals;
 using monoe.exe.Core.Engine.Resources;
 using monoe.exe.Core.Manager;
 
@@ -47,4 +48,6 @@ public static class PathLib
   public static bool IsFile(string path) => File.Exists(FullPath(path));
 
   public static bool Exist(string path) => Path.Exists(FullPath(path));
+
+  public static string Random() => Path.GetRandomFileName();
 }

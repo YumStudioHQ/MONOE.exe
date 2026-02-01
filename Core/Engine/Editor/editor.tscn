@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://ch5aa23gjuf6o"]
+
+[ext_resource type="FontFile" uid="uid://c82yei7pe7ub3" path="res://Core/Themes/Monaco.ttf" id="1_8umk2"]
+[ext_resource type="Script" uid="uid://bqyqu1wf4filf" path="res://Core/Engine/Editor/editor.gd" id="1_yxrih"]
+
+[node name="CodeEdit" type="CodeEdit" unique_id=1136974202]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("1_8umk2")
+theme_override_font_sizes/font_size = 32
+minimap_draw = true
+highlight_all_occurrences = true
+highlight_current_line = true
+gutters_draw_executing_lines = true
+gutters_draw_line_numbers = true
+script = ExtResource("1_yxrih")

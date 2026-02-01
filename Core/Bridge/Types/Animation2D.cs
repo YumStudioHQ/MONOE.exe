@@ -177,7 +177,7 @@ public class Animation2D : Exposable, IPositionable2D, IScalable2D
 
   protected override void _Free()
   {
-    animation.QueueFree();
+    animation?.QueueFree();
   }
 
   public override Node NRef()

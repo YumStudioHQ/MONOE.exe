@@ -1,6 +1,14 @@
 # monoe.event
 
-
+Built-in events, those that are fired by the engine:
+* @collect: Called after each physic process, this one is designed for cleaning up some resources.
+* @ready: Called once the engine is ready.
+* @process: Called each frames.
+* @physics: Called at a fixed point, for physic updates. You may move entities here (entity.move() function should be called from here)
+* @input: Called when any input interaction happens.
+* @onexit: Called when an exit has been requested and not rejected (at this state, you cannot prevent exiting)
+* @hot: Internal specific, prefer not using it. (Fired when a file changes)
+* @load: Do not use this one. (please)
 
 ## Properties
 

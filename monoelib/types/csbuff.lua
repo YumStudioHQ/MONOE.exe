@@ -4,7 +4,7 @@ monoe = monoe or {}
 
 ---@class monoe.csbuff
 ---@field uid integer
----This is an interface that helps using C# specific monoe.exe.Core.Bridge.Types.LazyReadonlyBuffer type.
+---This is an interface that helps using C# specific monoe.exe.Core.Bridge.Types.Internals.LazyReadonlyBuffer type.
 monoe.csbuff = {}
 monoe.csbuff.__index = monoe.csbuff
 

@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using monoe.exe.Core.Engine;
 using monoe.exe.Core.Manager;
 
 namespace monoe.exe.Core.Bridge;
@@ -14,6 +13,9 @@ public static class Importer
   private static readonly List<Assembly> assemblies = [.. Engine.EngineAssembly.GetEngineAssembly()];
   private static readonly Dictionary<string, Type> types = [];
   private static readonly ConcurrentDictionary<(string type, string method), MethodInfo> staticMethodCache = new();
+  private static readonly ConcurrentDictionary<(Type type, string method), MethodInfo> instanceMethodCache = new();
+  sealed record CallSite(MethodInfo Method, bool TakesObjectArray);
+  private static readonly ConcurrentDictionary<(Type type, string method), CallSite> instanceCallCache = new();
 
   public static Assembly[] GetAssemblies() => [.. assemblies];
 
@@ -34,6 +36,8 @@ public static class Importer
     assemblies.Clear();
     types.Clear();
     staticMethodCache.Clear();
+    instanceMethodCache.Clear();
+    instanceCallCache.Clear();
   }
 
   public static object[] Limport(object[] args)
@@ -92,63 +96,45 @@ public static class Importer
     {
       if (ObjectRegistry.TryGet(uid, out object instance))
       {
-        var method = instance.GetType()
-            .GetMethod(methodname,
-                 BindingFlags.Public
-               | BindingFlags.Instance
-               | BindingFlags.Static
-               | BindingFlags.NonPublic)
-               ?? throw new MissingMethodException($"method {methodname} not found in base {instance.GetType().FullName}");
+        var type = instance.GetType();
+        var key = (type, methodname);
+
+        var method = instanceMethodCache.GetOrAdd(key, k =>
+        {
+          var mi = k.type.GetMethod(
+            k.method,
+            BindingFlags.Public |
+            BindingFlags.Instance |
+            BindingFlags.Static |
+            BindingFlags.NonPublic
+          ) ?? throw new MissingMethodException(
+              $"method {k.method} not found in base {k.type.FullName}"
+            );
+          return mi;
+        });
 
         var callArgs = args.Skip(2).ToArray();
 
-        object target = method.IsStatic ? null : instance;
+        var callSite = ResolveInstanceCall(instance.GetType(), methodname);
+
+        object target = callSite.Method.IsStatic ? null : instance;
         object result;
-        if (method.GetParameters() is [{ ParameterType: var t }]
-            && t == typeof(object[]))
+
+        if (callSite.TakesObjectArray)
         {
-          result = method.Invoke(target, [callArgs]);
-          return result is object[] arrl ? arrl : [result];
+          result = callSite.Method.Invoke(target, [callArgs]);
+          return result is object[] arr ? arr : [result];
         }
 
-        result = method.Invoke(target, callArgs);
-        return result is object[] arr ? arr : [result];
+        result = callSite.Method.Invoke(target, callArgs);
+        return result is object[] arr2 ? arr2 : [result];
+
       }
 
       throw new Exception($"{uid}: No such internal UID.");
     }
 
     return [];
-  }
-
-  private static MethodInfo ResolveStaticMethod(string typeName, string methodName)
-  {
-    var key = (typeName, methodName);
-
-    if (staticMethodCache.TryGetValue(key, out var cached))
-      return cached;
-
-    foreach (var asm in assemblies)
-    {
-      var type = asm.GetType(typeName, throwOnError: false);
-      if (type == null)
-        continue;
-
-      // ensure it's a static class (optional but good)
-      if (!(type.IsAbstract && type.IsSealed))
-        throw new Exception($"{typeName} is not a static class");
-
-      var method = type.GetMethod(
-          methodName,
-          BindingFlags.Public | BindingFlags.Static
-      );
-      staticMethodCache[key] = method ?? throw new MissingMethodException(
-            $"static method {methodName} not found in {typeName}"
-        );
-      return method;
-    }
-
-    throw new TypeLoadException($"static base '{typeName}' not found");
   }
 
   public static object[] Lstaticcall(object[] args)
@@ -173,5 +159,55 @@ public static class Importer
 
     result = method.Invoke(null, callArgs);
     return result is object[] arr2 ? arr2 : [result];
+  }
+
+  private static CallSite ResolveInstanceCall(Type type, string methodName)
+  {
+    return instanceCallCache.GetOrAdd((type, methodName), key =>
+    {
+      var method = key.type.GetMethod(
+        key.method,
+        BindingFlags.Public |
+        BindingFlags.Instance |
+        BindingFlags.Static |
+        BindingFlags.NonPublic
+      ) ?? throw new MissingMethodException(
+          $"method {key.method} not found in {key.type.FullName}"
+        );
+      var parameters = method.GetParameters();
+
+      bool takesObjectArray =
+        parameters.Length == 1 &&
+        parameters[0].ParameterType == typeof(object[]);
+
+      return new CallSite(method, takesObjectArray);
+    });
+  }
+
+
+  private static MethodInfo ResolveStaticMethod(string typeName, string methodName)
+  {
+    var key = (typeName, methodName);
+
+    if (staticMethodCache.TryGetValue(key, out var cached))
+      return cached;
+
+    foreach (var asm in assemblies)
+    {
+      var type = asm.GetType(typeName, throwOnError: false);
+      if (type == null)
+        continue;
+
+      var method = type.GetMethod(
+          methodName,
+          BindingFlags.Public | BindingFlags.Static
+      );
+      staticMethodCache[key] = method ?? throw new MissingMethodException(
+            $"static method {methodName} not found in {typeName}"
+        );
+      return method;
+    }
+
+    throw new TypeLoadException($"static base '{typeName}' not found");
   }
 }

@@ -108,6 +108,16 @@ Checks if a path exists
 
 ---
 
+## monoe.path.random
+
+Returns a random file or folder
+
+### Returns
+
+- `string`
+
+---
+
 ## monoe.path.filename
 
 Returns the file's name

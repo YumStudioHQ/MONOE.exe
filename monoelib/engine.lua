@@ -7,11 +7,17 @@ local rendering = require('monoelib.rendering')
 monoe = monoe or {}
 
 ---@class monoe.info
-monoe.info = monoe.info or {
+monoe.info =  {
   os = {
     name = 'unknown',
     version = 'unknown',
     argv = {},
+    processorcount = -1,
+    isos64 = false,
+    isproc64 = false,
+    ispriviliged = false,
+    machinename = 'unknown',
+    procid = -1,
     exit = function(code) end
   },
   runtime = {
@@ -183,7 +189,7 @@ end
 ---@param self table
 ---@param static boolean|nil
 function monoe.qualify(self, static)
-  if static then
+  if not static then
     subscribe_object(self)
   else
     subscribe_table(self)
@@ -195,6 +201,10 @@ function monoe.qualify(self, static)
     _attach(self)
   end
 end
+
+---Called when the user requests an exit. You can override this function in order to handle exit requests.
+---@param code number Exit code
+function monoe.exit_requested(code)end
 
 _G.monoe = monoe
 return monoe

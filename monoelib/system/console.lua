@@ -33,19 +33,19 @@ end
 ---Writes a warning in the console. The warning is printed in yellow, with a time stamp.
 ---@param ... any
 function monoe.system.console.warn(...)
-  engine.staticcall(base, 'WriteWarning', get_strings(...))
+  engine.staticcall(base, 'LWriteWarning', get_strings(...))
 end
 
 ---Writes an error in the console. The error is printed in red, with a time stamp.
 ---@param ... any
 function monoe.system.console.error(...)
-  engine.staticcall(base, 'WriteError', get_strings(...))
+  engine.staticcall(base, 'LWriteError', get_strings(...))
 end
 
 ---Writes an information in the console. The information is printed in grey, with a time stamp. If the engine does not run in verbose mode, the message won't be show.
 ---@param ... any
 function monoe.system.console.info(...)
-  engine.staticcall(base, 'Verbose', get_strings(...))
+  engine.staticcall(base, 'LVerbose', get_strings(...))
 end
 
 _G.monoe = monoe
