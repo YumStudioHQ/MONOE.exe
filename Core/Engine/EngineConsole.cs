@@ -167,4 +167,7 @@ public static class EngineConsole
 
   public static void LWrite(params object[] s) => Write(s);
   public static void LWriteLine(params object[] s) => WriteLine(s);
+  public static void LVerbose(params object[] s) => Verbose(s);
+  public static void LWriteError(params object[] s) => WriteError(s);
+  public static void LWriteWarning(params object[] s) => WriteWarning(s);
 }

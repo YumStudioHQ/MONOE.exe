@@ -48,4 +48,6 @@ public static class PathLib
   public static bool IsFile(string path) => File.Exists(FullPath(path));
 
   public static bool Exist(string path) => Path.Exists(FullPath(path));
+
+  public static string Random() => Path.GetRandomFileName();
 }

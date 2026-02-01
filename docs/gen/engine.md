@@ -153,3 +153,15 @@ Subscribes all known methods of a table to events.
 
 ---
 
+## monoe.exit_requested
+
+Called when the user requests an exit. You can override this function in order to handle exit requests.
+
+### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `code` | `number` | Exit code |
+
+---
+

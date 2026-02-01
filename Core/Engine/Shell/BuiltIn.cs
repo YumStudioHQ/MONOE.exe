@@ -138,9 +138,6 @@ public static class BuiltIns
   [ShellCommand("clear", help: "Clears the console")]
   public static void Clear(string[] _) => Console.Clear();
 
-  [ShellCommand("exit", help: "Quits the engine")]
-  public static void Exit(string[] _) => Base.MainBase.RequestExit();
-
   [ShellCommand("emit", help: "Emits an event with given arguments", args: ["[eventName]", "[args...]"])]
   public static void Emit(string[] args)
   {
@@ -287,22 +284,6 @@ public static class BuiltIns
     }
   }
 
-  [ShellCommand("newp", help: "Creates a new project", args: ["[path]"])]
-  public static void Newp(string[] args)
-  {
-    if (args.Length == 0)
-    {
-      EngineConsole.WriteError("Expected path");
-      return;
-    }
-
-    var path = args[0];
-    if (!Directory.Exists(path))
-      Directory.CreateDirectory(path);
-
-    CopyLibs([path]);
-  }
-
   [ShellCommand("version", help: "Shows the version")]
   public static void Version(string[] _) => EngineConsole.WriteLine(Core.Version.All);
 
@@ -314,6 +295,9 @@ public static class BuiltIns
       EngineConsole.WriteLine($"monoe.runtime-{runtime.Name}@{Core.Version.All} ~ {runtime.Path}");
     }
   }
+
+  [ShellCommand("mverb", "Activates/desactivates the verbose mode")]
+  public static void ActivateVerbose(string[]_) => EngineConsole.IsVerbose = !EngineConsole.IsVerbose;
 
   private static void CopyDirectory(string sourceDir, string destinationDir)
   {

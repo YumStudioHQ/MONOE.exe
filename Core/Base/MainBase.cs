@@ -61,15 +61,18 @@ public partial class MainBase : Control
     });
   }
 
-  public static void RequestExit(int code = 0)
+  public static void RequestExit(long code = 0)
   {
     EnqueueOnMain(() =>
     {
       if (Application.IsShuttingDown)
+      {
+        EngineConsole.Verbose("exit rejected: already exiting!");
         return;
+      }
 
       Application.IsShuttingDown = true;
-      exitRequestionAction(code);
+      exitRequestionAction((int)code);
     });
   }
 
@@ -105,11 +108,6 @@ public partial class MainBase : Control
   public MainBase()
   {
     EngineConsole.WriteLine($"monoe.exe meta-runtime | monoe.exe@{Version.All}");
-  }
-
-  public MainBase(GameSettings settings)
-  {
-    gameSettings = settings;
   }
 
   public override void _EnterTree()
@@ -169,8 +167,6 @@ public partial class MainBase : Control
     {
       GetTree().Quit(c);
     };
-
-    SetUpEngineLifeTime();
   }
 
   public override void _Ready()
@@ -200,20 +196,9 @@ public partial class MainBase : Control
     EngineConsole.Verbose($"devs: {CurrentProject.PROJECT.DEV_NAME}, from {CurrentProject.PROJECT.COMPANY_NAME}");
 
     /*
-     * The free event is not fired directly after the first frame!
+     * Some events are fired at a fixed point, so people can "free a bit later"
      */
-    cleanupTimer = new()
-    {
-      WaitTime = 0.5,
-      OneShot = false,
-    };
-
-    AddChild(cleanupTimer);
-
-    cleanupTimer.Timeout += () =>
-    {
-      Emit("onfree");
-    };
+    SetUpTimers();
 
     if (gameSettings.HasDiagnostics) AddChild(new Engine.Layers.DebugLayer());
 
@@ -240,6 +225,8 @@ public partial class MainBase : Control
 
       thread.Start();
     }
+
+    GetTree().AutoAcceptQuit = false;
   }
 
   public override void _Process(double delta)
@@ -257,7 +244,7 @@ public partial class MainBase : Control
 
     if (!locked)
     {
-      Emit("process", delta);
+      Emit("@process", delta);
     }
   }
 
@@ -269,15 +256,15 @@ public partial class MainBase : Control
      */
     if (!locked)
     {
-      Emit("physics", delta);
+      Emit("@physics", delta);
+      Emit("@collect");
     }
   }
 
   public override void _ExitTree()
   {
-    if (Application.IsShuttingDown || exitTreeCalled)
+    if (exitTreeCalled)
     {
-      EngineConsole.WriteError("[rejecteed] exit rejected: already exiting.");
       return;
     }
 
@@ -286,8 +273,9 @@ public partial class MainBase : Control
     EngineConsole.WriteLine();
     EngineConsole.Verbose("exit requested...");
     EngineConsole.Verbose("exit event fired");
-    Emit("onexit");
-    Emit("onfree");
+    Emit("@onexit");
+    Emit("@collect");
+    Emit("@cleanup");
     Manager.ObjectRegistry.Clear();
     ResourceManager.Clear();
     watcher?.Dispose();
@@ -308,7 +296,7 @@ public partial class MainBase : Control
 
   public override void _Input(InputEvent @event)
   {
-    Emit("input");
+    Emit("@input");
   }
 
   public static object[] Lsleep(object[] args)
@@ -319,6 +307,15 @@ public partial class MainBase : Control
       else if (args[0] is double d) Thread.Sleep((int)d);
     }
     return [];
+  }
+
+  public override void _Notification(int what)
+  {
+    if (what == NotificationWMCloseRequest)
+    {
+      mainState.Call("monoe.exit_requested", 0);
+      return;
+    }
   }
 
   private void LoadProject()
@@ -362,7 +359,9 @@ public partial class MainBase : Control
                          end
                          monoe.staticcall("monoe.exe.Core.Engine.EngineConsole", "Print", table.unpack(args))
                        end
+
                        {{LoadRuntimeInformations()}}
+                       monoe.exit_requested = function(code) monoe.info.os.exit(code or 0) end
                        """;
     mainState.Run(injection, false);
 
@@ -375,7 +374,7 @@ public partial class MainBase : Control
     Emit("@load");
 
     // 7. Finally, call ready!
-    Emit("ready", margs);
+    Emit("@ready", margs);
 
     /* Quick note!
      * Generally, users love hot reloading. So, the function 'load' in monoe allows
@@ -389,26 +388,23 @@ public partial class MainBase : Control
      */
   }
 
-  private void SetUpEngineLifeTime()
+  private void SetUpTimers()
   {
-    Console.CancelKeyPress += (_, e) =>
+    /* Quick note!
+     * There is indeed two cleaning events ;
+     * * @collect, called after each physic process,
+     * * @cleanup, called at a fixed point (not something stable through versions!)
+     * Depending what you're doing, you may change your event's usage!
+     */
+    cleanupTimer = new()
     {
-      if (Application.IsShuttingDown || exitTreeCalled)
-      {
-        EngineConsole.Verbose("[rejected]: rejecting exit request: already exiting");
-        e.Cancel = true;
-      } else
-      {
-        RequestExit();
-      }
+      WaitTime = 1.5,
+      OneShot = false,
     };
 
-    AppDomain.CurrentDomain.ProcessExit += (_, _) =>
-    {
-      if (Application.IsShuttingDown) return;
-      if (exitTreeCalled) return;
-      _ExitTree();
-    };
+    cleanupTimer.Timeout += () => { Emit("@cleanup"); };
+
+    AddChild(cleanupTimer);
   }
 
   private static string LoadRuntimeInformations()
@@ -418,7 +414,13 @@ public partial class MainBase : Control
          name = '{{OS.GetName()}}',
          version = '{{OS.GetVersion()}}',
          argv = {{{GetFormatedCmdlineArgs()}}},
-         exit = function(code) monoe.staticcall('monoe.exe.Core.Engine.Application', 'Exit', code or 0)end
+         processorcount = {{System.Environment.ProcessorCount}},
+         isos64 = {{System.Environment.Is64BitOperatingSystem.ToString().ToLower()}},
+         isproc64 = {{System.Environment.Is64BitProcess.ToString().ToLower()}},
+         ispriviliged = {{System.Environment.IsPrivilegedProcess.ToString().ToLower()}},
+         machinename = '{{System.Environment.MachineName.Replace("\'", "\\\'")}}',
+         procid = {{System.Environment.ProcessId}},
+         exit = function(code) monoe.staticcall('monoe.exe.Core.Base.MainBase', 'RequestExit', code or 0) end
        },
        runtime = {
          version = '{{Version.All}}',

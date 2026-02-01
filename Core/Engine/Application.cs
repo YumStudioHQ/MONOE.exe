@@ -5,9 +5,11 @@ using System.Linq;
 using Godot;
 using monoe.exe.Core.Base;
 using monoe.exe.Core.Engine.Resources;
+using monoe.exe.Core.Engine.Shell;
 
 namespace monoe.exe.Core.Engine;
 
+[ShellCommandHolder]
 public static class Application
 {
   internal static volatile bool IsShuttingDown = false;
@@ -19,11 +21,10 @@ public static class Application
     EngineResources.GetResourceDir(),
   ];
 
-  public static void Exit(long code)
+  [ShellCommand("exit", help: "Quits the engine")]
+  public static void Exit(string[]_)
   {
-    EngineConsole.Verbose("exit requested by internals...");
-    MainBase.RequestExit((int)code);
-    MainBase.Lsleep([10]);
+    MainBase.RequestExit();
   }
 
   public static string ProjectSettingsFile()

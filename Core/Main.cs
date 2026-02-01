@@ -1,8 +1,6 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Godot;
 using monoe.exe.Core.Engine;
 using monoe.exe.Core.Engine.Resources;
@@ -51,20 +49,35 @@ public partial class Main : Base.MainBase
     {
       var arg = margs[i];
       if (arg == "-nr") nr = true;
-      else if (arg == "-dev") Application.IsDevMode = true;
-      else if (IsAppCmd(arg)) continue;
-      else if (arg == "-file")
+      else if (arg == "-dev")
       {
-        if (i + 1 >= margs.Length) throw new ArgumentException($"expected an argument after argument #{i}, got nil (nul)");
-        mainFile = margs[i+1];
-        i++;
+        Application.IsDevMode = true;
+        if (i + 1 < margs.Length)
+        {
+          mainFile = margs[i+1];
+          i++;
+        }
       }
-      else if (arg == "-local-libs") Application.Libraries.Add("@PWD");
+      else if (IsAppCmd(arg)) continue;
+      else if (arg == "-local-libs") Application.Libraries.Add("@PWD"); // @PWD is then expanded to the actual PWD!
       else
       {
         Shell.ExecuteCommand(arg.StartsWith('-') ? arg[1..] : arg, i + 1 >= margs.Length ? [] : margs[(i+1)..]);
         break;
       }
+    }
+
+    var pwd = Directory.GetCurrentDirectory();
+
+    if (Directory.Exists(mainFile) && Application.IsDevMode)
+    {
+      Application.Libraries.Add(mainFile);
+      pwd = Path.GetFullPath(mainFile);
+      mainFile = Path.Combine(mainFile, "res", "main.lua");
+    } 
+    else if (File.Exists(mainFile) && Application.IsDevMode)
+    {
+      pwd = Path.GetDirectoryName(mainFile);
     }
 
     if (Application.IsDevMode) gameSettings = new()
@@ -88,9 +101,9 @@ public partial class Main : Base.MainBase
       Application.IsEditor = false;
     }
 
-    Directory.SetCurrentDirectory(Directory.GetParent(gameSettings.MainFile).FullName);
-    Application.PWD = Directory.GetCurrentDirectory();
-    EngineConsole.Verbose($"current directory: {Directory.GetCurrentDirectory()}");
+    Directory.SetCurrentDirectory(pwd);
+    Application.PWD = pwd;
+    EngineConsole.Verbose($"PWD: {Directory.GetCurrentDirectory()}");
   }
 
   public override void _EnterTree()
@@ -109,5 +122,10 @@ public partial class Main : Base.MainBase
   {
     if (nr) return;
     else base._Ready();
+  }
+
+  public override void _Notification(int what)
+  {
+    base._Notification(what);
   }
 }
