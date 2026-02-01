@@ -88,7 +88,7 @@ function monoe.event.emit(name, ...)
   end
 end
 
-monoe.event.subscribe("@collect", function()
+monoe.event.subscribe("@cleanup", function()
   for name, list in pairs(monoe.event._once) do
     if not list or #list == 0 then
       monoe.event._once[name] = nil

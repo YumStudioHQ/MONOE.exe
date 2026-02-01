@@ -77,11 +77,11 @@ local function subscribe_table(table)
   if type(table) ~= "table" then return end
 
   if type(table.process) == "function" then
-    event.subscribe('process', table.process)
+    event.subscribe('@process', table.process)
   end
 
   if type(table.physics) == "function" then
-    event.subscribe('physics', table.physics)
+    event.subscribe('@physics', table.physics)
   end
 
   if type(table.ready) == "function" then
@@ -89,11 +89,11 @@ local function subscribe_table(table)
   end
 
   if type(table.input) == "function" then
-    event.subscribe('input', table.input)
+    event.subscribe('@input', table.input)
   end
 
   if type(table.exit) == "function" then
-    event.subscribe('onexit', table.exit)
+    event.subscribe('@onexit', table.exit)
   end
 end
 
@@ -102,11 +102,11 @@ local function subscribe_object(table)
   if type(table) ~= "table" then return end
 
   if type(table.process) == "function" then
-    event.subscribe('process', function (delta) table:process(delta) end)
+    event.subscribe('@process', function (delta) table:process(delta) end)
   end
 
   if type(table.physics) == "function" then
-    event.subscribe('physics', function (delta) table:physics(delta) end)
+    event.subscribe('@physics', function (delta) table:physics(delta) end)
   end
 
   if type(table.ready) == "function" then
@@ -114,11 +114,11 @@ local function subscribe_object(table)
   end
 
   if type(table.input) == "function" then
-    event.subscribe('input', function () table:input() end)
+    event.subscribe('@input', function () table:input() end)
   end
 
   if type(table.exit) == "function" then
-    event.subscribe('onexit', function () table:exit() end)
+    event.subscribe('@onexit', function () table:exit() end)
   end
 end
 

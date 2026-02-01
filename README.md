@@ -201,15 +201,15 @@ function main()
   print("Game started")
 end
 
-event.subscribe("process", function(delta)
+event.subscribe('@process', function(delta)
   -- frame update
 end)
 
-event.subscribe("physics", function(delta)
+event.subscribe('@physics', function(delta)
   -- physics update
 end)
 
-event.subscribe("onexit", function()
+event.subscribe('@onexit', function()
   print("Goodbye")
 end)
 ```

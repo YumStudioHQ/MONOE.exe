@@ -195,6 +195,9 @@ def main() -> None:
         shutil.copytree(runtimes_dir, target)
         log.ok(f"runtimes → {resource_dir}")
 
+    log.header('signing again (with runtimes now)')
+    codesign_app(Path('build/osx/monoe.exe.app'))
+
     zip_all_build_folders(build_dir)
 
 
