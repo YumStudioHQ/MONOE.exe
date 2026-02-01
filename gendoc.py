@@ -250,7 +250,7 @@ def render_html(cls: ClassDoc, output_path: str, css_path: str = "website/style/
 </html>
 """)
 
-def render_html_index(generated, output_path: str, css_path: str = "/website/style/style.css"):
+def render_html_index(generated, output_path: str, css_path: str = "website/style/style.css"):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     with open(output_path, "w", encoding="utf-8") as f:

@@ -1,74 +1,103 @@
 :root {
-  --bg: #121212;
-  --panel: rgba(30, 30, 30, 0.85); /* semi-transparent panel */
-  --border: rgba(255, 255, 255, 0.1);
-  --text: #e0e0e0;
-  --muted: #aaaaaa;
-  --accent: #ff6ec7; /* neon pink accent */
-  --code-bg: rgba(20, 20, 20, 0.9);
+  --bg: #1e1e1e;
+  --bg-alt: #252525;
+  --panel: #2b2b2b;
+  --panel-alt: #303030;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+
+  --text: #e6e6e6;
+  --muted: #b0b0b0;
+
+  --accent: #ff6ec7;
+  --accent-soft: rgba(255, 110, 199, 0.25);
+
+  --code-bg: #1a1a1a;
+  --code-border: rgba(255, 255, 255, 0.06);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   font-family: "Inter", system-ui, sans-serif;
-  background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+  background: radial-gradient(
+      circle at top,
+      #252525,
+      #1b1b1b 60%
+  );
   color: var(--text);
-  backdrop-filter: blur(2px);
 }
 
 .topbar {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 12px 20px;
-  background: rgba(40, 40, 40, 0.8);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(6px);
+  padding: 10px 18px;
+  background: linear-gradient(
+    to bottom,
+    #2c2c2c,
+    #242424
+  );
+  border-bottom: 1px solid var(--border-strong);
 }
 
 .logo {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  box-shadow: 0 0 12px var(--accent);
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #000;
+  box-shadow:
+    0 0 0 1px var(--border),
+    0 0 12px var(--accent-soft);
 }
 
 .title h1 {
   margin: 0;
-  font-size: 1.5rem;
-  letter-spacing: 0.5px;
-  color: var(--text);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .version {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--accent);
+  opacity: 0.9;
 }
 
 main {
   padding: 24px;
-  max-width: 1100px;
+  max-width: 1200px;
   margin: auto;
 }
 
 .panel {
-  background: var(--panel);
+  background: linear-gradient(
+    to bottom,
+    var(--panel),
+    var(--panel-alt)
+  );
   border: 1px solid var(--border);
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-  backdrop-filter: blur(6px);
-  transition: transform 0.2s;
+  border-radius: 8px;
+  padding: 20px 22px;
+  margin-bottom: 20px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.03),
+    0 10px 30px rgba(0,0,0,0.4);
 }
 
-.panel:hover {
-  transform: translateY(-2px);
+.panel h2,
+.panel h3 {
+  margin-top: 0;
+  font-weight: 600;
 }
 
 .panel a {
   color: var(--accent);
   text-decoration: none;
-  font-weight: 500;
 }
 
 .panel a:hover {
@@ -77,42 +106,69 @@ main {
 
 .panel code {
   background: var(--code-bg);
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-family: 'Fira Code', monospace;
-  font-weight: 500;
+  border: 1px solid var(--code-border);
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-family: "Fira Code", monospace;
+  font-size: 0.95em;
 }
 
 .panel pre {
-  background: var(--code-bg);
+  background: linear-gradient(
+    to bottom,
+    #1c1c1c,
+    #181818
+  );
+  border: 1px solid var(--code-border);
   padding: 16px;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow-x: auto;
+  font-family: "Fira Code", monospace;
   font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.panel pre::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--accent),
+    transparent
+  );
+  margin: -16px -16px 12px;
+  opacity: 0.6;
 }
 
 .download-grid button {
-  background: rgba(50, 50, 50, 0.85);
+  background: linear-gradient(
+    to bottom,
+    #2f2f2f,
+    #262626
+  );
   border: 1px solid var(--border);
   color: var(--text);
-  padding: 12px 14px;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.95rem;
-  backdrop-filter: blur(4px);
-  transition: all 0.2s;
+  font-size: 0.9rem;
+  transition: all 0.15s ease;
 }
 
 .download-grid button:hover {
-  background: rgba(60, 0, 60, 0.9);
   border-color: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
-  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px var(--accent-soft),
+    0 0 12px var(--accent-soft);
+  transform: translateY(-1px);
 }
 
 footer {
   text-align: center;
-  padding: 12px;
-  font-size: 0.85rem;
+  padding: 14px;
+  font-size: 0.8rem;
   color: var(--muted);
+  opacity: 0.85;
 }

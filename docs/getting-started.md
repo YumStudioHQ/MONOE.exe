@@ -1,188 +1,330 @@
-# Getting Started with MONOE.exe
+# Getting Started with **MONOE.exe v3**
 
-Welcome to MONOE.exe! This guide will walk you through creating your first small game using Lua scripting. We'll build a simple "Pong-like" game where a ball bounces around and you control a paddle.
+Welcome to **MONOE.exe v3** !!
+MONOE.exe is a Godot-powered runtime that lets you build applications and games using **Lua**, with a strong C# core handling lifecycle, threading, hot-reload, and system integration.
 
-## Prerequisites
+Version 3 introduces a **fully event-driven runtime**, a new boot process, and a much tighter Lua ↔ engine bridge.
 
-- MONOE.exe engine installed
-- Basic knowledge of Lua programming
-- A text editor
+---
 
-## Step 1: Set Up Your Project
+## Core Concepts (v3 mindset)
 
-Create a new directory for your game project. Copy the `libraries` folder from the MONOE.exe installation into your project directory.
+Before writing code, here’s how v3 thinks:
 
-Create a `project.lua` file in your project root:
+### 1. Lua is event-driven
 
-```lua
-local engine = require('monoelib.engine')
+You **do not** implement engine loops directly.
 
--- Define your game object
-monoe.game = {}
+Instead, Lua reacts to **engine events**:
 
-function monoe.game.ready()
-    print("Game is ready!")
-    -- Initialize your game here
-end
+* `@load`
+* `@ready`
+* `@process`
+* `@physics`
+* `@input`
+* `@hot`
+* `@cleanup`
+* `@onexit`
 
-function monoe.game.process(delta)
-    -- Update game logic every frame
-    -- delta is the time elapsed since last frame
-end
+### 2. The engine owns the lifecycle
 
-function deps()
-    -- Return any custom DLL dependencies (empty for now)
-    return {}
-end
+* Godot runs the main loop
+* C# marshals execution onto the main thread
+* Lua code **cannot break thread safety**
 
--- Register the game with the engine
-engine.qualify(monoe.game)
+### 3. Hot reload is a first-class feature
+
+Lua files can opt-in to hot reload using `@hot` events.
+
+### 4. The shell is part of the runtime
+
+You can execute:
+
+* Lua code
+* Engine commands
+* Debug utilities
+  …while the app is running.
+
+---
+
+## Project Structure
+
+A minimal MONOE.exe v3 project:
+
+```
+my-game/
+├─ res/
+│  ├─ main.lua (can be empty, the `main()` function is called once the engine is ready)
+│  ├─ project.lua (now optional, and should contain settings code, instead of game logic)
+│  └─ game.lua
 ```
 
-## Step 2: Create Game Objects
+---
 
-Create a new Lua file called `game.lua` in your project directory:
+## `main.lua` – Entry Point
+
+Every MONOE.exe project starts from **`main.lua`**.
 
 ```lua
-local entity = require('monoelib.types.entity')
-local sprite = require('monoelib.types.sprite')
-local event = require('monoelib.event')
+-- main.lua
 
--- Game variables
-local ball
-local paddle
-local ballSpeed = {x = 200, y = 150}
-local paddleSpeed = 300
-
-function initGame()
-    -- Create the ball
-    ball = entity.new()
-    local ballSprite = sprite.new("ball.png")  -- You'll need a ball.png image
-    ball:attach(ballSprite)
-    ball:position(400, 300)  -- Center of screen
-
-    -- Create the paddle
-    paddle = entity.new()
-    local paddleSprite = sprite.new("paddle.png")  -- You'll need a paddle.png image
-    paddle:attach(paddleSprite)
-    paddle:position(400, 550)  -- Bottom of screen
+-- Optional: request dependencies (DLLs / managed libs)
+function deps()
+  return {}
 end
 
-function updateBall(delta)
-    -- Move the ball
-    local x, y = ball:position()
-    x = x + ballSpeed.x * delta
-    y = y + ballSpeed.y * delta
-
-    -- Bounce off walls
-    if x <= 0 or x >= 800 then  -- Assuming 800px width
-        ballSpeed.x = -ballSpeed.x
-    end
-    if y <= 0 then
-        ballSpeed.y = -ballSpeed.y
-    end
-
-    -- Check paddle collision (simple AABB)
-    local px, py = paddle:position()
-    if y >= py - 20 and y <= py + 20 and x >= px - 50 and x <= px + 50 then
-        ballSpeed.y = -ballSpeed.y
-    end
-
-    -- Reset if ball goes off bottom
-    if y > 600 then  -- Assuming 600px height
-        x, y = 400, 300
-        ballSpeed.x = 200
-        ballSpeed.y = 150
-    end
-
-    ball:position(x, y)
+-- Main entry point
+function main()
+  print("MONOE v3 runtime booted!")
+  return {}
 end
+```
 
-function updatePaddle(delta)
-    -- Move paddle with keyboard input
-    local keyboard = require('monoelib.io.keyboard')
+### What happens under the hood
 
-    local px, py = paddle:position()
+1. Engine loads `main.lua`
+2. Calls `deps()`
+3. Loads requested libraries
+4. Injects runtime globals
+5. Calls `main()`
+6. Fires lifecycle events
 
-    if keyboard.down("ui_left") then
-        px = px - paddleSpeed * delta
-    elseif keyboard.down("ui_right") then
-        px = px + paddleSpeed * delta
-    end
+---
 
-    -- Keep paddle on screen
-    if px < 50 then px = 50 end
-    if px > 750 then px = 750 end
+## Runtime Globals (Injected)
 
-    paddle:position(px, py)
-end
+MONOE.exe injects a `monoe` table automatically.
 
--- Initialize when the game is ready
-event.once('ready', function()
-    initGame()
+### `monoe.info`
+
+```lua
+print(monoe.info.os.name)
+print(monoe.info.runtime.version)
+```
+
+Available sections:
+
+* `monoe.info.os`
+* `monoe.info.runtime`
+
+Including:
+
+* OS name / version
+* argv
+* process ID
+* exit function
+
+```lua
+monoe.info.os.exit(0)
+```
+
+---
+
+## Events in v3
+
+Events are emitted by the engine using **string-based names**.
+
+### Common events
+
+| Event      | When it fires                   |
+| ---------- | ------------------------------- |
+| `@load`    | After scripts are loaded        |
+| `@ready`   | After everything is initialized |
+| `@process` | Every frame                     |
+| `@physics` | Every physics tick              |
+| `@input`   | On input                        |
+| `@hot`     | When a Lua file is hot-reloaded |
+| `@cleanup` | Periodic cleanup                |
+| `@collect` | After each frame                |
+| `@onexit`  | Application is exiting          |
+
+---
+
+## Subscribing to Events
+
+MONOE.exe exposes an event system through `monoe.event`.
+
+### Basic subscription
+
+```lua
+monoe.event.subscribe("@ready", function()
+  print("App is ready!")
+end)
+```
+
+### Per-frame update
+
+```lua
+monoe.event.subscribe("@process", function(delta)
+  -- delta is frame time in seconds
+end)
+```
+
+### Physics update
+
+```lua
+monoe.event.subscribe("@physics", function(delta)
+end)
+```
+
+---
+
+## Example: Minimal Game Loop
+
+```lua
+-- game.lua
+
+local x = 0
+
+monoe.event.subscribe("@ready", function()
+  print("Game ready")
 end)
 
--- Update every frame
-event.subscribe('process', function(delta)
-    updateBall(delta)
-    updatePaddle(delta)
+monoe.event.subscribe("@process", function(delta)
+  x = x + 100 * delta
+  print("x =", x)
 end)
-
-return {}
 ```
 
-## Step 3: Update project.lua to Load Your Game
-
-Modify your `project.lua` to load the game script:
+Load it from `main.lua`:
 
 ```lua
-local engine = require('monoelib.engine')
+-- main.lua
 
-monoe.game = {}
-
-function monoe.game.ready()
-    print("Game is ready!")
-    -- Load the main game script
-    engine.load('mainGame', 'game')
+function main()
+  -- This would be a very manual way,
+  dofile("res/game.lua")
+  -- Instead, this could be sometimes better:
+  engine.qualify(require('res.game.lua'), false) -- Or true, if it is a class that needs a self.
 end
-
-function deps()
-    return {}
-end
-
-engine.qualify(monoe.game)
 ```
 
-## Step 4: Add Input Handling
+---
 
-The keyboard input in the example above uses the `monoelib.io.keyboard` module. Make sure you have the necessary IO libraries available.
+## Hot Reloading (v3)
 
-## Step 5: Run Your Game
+Hot reload is automatic when enabled.
 
-1. Place your `project.lua` and `game.lua` in the project directory
-2. Add `ball.png` and `paddle.png` images to the directory
-3. Run MONOE.exe with your project directory as the working directory
+### Reacting to reloads
 
-## Step 6: Enhance Your Game
+```lua
+monoe.event.subscribe("@hot", function(path)
+  print("Reloaded:", path)
+end)
+```
 
-- Add scoring system
-- Add sound effects using the audio library
-- Add multiple balls or power-ups
-- Implement AI for computer-controlled paddles
+### Typical pattern
 
-## Using the Runtime Shell
+```lua
+local function setup()
+  print("setup called")
+end
 
-While your game is running, you can use the built-in shell to:
+monoe.event.subscribe("@load", setup)
+monoe.event.subscribe("@hot", function(path)
+  if path:endswith("game.lua") then
+    setup()
+  end
+end)
+```
 
-- Execute Lua code: `print("Hello from shell!")`
-- Reload scripts: `:reload`
-- Inspect variables: `:dump _G`
-- Check performance: `:stats`
+---
 
-## Next Steps
+## Cleanup & Resource Management
 
-- Explore the [API documentation](./api/lua.md) for more features
-- Check out [shell commands](./shell.md) for debugging
-- Learn about [hot reloading](./meta-runtime.md) for faster development
+Two cleanup phases exist:
 
-Happy game development with MONOE.exe!
+### `@collect`
+
+* Fired after physics updates
+* Lightweight cleanup
+
+### `@cleanup`
+
+* Fired periodically
+* Good for deferred destruction
+
+```lua
+monoe.event.subscribe("@cleanup", function()
+  -- free resources
+end)
+```
+
+---
+
+## Exiting the Application
+
+From Lua:
+
+```lua
+monoe.info.os.exit(0)
+```
+
+From the shell:
+
+```text
+:exit
+```
+
+On window close, the engine triggers:
+
+```lua
+@onexit
+```
+
+---
+
+## The Runtime Shell
+
+When enabled, MONOE.exe starts an interactive shell.
+
+### Lua execution
+
+```text
+print("hello world")
+```
+
+### Engine commands
+
+```text
+:reload
+:exit
+```
+
+Commands are discovered via C# attributes and run safely on the main thread.
+
+---
+
+## Command Line Flags (Common)
+
+| Flag             | Description                    |
+| ---------------- | ------------------------------ |
+| `-dev`           | Enable dev mode |
+| `-nr`            | No Run (exits directly) |
+| `-no-shell`      | Disable shell |
+| `-no-hot-reload` | Disable hot reload |
+| `-diagnostics`   | Enable diagnostics |
+| `-silent`        | Reduce output |
+
+---
+
+## Philosophy of v3
+
+* **Lua is userland**
+* **C# is kernel**
+* **Godot is hardware**
+* Everything runs on the **main thread**
+* Crashes lock the runtime instead of corrupting state
+* Hot reload is safe by default
+
+---
+
+## Migration Notes
+
+| v2                     | v3               |
+| ---------------------- | ---------------- |
+| `project.lua`          | boot file is now `main.lua`. The `project.lua` file is designed for project settings now.|
+| `engine.qualify`       |  changed        |
+| File-based lifecycle | Event-based      |
+| Named events           | `@event` strings |
+| Manual reload logic    | Built-in |
