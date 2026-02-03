@@ -66,6 +66,8 @@ public static class EngineResources
 
   static EngineResources()
   {
+    EngineConsole.Verbose($"before boot: {Directory.GetCurrentDirectory()} (in .ctors)");
+
     try
     {
       Init();
