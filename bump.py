@@ -2,6 +2,7 @@
 
 import sys
 import re
+import subprocess
 from pathlib import Path
 
 PROJECT_FILE = Path("project.godot")
@@ -13,6 +14,18 @@ VERSION_REGEX = re.compile(
 )
 
 SEMVER_REGEX = re.compile(r"^\d+\.\d+\.\d+$")
+
+def git_info():
+    try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD^{tree}",]
+        ).decode().strip()
+        dirty = bool(
+            subprocess.check_output(["git", "status", "--porcelain"]).decode().strip()
+        )
+        return commit, dirty
+    except Exception:
+        return "unknown", True
 
 def bump_version(major: int, minor: int, fix:int, bump_type: str) -> tuple[int, int, int]:
     if bump_type == "major":
@@ -81,6 +94,8 @@ def main():
       f'config/version="{new_version}"',
       content
     )
+    
+    commit, dirty = git_info()
 
     PROJECT_FILE.write_text(updated_content, encoding="utf-8")
 
@@ -89,11 +104,12 @@ public static partial class Version {{
     public static readonly int Major = {new_major};
     public static readonly int Minor = {new_minor};
     public static readonly int Fix = {new_fix};
-    public static readonly string All = "{new_version}";
+    public static readonly string All = "{new_version}.{'dev' if dirty else 'stable'}.{commit}";
+    public static readonly string GitCommit = "{commit}";
+    public static readonly bool IsDirty = {str(dirty).lower()};
 }}""", encoding="utf-8")
 
     print(f"Version updated: {old_version} → {new_version}")
-
 
 if __name__ == "__main__":
     main()

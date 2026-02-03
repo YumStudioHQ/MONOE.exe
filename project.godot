@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="monoe.exe"
-config/version="3.0.0"
+config/version="3.0.5"
 run/main_scene="uid://n0ipngfcc2e8"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 boot_splash/bg_color=Color(0, 0, 0, 0)
