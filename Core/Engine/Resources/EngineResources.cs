@@ -22,9 +22,6 @@ public static class EngineResources
   {
     if (path.Trim() == "") return "";
 
-    path = path.Replace("@PWD", Application.PWD)
-               .Replace('\\', '/');
-
     if (path.EndsWith('/'))
       path = path[..^1];
 
@@ -33,12 +30,7 @@ public static class EngineResources
 
   public static string LuaLibrariesFmt()
   {
-    var query = "''";
-
-    foreach (var libdel in Application.Libraries)
-      query += ".." + FormatPathForLua(libdel);
-
-    return query;
+    return $".. {FormatPathForLua(GetRuntimeResourceDir())}";
   }
 
 
@@ -66,6 +58,8 @@ public static class EngineResources
 
   static EngineResources()
   {
+    EngineConsole.Verbose($"before boot: {Directory.GetCurrentDirectory()} (in .ctors)");
+
     try
     {
       Init();

@@ -15,11 +15,6 @@ public static class Application
   internal static volatile bool IsShuttingDown = false;
   internal static volatile bool IsDevMode = OS.GetCmdlineArgs().Contains("-dev");
   internal static volatile bool IsEditor = true;
-  internal static string PWD { get; set; } = Directory.GetCurrentDirectory();
-
-  public static List<string> Libraries { get; set; } = [
-    EngineResources.GetResourceDir(),
-  ];
 
   [ShellCommand("exit", help: "Quits the engine")]
   public static void Exit(string[]_)
