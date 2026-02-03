@@ -1,3 +1,6 @@
+# Please know that this file is pure ugly / AI gen code ...
+# "But it works on my computer" — LOL.
+
 import os
 import shutil
 import subprocess
@@ -5,10 +8,6 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 import time
-
-# -------------------------
-# Subtle CLI Styling (Apple-ish)
-# -------------------------
 
 class C:
     RESET = "\033[0m"
@@ -53,10 +52,6 @@ platforms: List[Tuple[str, str, str, str]] = [
     ("Windows Desktop 2", "build/win32", "libyum_win_x86.dll", "build/win32"),
     ("Windows Desktop 3", "build/winarm64", "libyum_win_arm64.dll", "build/winarm64"),
 ]
-
-# -------------------------
-# Utility Functions
-# -------------------------
 
 def find_godot() -> str:
     godot = os.environ.get("GODOT")
@@ -123,10 +118,6 @@ def zip_all_build_folders(build_dir: Path) -> None:
             shutil.make_archive(str(zip_path), "zip", item)
             log.ok(f"{item.name}.zip created")
 
-
-# -------------------------
-# Main Build Logic
-# -------------------------
 
 def main() -> None:
     build_dir = Path("build")
@@ -200,13 +191,8 @@ def main() -> None:
 
     zip_all_build_folders(build_dir)
 
-
-# -------------------------
-# Entry Point
-# -------------------------
-
 if __name__ == "__main__":
-    import bump
+    import bump 
     import gendoc
 
     start = time.time()
