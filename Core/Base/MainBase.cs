@@ -31,7 +31,7 @@ public partial class MainBase : Control
 
   public static void Emit(string @event, params object[] args)
   {
-    mainState.Call("monoe.event.emit", [@event, .. args]);
+    mainState?.Call("monoe.event.emit", [@event, .. args]);
   }
 
   public static object[] LCall(string method, params object[] args)
@@ -289,7 +289,7 @@ public partial class MainBase : Control
       else EngineConsole.WriteError("[rejected]: Failled to deque an element !");
     }
 
-    mainState.Dispose();
+    mainState?.Dispose();
 
     EngineConsole.Verbose("process finished");
   }
