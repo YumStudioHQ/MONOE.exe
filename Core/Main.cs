@@ -51,7 +51,7 @@ public partial class Main : Base.MainBase
       if (arg == "-nr") nr = true;
       else if (arg == "-dev") Application.IsDevMode = true;
       else if (IsAppCmd(arg)) continue;
-      else if (arg == "-local-libs") EngineConsole.WriteWarning("argument `-local-libs` is not supported");
+      else if (arg == "-local-libs") EngineConsole.WriteWarning("argument `-local-libs` is no longer supported");
       else
       {
         Shell.ExecuteCommand(arg.StartsWith('-') ? arg[1..] : arg, i + 1 >= margs.Length ? [] : margs[(i+1)..]);
@@ -80,6 +80,8 @@ public partial class Main : Base.MainBase
       Application.IsEditor = false;
     }
 
+    var path = System.Environment.GetEnvironmentVariable("_MON_PWD");
+    if (File.Exists(path)) Directory.SetCurrentDirectory(path);
     EngineConsole.Verbose($"PWD: {Directory.GetCurrentDirectory()}");
   }
 
@@ -98,7 +100,6 @@ public partial class Main : Base.MainBase
   public override void _Ready()
   {
     if (nr) return;
-    
     base._Ready();
   }
 

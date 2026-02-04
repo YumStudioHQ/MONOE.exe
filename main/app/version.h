@@ -1,0 +1,4 @@
+#ifndef _MONOE_APP_VERSION_
+#define _MONOE_APP_VERSION_
+#define VERSION "3.1.0.dev.00f4d4109ca04c2bdc98efdf98f653be6f63c064"
+#endif // _MONOE_APP_VERSION_

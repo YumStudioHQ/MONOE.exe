@@ -6,7 +6,8 @@ import subprocess
 from pathlib import Path
 
 PROJECT_FILE = Path("project.godot")
-VERSION_FILE = Path("Core/Version.cs")
+CS_VERSION_FILE = Path("Core/Version.cs")
+CXX_VERSION_FILE = Path("main/app/version.h")
 DEFAULT_BUMP = "fix"
 
 VERSION_REGEX = re.compile(
@@ -99,7 +100,7 @@ def main():
 
     PROJECT_FILE.write_text(updated_content, encoding="utf-8")
 
-    VERSION_FILE.write_text(f"""namespace monoe.exe.Core;
+    CS_VERSION_FILE.write_text(f"""namespace monoe.exe.Core;
 public static partial class Version {{
     public static readonly int Major = {new_major};
     public static readonly int Minor = {new_minor};
@@ -108,6 +109,11 @@ public static partial class Version {{
     public static readonly string GitCommit = "{commit}";
     public static readonly bool IsDirty = {str(dirty).lower()};
 }}""", encoding="utf-8")
+
+    CXX_VERSION_FILE.write_text(f'''#ifndef _MONOE_APP_VERSION_
+#define _MONOE_APP_VERSION_
+#define VERSION "{new_version}.{'dev' if dirty else 'stable'}.{commit}"
+#endif // _MONOE_APP_VERSION_''')
 
     print(f"Version updated: {old_version} → {new_version}")
 
