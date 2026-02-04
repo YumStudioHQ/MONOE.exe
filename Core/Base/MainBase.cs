@@ -363,7 +363,7 @@ public partial class MainBase : Control
                        {{LoadRuntimeInformations()}}
                        monoe.exit_requested = function(code) monoe.info.os.exit(code or 0) end
                        """;
-    mainState.Run(injection, false);
+    mainState.Run(injection.Replace("\\", "\\\\"), false);
 
     // 5. Call main.
     Run("main = main or function() end");

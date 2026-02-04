@@ -22,6 +22,8 @@ public static class EngineResources
   {
     if (path.Trim() == "") return "";
 
+    path = path.Replace('\\', '/');
+
     if (path.EndsWith('/'))
       path = path[..^1];
 
@@ -30,9 +32,8 @@ public static class EngineResources
 
   public static string LuaLibrariesFmt()
   {
-    return $".. {FormatPathForLua(GetRuntimeResourceDir())}";
+    return $"{FormatPathForLua(GetRuntimeResourceDir())}";
   }
-
 
   private static void Init()
   {

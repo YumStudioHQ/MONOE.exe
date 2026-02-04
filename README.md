@@ -70,6 +70,13 @@ Grab the latest release here:
 
 No installer, no launcher — just run it.
 
+### Considerations
+
+Next to the Godot 4.6 update, the engine had a huge impact about PWD and finding projects. So, we did add a bootloader that loads the engine through another binary. Because of this, know ; you may launch the engine by the terminal on macOS, and run MONOE.APP/Contents/MacOS/launch binary. In order to make it easier, you can install monoe.exe.app in /Applications folder. Then, in your bash configuration file (generally ~/.zshrc), add the following line:
+```
+alias monoe.exe='/Applications/monoe.exe.app/Contents/MacOS/launch'
+```
+
 ---
 
 ## Architecture Overview

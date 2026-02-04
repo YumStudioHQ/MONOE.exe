@@ -26,7 +26,7 @@ namespace monoe::exe {
     parse_arguments(args);
 
     if (!os::launch_godot(bin.string(), args, cwd)) {
-      std::cerr << "failed to launch monoe!" << std::endl;
+      std::cerr << "\n[@monoe/bootloader] monoe.exe did not exit properly!" << std::endl;
       return 1;
     }
 
@@ -35,7 +35,7 @@ namespace monoe::exe {
 }
 
 int main(int argc, char *const argv[]) {
-  std::cout << "monoe.exe -- mootloader, monoe's standard bootloader" << std::endl;
+  std::cout << "[@monoe/bootloader] launching monoe.exe ..." << std::endl;
 
   std::vector<std::string> args = {};
   for (int i = 1; i < argc; i++) {

@@ -43,14 +43,15 @@ class log:
         print(f"\n{C.BOLD}{msg}{C.RESET}")
         print(f"{C.DIM}{'─' * len(msg)}{C.RESET}")
 
-platforms: List[Tuple[str, str, str, str]] = [
-    ("macOS",             "build/osx/monoe.exe.app/Contents/MacOS", "libyum_apple.dylib", "build/osx/monoe.exe.app/Contents/Resources"),
-    ("Linux",             "build/lin64", "libyum_linux_x64.so", "build/lin64"),
-    ("Linux 2",           "build/lin32", "libyum_linux_x86.so", "build/lin32"),
-    ("Linux 3",           "build/linarm64", "libyum_linux_arm64.so", "build/linarm64"),
-    ("Windows Desktop",   "build/win64", "libyum_win_x64.dll", "build/win64"),
-    ("Windows Desktop 2", "build/win32", "libyum_win_x86.dll", "build/win32"),
-    ("Windows Desktop 3", "build/winarm64", "libyum_win_arm64.dll", "build/winarm64"),
+platforms: List[Tuple[str, str, str, str, str]] = [
+    ("macOS", "build/osx/monoe.exe.app/Contents/MacOS", "libyum_apple.dylib",
+        "build/osx/monoe.exe.app/Contents/Resources", 'APPLE'),
+    ("Linux", "build/lin64", "libyum_linux_x64.so", "build/lin64", 'x86_64-linux-gnu'),
+    ("Linux 2", "build/lin32", "libyum_linux_x86.so", "build/lin32", 'x86-linux-gnu'),
+    ("Linux 3", "build/linarm64", "libyum_linux_arm64.so", "build/linarm64", 'aarch64-linux-gnu'),
+    ("Windows Desktop", "build/win64", "libyum_win_x64.dll", "build/win64", 'x86_64-windows-gnu'),
+    ("Windows Desktop 2", "build/win32", "libyum_win_x86.dll", "build/win32", 'x86-windows-gnu'),
+    ("Windows Desktop 3", "build/winarm64", "libyum_win_arm64.dll", "build/winarm64", 'aarch64-windows-gnu'),
 ]
 
 def find_godot() -> str:
@@ -118,6 +119,34 @@ def zip_all_build_folders(build_dir: Path) -> None:
             shutil.make_archive(str(zip_path), "zip", item)
             log.ok(f"{item.name}.zip created")
 
+def cxx(out: str, apple: bool, target: str):
+    result = None
+    if apple:
+        ret = os.system(f'clang++ -arch arm64 -arch x86_64 -stdlib=libc++ -isysroot $(xcrun --show-sdk-path) -Wall -Wextra main/main.cpp -o "{out}" -std=c++23')
+        if ret != 0: sys.exit(ret)
+        else: return
+    else:
+        result = subprocess.run(
+            ['zig', 'c++', 'main/main.cpp', '-target', target, '-o', out, '-Wall', '-Wextra', '-std=c++23'],
+            stdout=subprocess.DEVNULL,
+            stderr=sys.stderr
+        )
+    if result.returncode != 0:
+        log.err(f"Failed to compile C++ for platform {target}")
+        sys.exit(1)
+
+def install_bootloader(contents: Path, binpath: Path, platform: str):
+    if platform == 'APPLE':
+        cxx(str(binpath / 'launch'), True, platform)
+        old = "<key>CFBundleExecutable</key>\n\t<string>monoe.exe</string>"
+        new = "<key>CFBundleExecutable</key>\n\t<string>launch</string>"
+        with open(contents.parent / 'Info.plist', 'r') as file:
+            content = file.read().replace(' ', '').replace('\t', '').replace(old, new)
+            file.close()
+            with open(contents.parent / 'Info.plist', 'w') as wfile: wfile.write(content); wfile.close()
+    else:
+        cxx(str(binpath / 'launch'), False, platform)
+    log.ok('C++ entry built');
 
 def main() -> None:
     build_dir = Path("build")
@@ -131,7 +160,7 @@ def main() -> None:
 
     runtimes_dir.mkdir(exist_ok=True)
 
-    for platform_name, binpath, libyumsrc, resource_path in platforms:
+    for platform_name, binpath, libyumsrc, resource_path, cxx_plat in platforms:
         log.header(platform_name)
 
         bin_path_obj = Path(binpath)
@@ -161,6 +190,8 @@ def main() -> None:
         shutil.copy2("main.lua", resource_dir)
         log.ok("monoelib/ and main.lua copied")
 
+        install_bootloader(Path(resource_path), Path(binpath), cxx_plat)
+
         # Zip runtime
         platform_build_dir = (
             bin_path_obj.parent.parent
@@ -176,7 +207,7 @@ def main() -> None:
 
     log.header("Embedding Runtimes")
 
-    for _, _, _, resource_path in platforms:
+    for _, _, _, resource_path, _ in platforms:
         resource_dir = Path(resource_path)
         target = resource_dir / "runtimes"
 
